@@ -11,6 +11,10 @@ var routes = [
 		path: "/",
 		component: HomePage,
 	},
+	// {
+	// 	path: "/menu",
+	// 	component: MenuPage,
+	// },
 	{
 		path: "/about/",
 		component: AboutPage,

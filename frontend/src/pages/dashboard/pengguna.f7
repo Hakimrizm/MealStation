@@ -280,7 +280,7 @@
             <div class="navbar-inner">
               <div class="left">
                 <a href="#" class="link left-icon">
-                  <img src="../../public/icons/logo.png" alt="App Logo" class="app-logo" />
+                  <img src="../../../public/icons/logo.png" alt="App Logo" class="app-logo" />
                 </a>
               </div>
               <div class="location-info">
@@ -349,7 +349,7 @@
 
             <div class="food-grid">
               <div class="food-card" data-category="makanan">
-                <img src="../../public/menus/nasi.jpeg" alt="Nasi Goreng Spesial" />
+                <img src="../../../public/menus/nasi.jpeg" alt="Nasi Goreng Spesial" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     Nasi Goreng Spesial
@@ -371,7 +371,7 @@
               </div>
 
               <div class="food-card" data-category="makanan">
-                <img src="../../public/menus/mie.jpeg" alt="mie Goreng Spesial" />
+                <img src="../../../public/menus/mie.jpeg" alt="mie Goreng Spesial" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     mie Goreng Spesial
@@ -393,7 +393,7 @@
               </div>
 
               <div class="food-card" data-category="minuman">
-                <img src="../../public/menus/minuman.jpeg" alt="Es Teh Manis" />
+                <img src="../../../public/menus/minuman.jpeg" alt="Es Teh Manis" />
                 <div class="food-card-content">
                   <div class="food-card-title">Es Teh Manis Jumbo</div>
                   <div class="food-card-subtitle">Aneka Minuman Segar</div>
@@ -410,7 +410,7 @@
               </div>
 
               <div class="food-card" data-category="dessert">
-                <img src="../../public/menus/dessert.jpeg" alt="Pudding Coklat" />
+                <img src="../../../public/menus/dessert.jpeg" alt="Pudding Coklat" />
                 <div class="food-card-content">
                   <div class="food-card-title">Pudding Coklat Creamy</div>
                   <div class="food-card-subtitle">Dessert Manis Bu Siti</div>
@@ -427,7 +427,7 @@
               </div>
 
               <div class="food-card" data-category="makanan">
-                <img src="../../public/menus/mie.jpeg" alt="mie Goreng Spesial" />
+                <img src="../../../public/menus/mie.jpeg" alt="mie Goreng Spesial" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     mie Goreng Spesial
@@ -449,7 +449,7 @@
               </div>
 
               <div class="food-card" data-category="makanan">
-                <img src="../../public/menus/nasi.jpeg" alt="Nasi Goreu Budi" />
+                <img src="../../../public/menus/nasi.jpeg" alt="Nasi Goreu Budi" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     Nasi Goreng Budi
@@ -471,7 +471,7 @@
               </div>
 
               <div class="food-card" data-category="Lainnya">
-                <img src="../../public/menus/jas.jpeg" alt="jas hujan" />
+                <img src="../../../public/menus/jas.jpeg" alt="jas hujan" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     jas anti badai
@@ -493,7 +493,7 @@
               </div>
 
               <div class="food-card" data-category="Lainnya">
-                <img src="../../public/menus/rokok.jpeg" alt="rokok sampoerna" />
+                <img src="../../../public/menus/rokok.jpeg" alt="rokok sampoerna" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     rokok sampoerna
@@ -515,7 +515,7 @@
               </div>
 
               <div class="food-card" data-category="Lainnya">
-                <img src="../../public/menus/yupi.jpeg" alt="yupi jelly" />
+                <img src="../../../public/menus/yupi.jpeg" alt="yupi jelly" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     yupi aneka rasa
@@ -537,7 +537,7 @@
               </div>
 
               <div class="food-card" data-category="Lainnya">
-                <img src="../../public/menus/permen.jpeg" alt="permen" />
+                <img src="../../../public/menus/permen.jpeg" alt="permen" />
                 <div class="food-card-content">
                   <div class="food-card-title">
                     permen asam
@@ -570,9 +570,9 @@
                 <i class="fas fa-list-alt"></i>
                 <span>Pesanan Saya</span>
               </a>
-              <a href="#" class="toolbar-link">
-                <i class="fas fa-bell"></i>
-                <span>Notifikasi</span>
+              <a href="../Riwayat-Transaki.f7" class="toolbar-link">
+                <i class="fas fa-history"></i>
+                <span>riwayat</span>
               </a>
               <a href="profile.html" class="toolbar-link">
                 <i class="fas fa-user"></i>
