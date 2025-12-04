@@ -1,0 +1,305 @@
+<template>
+  <div class="page" data-name="riwayat-pesanan">
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link icon-only back"><i class="f7-icons">arrow_left</i></a>
+        </div>
+        <div class="title">Riwayat Pesanan Selesai</div>
+        <div class="right">
+          <a href="#" class="link icon-only"><i class="f7-icons">cart</i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+      
+      <!-- FILTER -->
+      <div class="filter-section">
+        <div class="btn-filter active" id="btnBulanIni">
+          <span>Bulan Ini</span>
+          <i class="f7-icons">calendar</i>
+        </div>
+        <div class="btn-filter" id="btnSemua">
+          <span>Semua</span>
+          <i class="f7-icons">layers_alt</i>
+        </div>
+      </div>
+
+      <!-- LIST PESANAN -->
+      <div class="order-list" id="orderListContainer"></div>
+
+    </div>
+
+    <!-- PESAN LAGI -->
+    <div class="fab-container">
+      <a href="#" class="btn-pesan-lagi">Pesan Lagi</a>
+    </div>
+
+  </div>
+</template>
+
+
+<script>
+export default {
+  on: {
+    pageInit() {
+
+      // ============================
+      // DATA DUMMY PESANAN
+      // ============================
+      var databasePesanan = [
+        {
+          id: 'A789',
+          toko: 'Warung Ibi',
+          harga: 20000,
+          tanggal: '2025-11-21 12:30',
+          img: 'https://tse1.mm.bing.net/th/id/OIP.L-2D-zrMRNvZjr5a3yJqkAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3',
+          menu: ['Nasi Telur Spesial (1x)', 'Air Mineral (2x)']
+        },
+        {
+          id: 'A790',
+          toko: 'Kantin Juara',
+          harga: 20000,
+          tanggal: '2025-11-20 11:15',
+          img: 'https://static.vecteezy.com/ti/gratis-vektor/p1/166296-kantine-illustration-gratis-vektor-gratis-vector.jpg',
+          menu: ['Nasi Goreng Spesial (1x)', 'Kulit Ayam (2x)']
+        },
+        {
+          id: 'A791',
+          toko: 'Es Coklat Belgia',
+          harga: 28000,
+          tanggal: '2025-10-25 15:00',
+          img: 'https://png.pngtree.com/png-clipart/20230529/original/pngtree-ice-chocolate-png-image_9173365.png',
+          menu: ['Es Coklat (M) (1x)', 'Red Velvet (L) (1x)']
+        },
+        {
+          id: 'A792',
+          toko: 'Mie Ayam Bakso',
+          harga: 8000,
+          tanggal: '2025-10-10 16:30',
+          img: 'https://img.freepik.com/premium-vector/man-job-seller-meatball-street-hawker-delicious-health-indonesian-food-traditional-local-culinary_1162612-3300.jpg',
+          menu: ['Mie Ayam (1x)']
+        }
+      ];
+
+      const app = this.$app;
+
+      // ============================
+      // RENDER LIST PESANAN
+      // ============================
+      function renderList(data) {
+        const container = document.getElementById('orderListContainer');
+        if (!container) return;
+
+        if (data.length === 0) {
+          container.innerHTML = `<div style="text-align:center; padding:40px; color:#999">
+            Tidak ada pesanan.
+          </div>`;
+          return;
+        }
+
+        let html = '';
+        data.forEach((item) => {
+          let hargaRp = 'Rp ' + item.harga.toLocaleString('id-ID');
+          let dateObj = new Date(item.tanggal);
+          let options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute:'2-digit' };
+          let tglCantik = dateObj.toLocaleDateString('id-ID', options);
+
+          html += `
+            <div class="order-card" data-id="${item.id}">
+              <img src="${item.img}" class="order-img">
+              <div class="order-info">
+                <div class="status-row">
+                  <div class="status-text">Pesanan Selesai <i class="f7-icons check-icon">checkmark_seal_fill</i></div>
+                  <a href="#" class="link-about">Tentang</a>
+                </div>
+                <div class="order-id">#${item.id}</div>
+                <div class="store-name">${item.toko}</div>
+                <div class="order-date">${tglCantik}</div>
+                <div class="order-price">${hargaRp}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+        // ketika diklik → buka detail
+        container.querySelectorAll('.order-card').forEach(card => {
+          card.addEventListener('click', () => bukaDetail(card.dataset.id));
+        });
+      }
+
+      // ============================
+      // FILTER PESANAN
+      // ============================
+      function filterPesanan(tipe) {
+        const btnBulan = document.getElementById('btnBulanIni');
+        const btnSemua = document.getElementById('btnSemua');
+
+        if (tipe === 'bulan_ini') {
+          btnBulan.classList.add('active');
+          btnSemua.classList.remove('active');
+        } else {
+          btnSemua.classList.add('active');
+          btnBulan.classList.remove('active');
+        }
+
+        let hasil = databasePesanan.filter(item => {
+          if (tipe === 'semua') return true;
+          let tgl = new Date(item.tanggal);
+          return tgl.getMonth() === 10; // November
+        });
+
+        renderList(hasil);
+      }
+
+      // tombol filter
+      document.getElementById('btnBulanIni').onclick = () => filterPesanan('bulan_ini');
+      document.getElementById('btnSemua').onclick = () => filterPesanan('semua');
+
+
+      // ============================
+      // DETAIL PESANAN
+      // ============================
+      function bukaDetail(idPesanan) {
+        const data = databasePesanan.find(x => x.id === idPesanan);
+        if (!data) return;
+
+        const listMenu = data.menu.map(m => <li>${m}</li>).join('');
+
+        const sheet = app.sheet.create({
+          content: `
+            <div class="sheet-modal" style="height:auto; border-radius:16px 16px 0 0;">
+              <div class="toolbar">
+                <div class="toolbar-inner">
+                  <div class="left"></div>
+                  <div class="title">Detail Pesanan ${data.id}</div>
+                  <div class="right"><a href="#" class="sheet-close link">Tutup</a></div>
+                </div>
+              </div>
+              <div class="sheet-modal-inner">
+                <div class="block">
+                  <h3>${data.toko}</h3>
+                  <p style="color:#888; font-size:12px">${data.tanggal}</p>
+
+                  <hr>
+
+                  <p style="font-weight:600;">Menu:</p>
+                  <ul>${listMenu}</ul>
+
+                  <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:bold;">
+                    <span>Total Bayar:</span>
+                    <span>Rp ${data.harga.toLocaleString('id-ID')}</span>
+                  </div>
+
+                  <button class="button button-fill button-large button-round margin-top sheet-close"
+                    style="background:var(--f7-theme-color)"
+                    onclick="pesanLagiAction('${data.toko}')">
+                    Pesan Lagi
+                  </button>
+                </div>
+              </div>
+            </div>
+          `
+        });
+
+        sheet.open();
+      }
+
+      // Toast
+      window.pesanLagiAction = function(namaToko) {
+        app.toast.create({
+          text: 'Menu dari ' + namaToko + ' masuk ke keranjang!',
+          closeTimeout: 2000,
+        }).open();
+      };
+
+      // Default filter
+      filterPesanan('bulan_ini');
+
+    }
+  }
+};
+</script>
+
+
+<style>
+:root {
+  --f7-theme-color: #E64A19;
+  --f7-navbar-bg-color: #E64A19;
+  --f7-navbar-text-color: #ffffff;
+}
+
+/* Navbar */
+.navbar .navbar-bg {
+  background-color: #E64A19 !important;
+  opacity: 1 !important;
+}
+.navbar .title, .navbar .link, .navbar i { color: #ffffff !important; }
+
+/* Page */
+.page-content {
+  padding-top: 80px !important;
+  padding-bottom: 100px !important;
+  background: #f8f9fa;
+}
+
+/* Filter */
+.filter-section {
+  padding: 0 16px 16px 16px;
+  display: flex;
+  gap: 10px;
+}
+.btn-filter {
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  background: #fff;
+  display: flex;
+  gap: 6px;
+  cursor: pointer;
+}
+.btn-filter.active {
+  background: #FFCCBC;
+  border-color: var(--f7-theme-color);
+  color: #bf360c;
+  font-weight: 600;
+}
+
+/* Order List */
+.order-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px;
+  display: flex;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  align-items: flex-start;
+}
+.order-img {
+  width: 50px; height: 50px; border-radius: 50%;
+  margin-right: 14px; object-fit: cover;
+}
+
+/* floating button */
+.fab-container {
+  position: fixed; bottom: 30px; left: 0; width: 100%;
+  display: flex; justify-content: center;
+}
+.btn-pesan-lagi {
+  background: var(--f7-theme-color);
+  color: white;
+  padding: 12px 40px;
+  border-radius: 50px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(230, 74, 25, 0.4);
+}
+</style>
