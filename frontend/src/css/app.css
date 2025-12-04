@@ -1,6 +1,26 @@
+:root {
+	/* Mengatur warna tema utama (primary color) aplikasi */
+	--f7-theme-color: #de7710;
+	--f7-theme-color-rgb: 222, 119, 16; /* RGB dari #de7710 */
+	--f7-theme-color-shade: #c86c0f; /* Warna sedikit lebih gelap untuk shade/hover */
+	--f7-theme-color-tint: #e48731; /* Warna sedikit lebih terang */
+}
+
+/* CSS untuk Ikon/Teks Tab Bar yang Aktif */
+.tabbar a.tab-link-active {
+	color: #de7710; /* Warna teks dan ikon saat tab aktif */
+}
+
+/* CSS Khusus untuk Tombol Kategori Aktif dengan Warna Oranye */
+.segmented .button.button-fill.button-active {
+	background-color: #de7710;
+	border-color: #de7710;
+	color: #fff;
+}
+
 /* iOS Cordova Tweak */
 .device-cordova.device-ios {
-  height: 100vh;
+	height: 100vh;
 }
 
 /* Your app custom styles here */

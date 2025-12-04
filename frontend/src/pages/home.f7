@@ -1,91 +1,165 @@
 <template>
-  <div class="page" data-name="home">
-    <!-- Top Navbar -->
-    <div class="navbar navbar-large">
-      <div class="navbar-bg"></div>
-      <div class="navbar-inner">
-        <div class="left">
-          <a href="#" class="link icon-only panel-open" data-panel="left">
-            <i class="icon f7-icons if-not-md">menu</i>
-            <i class="icon material-icons if-md">menu</i>
-          </a>
-        </div>
-        <div class="title sliding">kantin</div>
-        <div class="right">
-          <a href="#" class="link icon-only panel-open" data-panel="right">
-            <i class="icon f7-icons if-not-md">menu</i>
-            <i class="icon material-icons if-md">menu</i>
-          </a>
-        </div>
-        <div class="title-large">
-          <div class="title-large-text">kantin</div>
-        </div>
-      </div>
-    </div>
-    <!-- Toolbar-->
-    <div class="toolbar toolbar-bottom">
-      <div class="toolbar-inner">
-        <div class="toolbar-pane">
-          <a href="#" class="link">Left Link</a>
-          <a href="#" class="link">Right Link</a>
-        </div>
-      </div>
-    </div>
-    <!-- Scrollable page content-->
-    <div class="page-content">
-      <div class="block">
-        <p>Here is your blank Framework7 app. Let's see what we have here.</p>
-      </div>
-      <div class="block-title">Navigation</div>
-      <div class="list list-strong inset list-dividers-ios">
-        <ul>
-          <li>
-            <a href="/about/" class="item-content item-link">
-              <div class="item-inner">
-                <div class="item-title">About</div>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="/form/" class="item-content item-link">
-              <div class="item-inner">
-                <div class="item-title">Form</div>
-              </div>
-            </a>
-          </li>
-        </ul>
-      </div>
+	<div class="page" data-name="home">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="left">
+					<a href="#" class="link">
+						<span class="navbar-logo"> LPKIA </span>
+					</a>
+				</div>
 
-      <div class="block-title">Modals</div>
-      <div class="block grid grid-cols-2 grid-gap">
-        <a href="#" class="button button-fill popup-open" data-popup="#my-popup">Popup</a>
-        <a href="#" class="button button-fill login-screen-open" data-login-screen="#my-login-screen">Login Screen</a>
-      </div>
+				<div class="title">Beranda</div>
 
-      <div class="block-title">Panels</div>
-      <div class="block grid grid-cols-2 grid-gap">
-        <a href="#" class="button button-fill panel-open" data-panel="left">Left Panel</a>
-        <a href="#" class="button button-fill panel-open" data-panel="right">Right Panel</a>
-      </div>
+				<div class="right">
+					<a href="/cart/" class="link icon-only">
+						<i class="icon f7-icons">cart_fill</i>
+					</a>
 
-      <div class="list list-strong inset list-dividers-ios links-list">
-        <ul>
-          <li>
-            <a href="/dynamic-route/blog/45/post/125/?foo=bar#about">Dynamic (Component) Route</a>
-          </li>
-          <li>
-            <a href="/load-something-that-doesnt-exist/">Default Route (404)</a>
-          </li>
-          <li>
-            <a href="/request-and-load/user/123456/">Request Data & Load</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
+					<a id="profile-btn" class="link icon-only">
+						<i id="profile-icon" class="icon f7-icons"
+							>person_crop_circle_fill</i
+						>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="page-content">
+			<form class="searchbar">
+				<div class="searchbar-inner">
+					<div class="searchbar-input-wrap">
+						<input type="search" placeholder="Cari produk atau layanan..." />
+						<i class="searchbar-icon"></i>
+						<span class="input-clear-button"></span>
+					</div>
+					<span class="searchbar-disable-button">Batal</span>
+				</div>
+			</form>
+			<div class="block-title margin-top-half">Pilih Kategori</div>
+			<div class="segmented segmented-strong margin-horizontal">
+				<button class="button button-fill button-active">Semua</button>
+
+				<button class="button">Minuman</button>
+				<button class="button">Makanan</button>
+				<button class="button">Dessert</button>
+			</div>
+
+			<div class="block-title">Produk Terlaris</div>
+			<div class="list media-list">
+				<ul>
+					<!-- CARD ITEM -->
+					<li>
+						<div class="card">
+							<div class="card-content card-content-padding">
+								<div class="row">
+									<!-- Gambar -->
+									<div class="col-30">
+										<img
+											src="https://via.placeholder.com/120x120"
+											alt="Menu"
+											style="border-radius: 10px; width: 100%; height: 100%"
+										/>
+									</div>
+
+									<!-- Detail Menu -->
+									<div class="col-70">
+										<div
+											class="item-title"
+											style="font-size: 16px; font-weight: bold"
+										>
+											Ayam Geprek Pedas
+										</div>
+
+										<!-- Tenant -->
+										<div
+											class="item-subtitle"
+											style="color: gray; font-size: 13px"
+										>
+											Warung Mamah Rika
+										</div>
+
+										<!-- Rating -->
+										<div style="margin: 5px 0">⭐⭐⭐⭐☆ (4.2)</div>
+
+										<!-- Harga -->
+										<div
+											style="font-size: 16px; font-weight: bold; margin: 5px 0"
+										>
+											Rp 18.000
+										</div>
+
+										<!-- Tombol -->
+										<button
+											class="button button-fill color-green"
+											style="height: 30px; font-size: 13px"
+										>
+											Tambah ke Keranjang
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="toolbar toolbar-bottom tabbar">
+			<div class="toolbar-inner">
+				<a href="#tab-home" class="tab-link tab-link-active">
+					<i class="icon f7-icons">house_fill</i>
+					<span class="tabbar-label">Home</span>
+				</a>
+
+				<a href="#tab-pesanan" class="tab-link">
+					<i class="icon f7-icons">bag_fill</i>
+					<span class="tabbar-label">Pesanan</span>
+				</a>
+
+				<a href="#tab-notifikasi" class="tab-link">
+					<i class="icon f7-icons">bell_fill</i>
+					<span class="tabbar-label">Notifikasi</span>
+				</a>
+
+				<a id="tab-profile-btn" class="tab-link">
+					<i id="tab-profile-icon" class="icon f7-icons"
+						>person_crop_circle_fill</i
+					>
+					<span class="tabbar-label">Profile</span>
+				</a>
+			</div>
+		</div>
+	</div>
 </template>
+
 <script>
-export default () => {
-  return $render;
-}
+	import { getToken } from "../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
+		const updateProfileUI = () => {
+			const token = getToken();
+
+			const icon = token
+				? "person_crop_circle_fill"
+				: "square_arrow_right_fill";
+			const link = token ? "/profile/" : "/login/";
+			const label = token ? "Profile" : "Login";
+
+			// Navbar Right
+			$("#profile-icon").text(icon);
+			$("#profile-btn").attr("href", link);
+
+			// Tab Bar
+			$("#tab-profile-icon").text(icon);
+			$("#tab-profile-btn").attr("href", link);
+			$("#tab-profile-label").text(label);
+		};
+
+		// Jalankan saat page siap
+		$on("pageInit", updateProfileUI);
+
+		// Jalankan lagi kalau login/logout terjadi
+		document.addEventListener("authChanged", updateProfileUI);
+
+		return $render;
+	};
 </script>

@@ -1,0 +1,110 @@
+<template>
+	<div class="page" data-name="register">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="title">Register</div>
+			</div>
+		</div>
+
+		<div class="page-content">
+			<div class="block-title">Buat Akun Baru</div>
+
+			<div class="list no-hairlines-md">
+				<ul>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Nama</div>
+							<div class="item-input-wrap">
+								<input type="text" id="reg-name" placeholder="Nama lengkap" />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Email</div>
+							<div class="item-input-wrap">
+								<input
+									type="email"
+									id="reg-email"
+									placeholder="email@example.com"
+								/>
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Password</div>
+							<div class="item-input-wrap">
+								<input
+									type="password"
+									id="reg-password"
+									placeholder="********"
+								/>
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Role</div>
+							<div class="item-input-wrap">
+								<select id="reg-role">
+									<option value="user">User</option>
+									<option value="tenant">Tenant</option>
+								</select>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+
+			<div class="block">
+				<a class="button button-fill" id="btn-register">Register</a>
+
+				<div class="block-footer">
+					Sudah punya akun?
+					<a href="/login">Login</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	export default (props, { $f7, $f7router }) => {
+		const register = async () => {
+			let name = document.getElementById("reg-name").value;
+			let email = document.getElementById("reg-email").value;
+			let password = document.getElementById("reg-password").value;
+			let role = document.getElementById("reg-role").value;
+
+			let res = await fetch("http://127.0.0.1:8000/api/register", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ name, email, password, role }),
+			});
+
+			let data = await res.json();
+
+			if (!res.ok) {
+				return $f7.dialog.alert(data.message || "Register gagal!");
+			}
+
+			$f7.dialog.alert("Register berhasil!", () => {
+				$f7router.navigate("/login");
+			});
+		};
+
+		return {
+			on: {
+				pageInit() {
+					document
+						.getElementById("btn-register")
+						.addEventListener("click", register);
+				},
+			},
+		};
+	};
+</script>
