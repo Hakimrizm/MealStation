@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#2196f3" />
+    <title>Food Delivery App</title>
+    <link rel="stylesheet" href="css/framework7-bundle.min.css" />
+    <link rel="stylesheet" href="css/my-app.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      :root {
+        --f7-theme-color: #2196f3;
+        --f7-hot-color: #ff5722;
+        --f7-page-bg-color: #f4f4f4;
+        --f7-text-color: #333;
+        --f7-text-color-light: #666;
+        --f7-toolbar-height: 50px;
+        --f7-navbar-height: 56px;
+      }
+
+      /* ==================== NAVBAR STYLES ==================== */
+      .navbar {
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .navbar-inner {
+        padding: 8px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: var(--f7-navbar-height);
+      }
+      .navbar .left-icon {
+        width: auto;
+        height: auto;
+        background-color: transparent;
+        color: transparent; /* Hapus warna Font Awesome */
+        font-size: 24px;
+        font-weight: normal;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0; /* Hapus padding yang tidak perlu jika menggunakan gambar */
+      }
+      /* CSS untuk gambar logo */
+      .navbar .left-icon .app-logo {
+        height: 30px; /* Ukuran logo */
+        width: auto;
+        display: block;
+        margin-top: 3px; /* Penyesuaian vertikal agar pas */
+      }
+
+      .navbar .location-info {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: var(--f7-text-color);
+        font-weight: 500;
+      }
+      .navbar .location-info i {
+        color: var(--f7-theme-color);
+        margin-right: 5px;
+      }
+      .navbar .right-icons a {
+        color: var(--f7-text-color-light);
+        margin-left: 15px;
+        font-size: 20px;
+      }
+      .navbar .right-icons .cart-icon {
+        color: var(--f7-theme-color);
+      }
+
+      /* ==================== SEARCHBAR STYLES ==================== */
+      .searchbar {
+        margin: 15px;
+        margin-top: 0 !important;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #e0e0e0;
+      }
+      .searchbar .searchbar-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .searchbar input {
+        border: none;
+        flex-grow: 1;
+        padding: 12px 15px 12px 40px;
+        font-size: 16px;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+      }
+      .searchbar .icon-search {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--f7-text-color-light);
+        z-index: 10;
+      }
+
+      /* ==================== CATEGORIES STYLES ==================== */
+      .categories {
+        display: flex;
+        overflow-x: scroll;
+        padding: 10px 15px;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+      }
+      .categories::-webkit-scrollbar {
+        display: none;
+      }
+      .category-item {
+        flex-shrink: 0;
+        width: 70px;
+        margin-right: 15px;
+        text-align: center;
+      }
+      .category-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        background-color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 5px auto;
+        color: var(--f7-text-color);
+        font-size: 24px;
+        pointer-events: auto;
+      }
+      .category-button.active {
+        background-color: var(--f7-theme-color);
+        color: #fff;
+      }
+      .category-item span {
+        font-size: 12px;
+        color: var(--f7-text-color);
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* ==================== FOOD GRID STYLES ==================== */
+      .food-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+      }
+      .food-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .food-card img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+      }
+      .food-card-content {
+        padding: 10px;
+      }
+      .food-card-title {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+      }
+      .food-card-title .fire-icon {
+        color: orange;
+        margin-left: 5px;
+        font-size: 14px;
+      }
+      .food-card-subtitle {
+        font-size: 12px;
+        color: var(--f7-text-color-light);
+        margin-bottom: 5px;
+      }
+      .food-card-rating {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: #ffc107;
+        margin-bottom: 5px;
+      }
+      .food-card-rating i {
+        margin-right: 2px;
+      }
+      .food-card-price {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--f7-text-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .food-card-price .star-icon {
+        color: var(--f7-theme-color);
+        font-size: 18px;
+      }
+
+      /* ==================== TOOLBAR STYLES ==================== */
+      .toolbar {
+        background-color: #ffffff;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        height: var(--f7-toolbar-height);
+
+        /* FIX: Mengubah absolute menjadi FIXED */
+        position: fixed;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 500;
+        padding-bottom: constant(safe-area-inset-bottom);
+        padding-bottom: env(safe-area-inset-bottom);
+        box-sizing: content-box;
+      }
+      .toolbar-inner {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding-top: 5px;
+        height: 100%;
+      }
+      .toolbar-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+        color: var(--f7-text-color-light);
+        text-decoration: none;
+        flex-grow: 1;
+      }
+      .toolbar-link.active {
+        color: var(--f7-theme-color);
+      }
+      .toolbar-link i {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+      .toolbar-link span {
+        font-size: 10px;
+      }
+
+      /* ==================== PAGE CONTENT PADDING ==================== */
+.page-content {
+  padding-bottom: calc(
+    var(--f7-toolbar-height) + constant(safe-area-inset-bottom)
+  );
+  padding-bottom: calc(
+    var(--f7-toolbar-height) + env(safe-area-inset-bottom)
+  );
+
+  
+  padding-top: 0 !important;
+}
+
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="view view-main">
+        <div data-name="home" class="page">
+          <div class="navbar no-shadow">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+              <div class="left">
+                <a href="#" class="link left-icon">
+                  <img src="../../../public/icons/logo.png" alt="App Logo" class="app-logo" />
+                </a>
+              </div>
+              <div class="location-info">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Current Location: Kantin LPKIA</span>
+              </div>
+              <div class="right right-icons">
+                <a href="#" class="link icon-only cart-icon"
+                  ><i class="fas fa-shopping-cart"></i
+                ></a>
+                <a href="profile.html" class="link icon-only"
+                  ><i class="fas fa-user-circle"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-content ptr-content">
+            <div class="ptr-preloader">
+              <div class="preloader"></div>
+              <div class="ptr-arrow"></div>
+            </div>
+
+            <div class="searchbar searchbar-inline row no-gap">
+              <div class="searchbar-inner col">
+                <i class="icon icon-search fas fa-search"></i>
+                <input
+                  type="search"
+                  placeholder="Cari makanan atau tenant..."
+                />
+              </div>
+            </div>
+
+            <div class="categories">
+              <div class="category-item">
+                <a href="#" class="category-button active" data-filter="all"
+                  ><i class="fas fa-filter"></i
+                ></a>
+                <span>Semua</span>
+              </div>
+              <div class="category-item">
+                <a href="#" class="category-button" data-filter="makanan"
+                  ><i class="fas fa-utensils"></i
+                ></a>
+                <span>makanan</span>
+              </div>
+              <div class="category-item">
+                <a href="#" class="category-button" data-filter="minuman"
+                  ><i class="fas fa-coffee"></i
+                ></a>
+                <span>Minuman</span>
+              </div>
+              <div class="category-item">
+                <a href="#" class="category-button" data-filter="dessert"
+                  ><i class="fas fa-ice-cream"></i
+                ></a>
+                <span>Dessert</span>
+              </div>
+              <div class="category-item">
+                <a href="#" class="category-button" data-filter="Lainnya"
+                  ><i class="fas fa-ellipsis-h"></i
+                ></a>
+                <span>Lainnya</span>
+              </div>
+            </div>
+
+            <div class="food-grid">
+              <div class="food-card" data-category="makanan">
+                <img src="../../../public/menus/nasi.jpeg" alt="Nasi Goreng Spesial" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    Nasi Goreng Spesial
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu Budi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 18.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="makanan">
+                <img src="../../../public/menus/mie.jpeg" alt="mie Goreng Spesial" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    mie Goreng Spesial
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu Budi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 18.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="minuman">
+                <img src="../../../public/menus/minuman.jpeg" alt="Es Teh Manis" />
+                <div class="food-card-content">
+                  <div class="food-card-title">Es Teh Manis Jumbo</div>
+                  <div class="food-card-subtitle">Aneka Minuman Segar</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 5.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="dessert">
+                <img src="../../../public/menus/dessert.jpeg" alt="Pudding Coklat" />
+                <div class="food-card-content">
+                  <div class="food-card-title">Pudding Coklat Creamy</div>
+                  <div class="food-card-subtitle">Dessert Manis Bu Siti</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 10.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="makanan">
+                <img src="../../../public/menus/mie.jpeg" alt="mie Goreng Spesial" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    mie Goreng Spesial
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu Budi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 18.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="makanan">
+                <img src="../../../public/menus/nasi.jpeg" alt="Nasi Goreu Budi" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    Nasi Goreng Budi
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu Budi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 18.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="Lainnya">
+                <img src="../../../public/menus/jas.jpeg" alt="jas hujan" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    jas anti badai
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu Budi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 15.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="Lainnya">
+                <img src="../../../public/menus/rokok.jpeg" alt="rokok sampoerna" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    rokok sampoerna
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu andi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 30.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="Lainnya">
+                <img src="../../../public/menus/yupi.jpeg" alt="yupi jelly" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    yupi aneka rasa
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu didin</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 1.500
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="food-card" data-category="Lainnya">
+                <img src="../../../public/menus/permen.jpeg" alt="permen" />
+                <div class="food-card-content">
+                  <div class="food-card-title">
+                    permen asam
+                    <span class="fire-icon"
+                      ><i class="fas fa-fire-alt"></i
+                    ></span>
+                  </div>
+                  <div class="food-card-subtitle">Warung Ibu Budi</div>
+                  <div class="food-card-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <div class="food-card-price">
+                    Rp 1.000
+                    <span class="star-icon"><i class="fas fa-star"></i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar toolbar-bottom">
+            <div class="toolbar-inner">
+              <a href="#" class="toolbar-link active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+              </a>
+              <a href="#" class="toolbar-link">
+                <i class="fas fa-list-alt"></i>
+                <span>Pesanan Saya</span>
+              </a>
+              <a href="../Riwayat-Transaki.f7" class="toolbar-link">
+                <i class="fas fa-history"></i>
+                <span>riwayat</span>
+              </a>
+              <a href="profile.html" class="toolbar-link">
+                <i class="fas fa-user"></i>
+                <span>Profil</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="js/framework7-bundle.min.js"></script>
+    <script type="text/javascript" src="js/my-app.js"></script>
+    <script>
+      const categoryButtons = document.querySelectorAll(".category-button");
+      const foodCards = document.querySelectorAll(".food-card");
+
+      categoryButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          // Hapus class active dari semua tombol
+          categoryButtons.forEach((b) => b.classList.remove("active"));
+
+          // Tambahkan active ke tombol yang ditekan
+          btn.classList.add("active");
+
+          const filter = btn.dataset.filter;
+
+          foodCards.forEach((card) => {
+            const cat = card.dataset.category;
+
+            if (filter === "all" || filter === cat) {
+              card.style.display = "block";
+            } else {
+              card.style.display = "none";
+            }
+          });
+        });
+      });
+    </script>
+<script>
+  const searchInput = document.querySelector('.searchbar input');
+
+  searchInput.addEventListener('input', function () {
+    const keyword = searchInput.value.toLowerCase();
+
+    foodCards.forEach(card => {
+      const title = card.querySelector('.food-card-title').textContent.toLowerCase();
+      const subtitle = card.querySelector('.food-card-subtitle').textContent.toLowerCase();
+
+      if (title.includes(keyword) || subtitle.includes(keyword)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  });
+</script>
+
+  </body>
+</html>

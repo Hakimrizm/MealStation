@@ -1,510 +1,252 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#2196f3">
-    <title>Profil Saya</title>
-    <link rel="stylesheet" href="css/framework7-bundle.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <style>
-        /* ==================== VARIABLE DASAR ==================== */
-        :root {
-            --f7-theme-color: #2196f3;
-            /* Biru Primer */
-            --f7-page-bg-color: #f4f4f4;
-            /* Background abu-abu muda */
-            --f7-text-color: #333;
-            --f7-text-color-light: #666;
-            --f7-toolbar-height: 50px;
-            --f7-navbar-height: 56px;
-
-            /* Warna Aksen Tambahan untuk Statistik - Meniru gambar */
-            --stat-active-color: #2196f3;
-            /* Biru untuk Active */
-            --stat-pending-color: #A0A0A0;
-            /* Abu-abu default */
-            --stat-completed-color: #D3D3D3;
-            /* Abu-abu lebih muda default */
-
-            /* Warna ikon pengaturan (Didasarkan pada gambar yang Anda kirim) */
-            --setting-icon-username: #9c27b0;
-            /* Ungu */
-            --setting-icon-notifications: #00bcd4;
-            /* Cyan */
-            --setting-icon-settings: #4caf50;
-            /* Hijau */
-            --setting-icon-address: #ff9800;
-            /* Oranye */
-            --setting-icon-password: #e91e63;
-            /* Pink */
-            --setting-icon-help: #607d8b;
-            /* Abu-abu kebiruan */
-        }
-
-        body {
-            background-color: var(--f7-page-bg-color);
-        }
-
-        /* ==================== NAVBAR (Konsisten dengan Gambar) ==================== */
-        .navbar {
-            background-color: transparent;
-            box-shadow: none;
-            position: absolute;
-            /* Penting agar konten di bawah bisa scroll ke atas */
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        .navbar-inner {
-            height: var(--f7-navbar-height);
-            justify-content: space-between;
-            padding: 0 15px;
-            /* Tambahkan padding agar ikon tidak menempel */
-        }
-
-        .navbar .left .link,
-        .navbar .right .link {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--f7-text-color);
-        }
-
-        .navbar .right .link i,
-        .navbar .left .link i {
-            font-size: 18px;
-        }
-
-        .navbar .title {
-            display: none;
-        }
-
-        /* ==================== PAGE CONTENT PENTING UNTUK SCROLLING ==================== */
-        /* Padding bawah yang cukup agar konten terakhir tidak tertutup Toolbar */
-        .page-content {
-            padding-top: calc(var(--f7-navbar-height) - 10px);
-            /* Sesuaikan jarak ke bawah dari navbar */
-            padding-bottom: calc(var(--f7-toolbar-height) + 20px);
-            /* Tambahkan margin agar tidak terlalu mepet toolbar */
-        }
-
-        /* ==================== PROFILE HEADER ==================== */
-        .profile-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px 15px 25px;
-            margin-bottom: 20px;
-        }
-
-        .profile-avatar-wrapper {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
-            overflow: hidden;
-        }
-
-        .profile-avatar-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .profile-name {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--f7-text-color);
-            margin-bottom: 5px;
-        }
-
-        .profile-email {
-            font-size: 15px;
-            color: var(--f7-text-color-light);
-        }
-
-        /* ==================== STATISTIK PROFIL ==================== */
-        .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 0 15px 30px;
-        }
-
-        .stat-card {
-            flex: 1;
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 15px 0;
-            text-align: center;
-            margin: 0 5px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Mengubah warna stat card sesuai gambar */
-        .stat-card.active {
-            background-color: #2196f3;
-            /* Biru */
-            color: #fff;
-        }
-
-        .stat-card.pending {
-            background-color: #fff;
-            /* Putih */
-            color: var(--f7-text-color);
-        }
-
-        .stat-card.completed {
-            background-color: #fff;
-            /* Putih */
-            color: var(--f7-text-color);
-        }
-
-        .stat-card .stat-number {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-
-        .stat-card .stat-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--f7-text-color-light);
-        }
-
-        .stat-card.active .stat-label {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Mengganti warna teks pada Pending & Completed agar sesuai gambar */
-        .stat-card.pending .stat-label,
-        .stat-card.completed .stat-label {
-            color: var(--f7-text-color-light);
-        }
-
-
-        /* ==================== LIST ITEM PENGATURAN (Mirip Gambar) ==================== */
-        .list-settings {
-            margin: 0 15px 15px;
-        }
-
-        .list-settings ul {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-
-        .list-settings .item-content {
-            padding-top: 15px;
-            padding-bottom: 15px;
-        }
-
-        .list-settings .item-media {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            margin-right: 15px;
-            font-size: 18px;
-        }
-
-        .list-settings .item-media i {
-            color: #fff;
-        }
-
-        /* Warna latar belakang ikon */
-        .list-settings .item-media.username-bg {
-            background-color: var(--setting-icon-username);
-        }
-
-        .list-settings .item-media.notifications-bg {
-            background-color: var(--setting-icon-notifications);
-        }
-
-        .list-settings .item-media.settings-bg {
-            background-color: var(--setting-icon-settings);
-        }
-
-        .list-settings .item-media.address-bg {
-            background-color: var(--setting-icon-address);
-        }
-
-        .list-settings .item-media.password-bg {
-            background-color: var(--setting-icon-password);
-        }
-
-        .list-settings .item-media.help-bg {
-            background-color: var(--setting-icon-help);
-        }
-
-        .list-settings .item-title {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--f7-text-color);
-        }
-
-        .list-settings .item-subtitle {
-            font-size: 13px;
-            color: var(--f7-text-color-light);
-            margin-top: 2px;
-        }
-
-        /* Mengatur tampilan item-inner agar sejajar dengan ikon Chevron */
-        .list-settings .item-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .list-settings .item-title-row {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            flex-grow: 1;
-        }
-
-        .list-settings .item-after {
-            color: var(--f7-text-color-light);
-            margin-left: 15px;
-        }
-
-        .list-settings .item-after i {
-            font-size: 16px;
-        }
-
-        /* ==================== TOOLBAR (Konsisten) ==================== */
-        .toolbar {
-            background-color: #ffffff;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
-            height: var(--f7-toolbar-height);
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 500;
-            padding-bottom: constant(safe-area-inset-bottom);
-            padding-bottom: env(safe-area-inset-bottom);
-            box-sizing: content-box;
-        }
-
-        .toolbar-inner {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-top: 5px;
-            height: 100%;
-        }
-
-        .toolbar-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 12px;
-            color: var(--f7-text-color-light);
-            text-decoration: none;
-            flex-grow: 1;
-        }
-
-        .toolbar-link.active {
-            color: var(--f7-theme-color);
-        }
-
-        .toolbar-link i {
-            font-size: 24px;
-            margin-bottom: 2px;
-        }
-
-        .toolbar-link span {
-            font-size: 10px;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="app">
-        <div class="view view-main">
-
-            <div data-name="profile" class="page">
-
-                <div class="navbar no-shadow">
-                    <div class="navbar-bg"></div>
-                    <div class="navbar-inner">
-                        <div class="left">
-                            <a href="index.html" class="link back">
-                                <i class="fas fa-arrow-left"></i>
-                            </a>
-                        </div>
-                        <div class="right">
-                            <a href="#" class="link">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="page-content">
-
-                    <div class="profile-header">
-                        <div class="profile-avatar-wrapper">
-                            <img src="https://i.imgur.com/8Qj8j3D.png" alt="Foto Profil Pengguna">
-                        </div>
-                        <div class="profile-name">Syifa Mustika</div>
-                        <div class="profile-email">SyifaMustika21@hotmail.com</div>
-                    </div>
-
-                    <div class="profile-stats">
-                        <div class="stat-card active">
-                            <div class="stat-number">02</div>
-                            <div class="stat-label">Pesanan Dalam Proses</div>
-                        </div>
-                        <div class="stat-card pending">
-                            <div class="stat-number">01</div>
-                            <div class="stat-label">Pending</div>
-                        </div>
-                        <div class="stat-card completed">
-                            <div class="stat-number">25</div>
-                            <div class="stat-label">Pesanan Selelsai</div>
-                        </div>
-                    </div>
-
-                    <div class="list list-settings inset no-hairlines">
-                        <ul>
-                            <li>
-                                <div class="item-content item-input">
-                                    <div class="item-media username-bg"><i class="fas fa-user"></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row">
-                                            <div class="item-title">Nama Profile</div>
-                                        </div>
-                                        <div class="item-input-wrap">
-                                            <input type="text" name="username" placeholder="Masukkan Username Baru"
-                                                value="@mayasari_id" />
-                                        </div>
-                                        <div class="item-after"><i class="fas fa-pencil-alt"></i></div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-media password-bg"><i class="fas fa-key"></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row">
-                                            <div class="item-title">Ubah Kata Sandi</div>
-                                            
-                                        </div>
-                                        <div class="item-input-wrap">
-                                            <input type="text" name="password" placeholder="Masukkan password Baru"
-                                                value="124445" />
-                                        </div>
-                                        <div class="item-after"><i class="fas fa-pencil-alt"></i></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-media address-bg"><i class="fas fa-map-marker-alt"></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row">
-                                            <div class="item-title">Alamat Saya</div>
-                                            </div>
-                                        <div class="item-input-wrap">
-                                            <input type="text" name="alamat" placeholder="Masukkan alamat Baru"
-                                                value="bandung" />
-                                        </div>
-                                        <div class="item-after"><i class="fas fa-pencil-alt"></i></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-media notifications-bg"><i class="fas fa-bell"></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row">
-                                            <div class="item-title">Notifikasi</div>
-                                            <div class="item-subtitle">Offers, New Items</div>
-                                        </div>
-                                        <div class="item-after"><i class="fas fa-chevron-right"></i></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-media settings-bg"><i class="fas fa-cog"></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row">
-                                            <div class="item-title">Pengaturan</div>
-                                            <div class="item-subtitle">Security, Privacy</div>
-                                        </div>
-                                        <div class="item-after"><i class="fas fa-chevron-right"></i></div>
-                                    </div>
-                                </a>
-                            </li>
-                            
-                            <li>
-                                <a href="#" class="item-link item-content">
-                                    <div class="item-media help-bg"><i class="fas fa-question-circle"></i></div>
-                                    <div class="item-inner">
-                                        <div class="item-title-row">
-                                            <div class="item-title">Pusat Bantuan</div>
-                                            <div class="item-subtitle">FAQ, Kontak Support</div>
-                                        </div>
-                                        <div class="item-after"><i class="fas fa-chevron-right"></i></div>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div style="height: 50px;"></div>
-
-                </div>
-
-                <div class="toolbar toolbar-bottom">
-                    <div class="toolbar-inner">
-                        <a href="index.html" class="toolbar-link">
-                            <i class="fas fa-home"></i>
-                            <span>Home</span>
-                        </a>
-                        <a href="#" class="toolbar-link">
-                            <i class="fas fa-list-alt"></i>
-                            <span>Pesanan Saya</span>
-                        </a>
-                        <a href="#" class="toolbar-link">
-                            <i class="fas fa-bell"></i>
-                            <span>Notifikasi</span>
-                        </a>
-                        <a href="profile.html" class="toolbar-link active">
-                            <i class="fas fa-user"></i>
-                            <span>Profil</span>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+<template>
+  <div class="page" data-name="profile">
+    <div class="navbar navbar-fixed">
+      <div class="navbar-inner">
+        <a class="link icon-only back">
+          <i class="icon f7-icons">arrow_left</i>
+        </a>
+      </div>
     </div>
-    <script type="text/javascript" src="js/framework7-bundle.min.js"></script>
-</body>
 
-</html>
+    <div class="page-content ptr-content">
+      <div class="block-header text-align-center">
+        <div class="profile-picture-container padding-bottom-half">
+          <div class="profile-picture-circle"></div>
+        </div>
+        <div class="text-color-black font-weight-bold text-align-center">
+          Syifa Mustika
+        </div>
+        <div class="text-align-center text-color-gray text-small">
+          syifamustika21@gmail.com
+        </div>
+      </div>
+
+      <div class="stats-flex padding-horizontal padding-bottom">
+        <div class="stat-card active" data-type="proses">
+          <div class="stat-icon icon-purple">
+            <i class="f7-icons">hourglass</i>
+          </div>
+          <div class="stat-number">90</div>
+          <div class="stat-label">Dalam Proses</div>
+        </div>
+
+        <div class="stat-card" data-type="pending">
+          <div class="stat-icon icon-yellow">
+            <i class="f7-icons">clock</i>
+          </div>
+          <div class="stat-number">01</div>
+          <div class="stat-label">Pending</div>
+        </div>
+
+        <div class="stat-card" data-type="selesai">
+          <div class="stat-icon icon-green">
+            <i class="f7-icons">checkmark_seal</i>
+          </div>
+          <div class="stat-number">25</div>
+          <div class="stat-label">Selesai</div>
+        </div>
+      </div>
+
+      <div class="list strong inset dividers-ios">
+        <ul>
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">Username</div>
+                <div class="item-input-wrap">
+                  <input id="username" type="text" value="@usernam_id" />
+                  <a
+                    href="#"
+                    class="item-link item-after icon-only link edit-btn"
+                    data-field="username"
+                  >
+                    <i class="icon f7-icons text-color-gray">pencil</i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">Nama Lengkap</div>
+                <div class="item-input-wrap">
+                  <input id="namaLengkap" type="text" value="Syifa Mustika" />
+                  <a
+                    href="#"
+                    class="item-link item-after icon-only link edit-btn"
+                    data-field="namaLengkap"
+                  >
+                    <i class="icon f7-icons text-color-gray">pencil</i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">Alamat</div>
+                <div class="item-input-wrap">
+                  <input id="alamat" type="text" value="Bandung" />
+                  <a
+                    href="#"
+                    class="item-link item-after icon-only link edit-btn"
+                    data-field="alamat"
+                  >
+                    <i class="icon f7-icons text-color-gray">pencil</i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">No. Telepon</div>
+                <div class="item-input-wrap">
+                  <input id="notelepon" type="text" value="0927269717" />
+                  <a
+                    href="#"
+                    class="item-link item-after icon-only link edit-btn"
+                    data-field="notelepon"
+                  >
+                    <i class="icon f7-icons text-color-gray">pencil</i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="toolbar toolbar-bottom">
+      <div class="toolbar-inner">
+        <a href="#" class="toolbar-link active">
+          <i class="fas fa-home"></i>
+          <span>Pesanan Saya</span>
+        </a>
+
+        <a href="/riwayat-pesanan.f7/" class="toolbar-link">
+          <i class="fas fa-receipt"></i>
+          <span>Riwayat Pesanan</span>
+        </a>
+
+        <a href="../pages/Riwayat-Transaki.f7" class="toolbar-link">
+          <i class="fas fa-wallet"></i>
+          <span>Riwayat Transaksi</span>
+        </a>
+
+        <a href="/profile/" class="toolbar-link">
+          <i class="fas fa-user-circle"></i>
+          <span>Profile</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default (props, { $, $on }) => {
+    $on("pageInit", () => {
+      console.log("Profile page loaded");
+
+      // Efek active pada badge statistik
+      $(".stat-card").on("click", function () {
+        $(".stat-card").removeClass("active");
+        $(this).addClass("active");
+      });
+
+      // Tombol edit
+      $(".edit-btn").on("click", function () {
+        const field = $(this).data("field");
+        const input = $("#" + field);
+        input.focus();
+      });
+    });
+
+    return $render;
+  };
+</script>
+
+<style>
+/* Navbar agar fixed */
+.navbar.navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+/* Tambahkan padding top hanya ke halaman profile */
+.page[data-name="profile"] .page-content {
+  padding-top: 90px;  /* aman untuk navbar custom */
+}
+
+  .stats-flex {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 16px 16px 16px;
+  }
+
+  .stat-card {
+    flex: 1;
+    background: #f7f7f7;
+    border-radius: 12px;
+    padding: 12px 4px;
+    text-align: center;
+    transition: 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .stat-card.active {
+    border-color: #007aff;
+    background: rgba(0, 122, 255, 0.1);
+  }
+
+  .stat-card:hover {
+    cursor: pointer;
+    background: #eef4ff;
+  }
+
+  .stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 6px;
+  }
+
+  .icon-purple {
+    background: #8e44ad;
+  }
+  .icon-yellow {
+    background: #f1c40f;
+    color: #444;
+  }
+  .icon-green {
+    background: #27ae60;
+  }
+
+  .stat-number {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #555;
+  }
+
+  /* Form edit */
+  .item-input-wrap a.link {
+    padding: 0 6px;
+  }
+</style>

@@ -16,7 +16,7 @@
                 <a href="#" class="link icon-only cart-icon"
                   ><i class="fas fa-shopping-cart"></i
                 ></a>
-                <a href="/frontend/src/pages/profile.f7" class="link icon-only"
+                <a href="/profile/" class="link icon-only"
                   ><i class="fas fa-user-circle"></i
                 ></a>
         </div>
@@ -31,11 +31,13 @@
       </div>
 
       <!-- SEARCH BAR -->
-      <div class="searchbar searchbar-inline row no-gap">
-        <div class="searchbar-inner col">
-          <i class="icon icon-search"></i>
-
-          <input type="search" placeholder="Search food..." />
+      <div class="searchbar searchbar-inline padding-horizontal padding-vertical-half">
+        <div class="searchbar-inner">
+          <div class="searchbar-input-wrap">
+            <i class="icon f7-icons">search</i>
+            <input type="search" placeholder="Cari menu..." />
+            <i class="icon searchbar-clear f7-icons">xmark_circle_fill</i>
+          </div>
         </div>
       </div>
 
@@ -166,20 +168,21 @@
       <div class="toolbar-inner">
         <a href="#" class="toolbar-link active">
           <i class="fas fa-home"></i>
-          <span>Pesanan Saya</span>
+          <span>Home</span>
         </a>
-        <a href="../pages/riwayat-pesanan.f7" class="toolbar-link">
-          <i class="fas fa-search"></i>
+        <a href="/riwayat-pesanan.f7/" class="toolbar-link">
+          <i class="fas fa-receipt"></i>
           <span>Riwayat Pesanan</span>
         </a>
         <a href="../pages/Riwayat-Transaki.f7" class="toolbar-link">
-          <i class="fas fa-history"></i>
+          <i class="fas fa-wallet"></i>
           <span>Riwayat Transaksi</span>
         </a>
-        <a href="../pages/profile.f7" class="toolbar-link">
+        <a href="/profile/" class="toolbar-link">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </a>
+
       </div>
     </div>
   </div>
@@ -187,13 +190,47 @@
 
 <script>
   export default (props, { $, $on }) => {
+
+    // Saat halaman mulai di-init
     $on("pageInit", () => {
       console.log("Dashboard pengguna loaded");
+
+      const categoryButtons = document.querySelectorAll('.category-button');
+      const foodCards = document.querySelectorAll('.food-card');
+
+      categoryButtons.forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.preventDefault();
+
+          // Hilangkan active dari semua tombol
+          categoryButtons.forEach(b => b.classList.remove('active'));
+
+          // Tambah active pada tombol yang diklik
+          btn.classList.add('active');
+
+          const filter = btn.getAttribute('data-filter');
+
+          // Log filter untuk debugging
+          console.log("Filter:", filter);
+
+          // Filter Food
+          foodCards.forEach(card => {
+            const category = card.getAttribute('data-category');
+
+            if (filter === "semua") {
+              card.style.display = "block";
+            } else {
+              card.style.display = category === filter ? "block" : "none";
+            }
+          });
+        });
+      });
     });
 
     return $render;
   };
 </script>
+
 
 <style>
   :root {
@@ -259,34 +296,28 @@
   }
 
   /* ==================== SEARCHBAR STYLES ==================== */
-  .searchbar {
-    margin: 15px;
-    margin-top: 0 !important;
-    border-radius: 10px;
-    overflow: hidden;
-    background-color: #e0e0e0;
-  }
-  .searchbar .searchbar-inner {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  .searchbar input {
-    border: none;
-    flex-grow: 1;
-    padding: 12px 15px 12px 40px;
-    font-size: 16px;
-    background-color: #e0e0e0;
-    border-radius: 10px;
-  }
-  .searchbar .icon-search {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--f7-text-color-light);
-    z-index: 10;
-  }
+  .searchbar-inline {
+  background: #f2f2f7;
+  border-radius: 12px;
+}
+
+.searchbar-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchbar-input-wrap input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  padding: 8px 0;
+  font-size: 16px;
+}
+
+.searchbar-input-wrap .icon {
+  color: #8e8e93;
+}
 
   /* ==================== CATEGORIES STYLES ==================== */
   .categories {
@@ -445,6 +476,6 @@
       var(--f7-toolbar-height) + env(safe-area-inset-bottom)
     );
 
-    padding-top: 0 !important;
+    padding-top: 70px !important;
   }
 </style>
