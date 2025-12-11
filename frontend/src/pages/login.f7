@@ -37,7 +37,7 @@
 				<a class="button button-fill" id="btn-login">Login</a>
 
 				<div class="block-footer">
-					Belum punya akun? <a href="/register">Daftar</a>
+					Belum punya akun? <a class="link" href="/register">Daftar</a>
 				</div>
 			</div>
 		</div>
@@ -81,7 +81,7 @@
           $f7.dialog.alert('Login berhasil!');
 
           // Redirect
-          $f7.views.main.router.navigate('/dashboard');
+          $f7.views.main.router.navigate('/home/');
 
         } catch (err) {
           console.error(err);

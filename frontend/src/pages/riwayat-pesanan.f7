@@ -171,7 +171,8 @@ export default {
         const data = databasePesanan.find(x => x.id === idPesanan);
         if (!data) return;
 
-        const listMenu = data.menu.map(m => <li>${m}</li>).join('');
+        const listMenu = data.menu.map(m => `<li>${m}</li>`).join('');
+
 
         const sheet = app.sheet.create({
           content: `

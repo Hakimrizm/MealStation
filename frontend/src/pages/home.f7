@@ -16,7 +16,7 @@
                 <a href="#" class="link icon-only cart-icon"
                   ><i class="fas fa-shopping-cart"></i
                 ></a>
-                <a href="/profile/" class="link icon-only"
+                <a href="/profile" class="link icon-only"
                   ><i class="fas fa-user-circle"></i
                 ></a>
         </div>
@@ -170,15 +170,15 @@
           <i class="fas fa-home"></i>
           <span>Home</span>
         </a>
-        <a href="/riwayat-pesanan.f7/" class="toolbar-link">
+        <a href="/riwayat-pesanan" class="toolbar-link">
           <i class="fas fa-receipt"></i>
           <span>Riwayat Pesanan</span>
         </a>
-        <a href="../pages/Riwayat-Transaki.f7" class="toolbar-link">
+        <a href="/riwayat-transaksi" class="toolbar-link">
           <i class="fas fa-wallet"></i>
           <span>Riwayat Transaksi</span>
         </a>
-        <a href="/profile/" class="toolbar-link">
+        <a href="/profile" class="toolbar-link">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </a>
@@ -191,45 +191,58 @@
 <script>
   export default (props, { $, $on }) => {
 
+    // Fungsi filter gabungan
+    function filterFood(categoryButtons, foodCards, searchInput) {
+      const activeFilter = Array.from(categoryButtons).find(btn => btn.classList.contains('active'))?.getAttribute('data-filter') || 'semua';
+      const query = searchInput.value.toLowerCase();
+
+      foodCards.forEach(card => {
+        const category = card.getAttribute('data-category') || '';
+        const title = card.querySelector('.food-card-title')?.textContent.toLowerCase() || '';
+        const subtitle = card.querySelector('.food-card-subtitle')?.textContent.toLowerCase() || '';
+
+        const matchCategory = activeFilter === 'semua' || category === activeFilter;
+        const matchQuery = title.includes(query) || subtitle.includes(query);
+
+        card.style.display = matchCategory && matchQuery ? 'block' : 'none';
+      });
+    }
+
     // Saat halaman mulai di-init
     $on("pageInit", () => {
       console.log("Dashboard pengguna loaded");
 
       const categoryButtons = document.querySelectorAll('.category-button');
       const foodCards = document.querySelectorAll('.food-card');
+      const searchInput = document.querySelector('.searchbar input');
 
+      // Tombol kategori
       categoryButtons.forEach(btn => {
         btn.addEventListener('click', e => {
           e.preventDefault();
 
           // Hilangkan active dari semua tombol
           categoryButtons.forEach(b => b.classList.remove('active'));
-
-          // Tambah active pada tombol yang diklik
           btn.classList.add('active');
 
-          const filter = btn.getAttribute('data-filter');
-
-          // Log filter untuk debugging
-          console.log("Filter:", filter);
-
-          // Filter Food
-          foodCards.forEach(card => {
-            const category = card.getAttribute('data-category');
-
-            if (filter === "semua") {
-              card.style.display = "block";
-            } else {
-              card.style.display = category === filter ? "block" : "none";
-            }
-          });
+          // Filter ulang
+          filterFood(categoryButtons, foodCards, searchInput);
         });
       });
+
+      // Search bar
+      searchInput.addEventListener('input', () => {
+        filterFood(categoryButtons, foodCards, searchInput);
+      });
+
+      // Inisialisasi: tampilkan semua
+      filterFood(categoryButtons, foodCards, searchInput);
     });
 
     return $render;
   };
 </script>
+
 
 
 <style>

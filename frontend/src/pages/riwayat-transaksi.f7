@@ -1,0 +1,123 @@
+<template>
+  <Page name="riwayat-pesanan">
+    <!-- NAVBAR -->
+    <Navbar title="Riwayat Transaksi" back-link="Kembali" class="bg-theme-color" />
+
+    <!-- PAGE CONTENT -->
+    <PageContent ptr>
+      <!-- FILTER SECTION -->
+      <Block strong class="margin-top-half">
+        <Segmented raised>
+          <Button class="button-fill tab-link tab-link-active" @click="filterOrders('all')">Semua</Button>
+          <Button @click="filterOrders('pending')">Bayar</Button>
+          <Button @click="filterOrders('completed')">Selesai</Button>
+          <Button @click="filterOrders('cancelled')">Batal</Button>
+        </Segmented>
+      </Block>
+
+      <!-- ORDER LIST -->
+      <div id="order-list-container" class="cards-list margin-top-half">
+        <Card v-for="order in filteredOrders" :key="order.id" class="order-card" :data-status="order.status">
+          <CardHeader class="display-flex justify-content-space-between align-items-center">
+            <span class="font-weight-bold text-color-black">{{ order.id }}</span>
+            <span class="text-color-gray font-size-small">{{ order.date }}</span>
+          </CardHeader>
+
+          <CardContent>
+            <a href="#" class="item-link no-chevron">
+              <div class="text-color-black">{{ order.items }}</div>
+              <div class="text-color-gray font-size-small margin-top-half">
+                <span class="price-tag">{{ order.total }}</span>
+              </div>
+            </a>
+          </CardContent>
+
+          <CardFooter class="display-flex justify-content-space-between align-items-center">
+            <span class="status-badge" :class="getStatusColor(order.status)">{{ order.statusLabel }}</span>
+            <span v-html="getQuickActionButton(order.status)"></span>
+          </CardFooter>
+        </Card>
+      </div>
+    </PageContent>
+  </Page>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      orders: [
+        { id: '#ORD-8832', date: '18 Nov 2025', total: 'Rp 150.000', items: 'Nasi Goreng Spesial (2), Es Teh Manis (2)', status: 'completed', statusLabel: 'Selesai' },
+        { id: '#ORD-8833', date: '17 Nov 2025', total: 'Rp 75.000', items: 'Ayam Bakar Madu (1)', status: 'pending', statusLabel: 'Menunggu Bayar' },
+        { id: '#ORD-8834', date: '10 Nov 2025', total: 'Rp 300.000', items: 'Paket Keluarga A (1)', status: 'cancelled', statusLabel: 'Dibatalkan' },
+      ],
+      filter: 'all',
+    };
+  },
+  computed: {
+    filteredOrders() {
+      if (this.filter === 'all') return this.orders;
+      return this.orders.filter(o => o.status === this.filter);
+    },
+  },
+  methods: {
+    getStatusColor(status) {
+      if (status === 'completed') return 'bg-color-green';
+      if (status === 'pending') return 'bg-color-orange';
+      if (status === 'cancelled') return 'bg-color-red';
+      return 'bg-color-gray';
+    },
+    getQuickActionButton(status) {
+      if (status === 'pending') return '<button class="button button-small button-fill color-green">Bayar Sekarang</button>';
+      if (status === 'completed') return '<button class="button button-small button-outline color-orange">Pesan Lagi</button>';
+      if (status === 'cancelled') return '<button class="button button-small button-outline color-gray">Hubungi CS</button>';
+      return '';
+    },
+    filterOrders(status) {
+      this.filter = status;
+    },
+  },
+};
+</script>
+
+<style>
+:root {
+  --f7-theme-color: #ff6b22;
+  --f7-theme-color-rgb: 255, 107, 34;
+  --f7-theme-color-shade: #e55a15;
+  --f7-theme-color-tint: #ff7c3b;
+}
+
+body {
+  background-color: #eee;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #f7f7f8;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* ORDER CARD */
+.order-card {
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.price-tag {
+  font-weight: 800;
+  font-size: 18px;
+  color: #333;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+</style>
