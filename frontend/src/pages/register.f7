@@ -1,102 +1,98 @@
 <template>
-	<div class="page" data-name="register">
-		<div class="navbar">
-			<div class="navbar-inner">
-				<div class="title">Register</div>
-			</div>
-		</div>
+  <div class="page" data-name="register">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="title">Register</div>
+      </div>
+    </div>
 
-		<div class="page-content">
-			<div class="block-title">Buat Akun Baru</div>
+    <div class="page-content">
+      <form id="register-form" class="list no-hairlines-md">
+        <ul>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-floating-label">Nama</div>
+              <div class="item-input-wrap">
+                <input type="text" name="name" required />
+              </div>
+            </div>
+          </li>
 
-			<div class="list no-hairlines-md">
-				<ul>
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Nama</div>
-							<div class="item-input-wrap">
-								<input type="text" id="reg-name" placeholder="Nama lengkap" />
-							</div>
-						</div>
-					</li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-floating-label">Email</div>
+              <div class="item-input-wrap">
+                <input type="email" name="email" required />
+              </div>
+            </div>
+          </li>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Email</div>
-							<div class="item-input-wrap">
-								<input
-									type="email"
-									id="reg-email"
-									placeholder="email@example.com"
-								/>
-							</div>
-						</div>
-					</li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-floating-label">Password</div>
+              <div class="item-input-wrap">
+                <input type="password" name="password" required />
+              </div>
+            </div>
+          </li>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Password</div>
-							<div class="item-input-wrap">
-								<input
-									type="password"
-									id="reg-password"
-									placeholder="********"
-								/>
-							</div>
-						</div>
-					</li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title">Role</div>
+              <div class="item-input-wrap">
+                <select name="role">
+                  <option value="user">User</option>
+                  <option value="tenant">Tenant</option>
+                </select>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </form>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title">Role</div>
-							<div class="item-input-wrap">
-								<select id="reg-role">
-									<option value="user">User</option>
-									<option value="tenant">Tenant</option>
-								</select>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
+      <div class="block">
+        <a class="button button-fill" id="btn-register">Register</a>
 
-			<div class="block">
-				<a class="button button-fill" id="btn-register">Register</a>
-
-				<div class="block-footer">
-					Sudah punya akun?
-					<a href="/">Login</a>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="block-footer">
+          Sudah punya akun?
+          <a href="/">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+<<<<<<< HEAD
 	export default (props, { $f7, $f7router, $on }) => {
 		const register = async () => {
 			let name = document.getElementById("reg-name").value;
 			let email = document.getElementById("reg-email").value;
 			let password = document.getElementById("reg-password").value;
 			let role = document.getElementById("reg-role").value;
+=======
+import { saveToken, saveRole } from '../js/auth.js';
+>>>>>>> 9493504aa1af571d98da3dd0bf9fab0734c702c3
 
-			let res = await fetch("http://127.0.0.1:8000/api/register", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ name, email, password, role }),
-			});
+export default (props, { $, $on, $f7, $f7router }) => {
+  $on('pageInit', () => {
+    $('#btn-register').on('click', async () => {
+      const data = $f7.form.convertToData('#register-form');
 
-			let data = await res.json();
+      if (!data.name || !data.email || !data.password) {
+        return $f7.dialog.alert('Semua field wajib diisi');
+      }
 
-			if (!res.ok) {
-				return $f7.dialog.alert(data.message || "Register gagal!");
-			}
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
 
-			$f7.dialog.alert("Register berhasil!", () => {
-				$f7router.navigate("/");
-			});
-		};
+        const result = await res.json();
 
+<<<<<<< HEAD
 		// ✅ EVENT HARUS PAKE $on
 		$on("pageInit", () => {
 			document
@@ -107,4 +103,29 @@
 		// ✅ WAJIB
 		return $render;
 	};
+=======
+        if (!res.ok) {
+          return $f7.dialog.alert(result.message || 'Register gagal');
+        }
+
+        // 🔥 SIMPAN TOKEN & ROLE
+        saveToken(result.token);
+        saveRole(result.role);
+
+        $f7.dialog.alert('Register berhasil', () => {
+          // 🔁 REDIRECT KE HOME
+          $f7router.navigate('/home/');
+        });
+
+      } catch (e) {
+        console.error(e);
+        $f7.dialog.alert('Server error');
+      }
+    });
+  });
+
+  return $render;
+};
+>>>>>>> 9493504aa1af571d98da3dd0bf9fab0734c702c3
 </script>
+

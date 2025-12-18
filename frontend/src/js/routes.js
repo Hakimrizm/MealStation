@@ -1,6 +1,4 @@
 import HomePage from "../pages/home.f7";
-import AboutPage from "../pages/about.f7";
-import FormPage from "../pages/form.f7";
 import LoginPage from "../pages/login.f7";
 import registerPage from "../pages/register.f7";
 import ProfilePage from "../pages/profile.f7";
@@ -15,12 +13,12 @@ import NotFoundPage from "../pages/404.f7";
 var routes = [
 
   {
-    path: "/login",
+    path: "/login/",
     component: LoginPage,
   },
 
   {
-    path: "/register",
+    path: "/register/",
     component: registerPage,
   },
 
@@ -30,29 +28,19 @@ var routes = [
   },
 
   {
-    path: '/riwayat-pesanan',
+    path: '/riwayat-pesanan/',
     component: riwayatPesananPage,
   },
 
   {
-    path: '/riwayat-transaksi',
+    path: '/riwayat-transaksi/',
     component: RiwayatTransaksiPage,
   },
 
   
   {
-    path: "/profile",
+    path: "/profile/",
     component: ProfilePage
-  },
-
-  {
-    path: "/about",
-    component: AboutPage,
-  },
-
-  {
-    path: "/form",
-    component: FormPage,
   },
 
   {

@@ -12,6 +12,7 @@
 					<span>Current Location: Kantin LPKIA</span>
 				</div>
 
+<<<<<<< HEAD
 				<div class="right right-icons">
 					<a href="#" class="link icon-only cart-icon"
 						><i class="fas fa-shopping-cart"></i
@@ -22,6 +23,18 @@
 				</div>
 			</div>
 		</div>
+=======
+        <div class="right right-icons">
+                <a href="#" class="link icon-only cart-icon"
+                  ><i class="fas fa-shopping-cart"></i
+                ></a>
+                <a href="/profile/" class="link icon-only"
+                  ><i class="fas fa-user-circle"></i
+                ></a>
+        </div>
+      </div>
+    </div>
+>>>>>>> 9493504aa1af571d98da3dd0bf9fab0734c702c3
 
 		<!-- PAGE CONTENT -->
 		<div class="page-content">
@@ -165,6 +178,7 @@
 			</div>
 		</div>
 
+<<<<<<< HEAD
 		<!-- TOOLBAR -->
 		<div class="toolbar toolbar-bottom">
 			<div class="toolbar-inner">
@@ -187,6 +201,31 @@
 			</div>
 		</div>
 	</div>
+=======
+    <!-- TOOLBAR -->
+    <div class="toolbar toolbar-bottom">
+      <div class="toolbar-inner">
+        <a href="#" class="toolbar-link active">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </a>
+        <a href="/riwayat-pesanan/" class="toolbar-link">
+          <i class="fas fa-receipt"></i>
+          <span>Riwayat Pesanan</span>
+        </a>
+        <a href="/riwayat-transaksi/" class="toolbar-link">
+          <i class="fas fa-wallet"></i>
+          <span>Riwayat Transaksi</span>
+        </a>
+        <a href="/profile/" class="toolbar-link">
+          <i class="fas fa-user-circle"></i>
+          <span>Profile</span>
+        </a>
+
+      </div>
+    </div>
+  </div>
+>>>>>>> 9493504aa1af571d98da3dd0bf9fab0734c702c3
 </template>
 
 <script>
