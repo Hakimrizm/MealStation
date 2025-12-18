@@ -18,7 +18,7 @@ class AuthController extends Controller
             'role' => 'required|in:user,tenant'
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -52,7 +52,7 @@ class AuthController extends Controller
 
     public function user()
     {
-        return auth()->user();
+        return Auth::user();
     }
 
 }
