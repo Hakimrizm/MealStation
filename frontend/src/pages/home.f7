@@ -1,494 +1,501 @@
 <template>
-  <div class="page" data-name="dashboard-pengguna">
-    <!-- NAVBAR -->
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="left-icon">
-          <img src="icons/logo.png" class="app-logo" />
-        </div>
+	<div class="page" data-name="dashboard-pengguna">
+		<!-- NAVBAR -->
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="left-icon">
+					<img src="icons/logo.png" class="app-logo" />
+				</div>
 
-        <div class="location-info">
-          <i class="fas fa-location-dot"></i>
-          <span>Current Location: Kantin LPKIA</span>
-        </div>
+				<div class="location-info">
+					<i class="fas fa-location-dot"></i>
+					<span>Current Location: Kantin LPKIA</span>
+				</div>
 
-        <div class="right right-icons">
-                <a href="#" class="link icon-only cart-icon"
-                  ><i class="fas fa-shopping-cart"></i
-                ></a>
-                <a href="/profile" class="link icon-only"
-                  ><i class="fas fa-user-circle"></i
-                ></a>
-        </div>
-      </div>
-    </div>
+				<div class="right right-icons">
+					<a href="#" class="link icon-only cart-icon"
+						><i class="fas fa-shopping-cart"></i
+					></a>
+					<a href="/login" class="link icon-only"
+						><i class="fas fa-user-circle"></i
+					></a>
+				</div>
+			</div>
+		</div>
 
-    <!-- PAGE CONTENT -->
-    <div class="page-content">
-      <div class="ptr-preloader">
-        <div class="preloader"></div>
-        <div class="ptr-arrow"></div>
-      </div>
+		<!-- PAGE CONTENT -->
+		<div class="page-content">
+			<div class="ptr-preloader">
+				<div class="preloader"></div>
+				<div class="ptr-arrow"></div>
+			</div>
 
-      <!-- SEARCH BAR -->
-      <div class="searchbar searchbar-inline padding-horizontal padding-vertical-half">
-        <div class="searchbar-inner">
-          <div class="searchbar-input-wrap">
-            <i class="icon f7-icons">search</i>
-            <input type="search" placeholder="Cari menu..." />
-            <i class="icon searchbar-clear f7-icons">xmark_circle_fill</i>
-          </div>
-        </div>
-      </div>
+			<!-- SEARCH BAR -->
+			<div
+				class="searchbar searchbar-inline padding-horizontal padding-vertical-half"
+			>
+				<div class="searchbar-inner">
+					<div class="searchbar-input-wrap">
+						<i class="icon f7-icons">search</i>
+						<input type="search" placeholder="Cari menu..." />
+						<i class="icon searchbar-clear f7-icons">xmark_circle_fill</i>
+					</div>
+				</div>
+			</div>
 
-      <!-- CATEGORIES -->
-      <div class="categories">
-        <div class="category-item">
-          <a href="#" class="category-button active" data-filter="semua">
-            <i class="fas fa-fire"></i>
-          </a>
-          <span>Semua</span>
-        </div>
+			<!-- CATEGORIES -->
+			<div class="categories">
+				<div class="category-item">
+					<a href="#" class="category-button active" data-filter="semua">
+						<i class="fas fa-fire"></i>
+					</a>
+					<span>Semua</span>
+				</div>
 
-        <div class="category-item">
-          <a href="#" class="category-button" data-filter="makanan">
-            <i class="fas fa-utensils"></i>
-          </a>
-          <span>Makanan</span>
-        </div>
+				<div class="category-item">
+					<a href="#" class="category-button" data-filter="makanan">
+						<i class="fas fa-utensils"></i>
+					</a>
+					<span>Makanan</span>
+				</div>
 
-        <div class="category-item">
-          <a href="#" class="category-button" data-filter="minuman">
-            <i class="fas fa-mug-hot"></i>
-          </a>
-          <span>Minuman</span>
-        </div>
+				<div class="category-item">
+					<a href="#" class="category-button" data-filter="minuman">
+						<i class="fas fa-mug-hot"></i>
+					</a>
+					<span>Minuman</span>
+				</div>
 
-        <div class="category-item">
-          <a href="#" class="category-button" data-filter="dessert">
-            <i class="fas fa-ice-cream"></i>
-          </a>
-          <span>Dessert</span>
-        </div>
+				<div class="category-item">
+					<a href="#" class="category-button" data-filter="dessert">
+						<i class="fas fa-ice-cream"></i>
+					</a>
+					<span>Dessert</span>
+				</div>
 
-        <div class="category-item">
-          <a href="#" class="category-button" data-filter="Lainnya">
-            <i class="fas fa-ellipsis-h"></i>
-          </a>
-          <span>Lainnya</span>
-        </div>
-      </div>
+				<div class="category-item">
+					<a href="#" class="category-button" data-filter="Lainnya">
+						<i class="fas fa-ellipsis-h"></i>
+					</a>
+					<span>Lainnya</span>
+				</div>
+			</div>
 
-      <!-- FOOD GRID -->
-      <div class="food-grid">
-        <div class="food-card" data-category="makanan">
-          <img src="menus/nasi.jpeg" />
-          <div class="food-card-content">
-            <div class="food-card-title">
-              Nasi Goreng <i class="fas fa-fire fire-icon"></i>
-            </div>
-            <div class="food-card-subtitle">Hot & Fresh</div>
-            <div class="food-card-rating"><i class="fas fa-star"></i> 4.8</div>
-            <div class="food-card-price">
-              $12.50
-              <i class="fas fa-plus star-icon"></i>
-            </div>
-          </div>
-        </div>
+			<!-- FOOD GRID -->
+			<div class="food-grid">
+				<div class="food-card" data-category="makanan">
+					<img src="menus/nasi.jpeg" />
+					<div class="food-card-content">
+						<div class="food-card-title">
+							Nasi Goreng <i class="fas fa-fire fire-icon"></i>
+						</div>
+						<div class="food-card-subtitle">Hot & Fresh</div>
+						<div class="food-card-rating"><i class="fas fa-star"></i> 4.8</div>
+						<div class="food-card-price">
+							$12.50
+							<i class="fas fa-plus star-icon"></i>
+						</div>
+					</div>
+				</div>
 
-        <div class="food-card" data-category="makanan">
-          <img src="menus/mie.jpeg" />
-          <div class="food-card-content">
-            <div class="food-card-title">Mie Goreng</div>
-            <div class="food-card-subtitle">Extra Cheese</div>
-            <div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-            <div class="food-card-price">
-              $9.90
-              <i class="fas fa-plus star-icon"></i>
-            </div>
-          </div>
-        </div>
+				<div class="food-card" data-category="makanan">
+					<img src="menus/mie.jpeg" />
+					<div class="food-card-content">
+						<div class="food-card-title">Mie Goreng</div>
+						<div class="food-card-subtitle">Extra Cheese</div>
+						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
+						<div class="food-card-price">
+							$9.90
+							<i class="fas fa-plus star-icon"></i>
+						</div>
+					</div>
+				</div>
 
-        <div class="food-card">
-          <img src="menus/nasi.jpeg" data-category="makanan"/>
-          <div class="food-card-content">
-            <div class="food-card-title">Nasi Goreng</div>
-            <div class="food-card-subtitle">Extra Cheese</div>
-            <div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-            <div class="food-card-price">
-              $9.90
-              <i class="fas fa-plus star-icon"></i>
-            </div>
-          </div>
-        </div>
+				<div class="food-card">
+					<img src="menus/nasi.jpeg" data-category="makanan" />
+					<div class="food-card-content">
+						<div class="food-card-title">Nasi Goreng</div>
+						<div class="food-card-subtitle">Extra Cheese</div>
+						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
+						<div class="food-card-price">
+							$9.90
+							<i class="fas fa-plus star-icon"></i>
+						</div>
+					</div>
+				</div>
 
-        <div class="food-card" data-category="minuman">
-          <img src="menus/minuman.jpeg" />
-          <div class="food-card-content">
-            <div class="food-card-title">Es teh</div>
-            <div class="food-card-subtitle">Extra gula</div>
-            <div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-            <div class="food-card-price">
-              $9.90
-              <i class="fas fa-plus star-icon"></i>
-            </div>
-          </div>
-        </div>
+				<div class="food-card" data-category="minuman">
+					<img src="menus/minuman.jpeg" />
+					<div class="food-card-content">
+						<div class="food-card-title">Es teh</div>
+						<div class="food-card-subtitle">Extra gula</div>
+						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
+						<div class="food-card-price">
+							$9.90
+							<i class="fas fa-plus star-icon"></i>
+						</div>
+					</div>
+				</div>
 
-        <div class="food-card" data-category="dessert">
-          <img src="menus/dessert.jpeg" />
-          <div class="food-card-content">
-            <div class="food-card-title">dessert</div>
-            <div class="food-card-subtitle">Extra Cheese</div>
-            <div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-            <div class="food-card-price">
-              $9.90
-              <i class="fas fa-plus star-icon"></i>
-            </div>
-          </div>
-        </div>
+				<div class="food-card" data-category="dessert">
+					<img src="menus/dessert.jpeg" />
+					<div class="food-card-content">
+						<div class="food-card-title">dessert</div>
+						<div class="food-card-subtitle">Extra Cheese</div>
+						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
+						<div class="food-card-price">
+							$9.90
+							<i class="fas fa-plus star-icon"></i>
+						</div>
+					</div>
+				</div>
 
-        <div class="food-card" data-category="Lainnya">
-          <img src="menus/jas.jpeg" />
-          <div class="food-card-content">
-            <div class="food-card-title">jas</div>
-            <div class="food-card-subtitle">Extra Cheese</div>
-            <div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-            <div class="food-card-price">
-              $9.90
-              <i class="fas fa-plus star-icon"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+				<div class="food-card" data-category="Lainnya">
+					<img src="menus/jas.jpeg" />
+					<div class="food-card-content">
+						<div class="food-card-title">jas</div>
+						<div class="food-card-subtitle">Extra Cheese</div>
+						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
+						<div class="food-card-price">
+							$9.90
+							<i class="fas fa-plus star-icon"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <!-- TOOLBAR -->
-    <div class="toolbar toolbar-bottom">
-      <div class="toolbar-inner">
-        <a href="#" class="toolbar-link active">
-          <i class="fas fa-home"></i>
-          <span>Home</span>
-        </a>
-        <a href="/riwayat-pesanan" class="toolbar-link">
-          <i class="fas fa-receipt"></i>
-          <span>Riwayat Pesanan</span>
-        </a>
-        <a href="/riwayat-transaksi" class="toolbar-link">
-          <i class="fas fa-wallet"></i>
-          <span>Riwayat Transaksi</span>
-        </a>
-        <a href="/profile" class="toolbar-link">
-          <i class="fas fa-user-circle"></i>
-          <span>Profile</span>
-        </a>
-
-      </div>
-    </div>
-  </div>
+		<!-- TOOLBAR -->
+		<div class="toolbar toolbar-bottom">
+			<div class="toolbar-inner">
+				<a href="#" class="toolbar-link active">
+					<i class="fas fa-home"></i>
+					<span>Home</span>
+				</a>
+				<a href="/riwayat-pesanan" class="toolbar-link">
+					<i class="fas fa-receipt"></i>
+					<span>Riwayat Pesanan</span>
+				</a>
+				<a href="/riwayat-transaksi" class="toolbar-link">
+					<i class="fas fa-wallet"></i>
+					<span>Riwayat Transaksi</span>
+				</a>
+				<a href="/profile" class="toolbar-link">
+					<i class="fas fa-user-circle"></i>
+					<span>Profile</span>
+				</a>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
-  export default (props, { $, $on }) => {
+	export default (props, { $, $on }) => {
+		// Fungsi filter gabungan
+		function filterFood(categoryButtons, foodCards, searchInput) {
+			const activeFilter =
+				Array.from(categoryButtons)
+					.find((btn) => btn.classList.contains("active"))
+					?.getAttribute("data-filter") || "semua";
+			const query = searchInput.value.toLowerCase();
 
-    // Fungsi filter gabungan
-    function filterFood(categoryButtons, foodCards, searchInput) {
-      const activeFilter = Array.from(categoryButtons).find(btn => btn.classList.contains('active'))?.getAttribute('data-filter') || 'semua';
-      const query = searchInput.value.toLowerCase();
+			foodCards.forEach((card) => {
+				const category = card.getAttribute("data-category") || "";
+				const title =
+					card.querySelector(".food-card-title")?.textContent.toLowerCase() ||
+					"";
+				const subtitle =
+					card
+						.querySelector(".food-card-subtitle")
+						?.textContent.toLowerCase() || "";
 
-      foodCards.forEach(card => {
-        const category = card.getAttribute('data-category') || '';
-        const title = card.querySelector('.food-card-title')?.textContent.toLowerCase() || '';
-        const subtitle = card.querySelector('.food-card-subtitle')?.textContent.toLowerCase() || '';
+				const matchCategory =
+					activeFilter === "semua" || category === activeFilter;
+				const matchQuery = title.includes(query) || subtitle.includes(query);
 
-        const matchCategory = activeFilter === 'semua' || category === activeFilter;
-        const matchQuery = title.includes(query) || subtitle.includes(query);
+				card.style.display = matchCategory && matchQuery ? "block" : "none";
+			});
+		}
 
-        card.style.display = matchCategory && matchQuery ? 'block' : 'none';
-      });
-    }
+		// Saat halaman mulai di-init
+		$on("pageInit", () => {
+			console.log("Dashboard pengguna loaded");
 
-    // Saat halaman mulai di-init
-    $on("pageInit", () => {
-      console.log("Dashboard pengguna loaded");
+			const categoryButtons = document.querySelectorAll(".category-button");
+			const foodCards = document.querySelectorAll(".food-card");
+			const searchInput = document.querySelector(".searchbar input");
 
-      const categoryButtons = document.querySelectorAll('.category-button');
-      const foodCards = document.querySelectorAll('.food-card');
-      const searchInput = document.querySelector('.searchbar input');
+			// Tombol kategori
+			categoryButtons.forEach((btn) => {
+				btn.addEventListener("click", (e) => {
+					e.preventDefault();
 
-      // Tombol kategori
-      categoryButtons.forEach(btn => {
-        btn.addEventListener('click', e => {
-          e.preventDefault();
+					// Hilangkan active dari semua tombol
+					categoryButtons.forEach((b) => b.classList.remove("active"));
+					btn.classList.add("active");
 
-          // Hilangkan active dari semua tombol
-          categoryButtons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
+					// Filter ulang
+					filterFood(categoryButtons, foodCards, searchInput);
+				});
+			});
 
-          // Filter ulang
-          filterFood(categoryButtons, foodCards, searchInput);
-        });
-      });
+			// Search bar
+			searchInput.addEventListener("input", () => {
+				filterFood(categoryButtons, foodCards, searchInput);
+			});
 
-      // Search bar
-      searchInput.addEventListener('input', () => {
-        filterFood(categoryButtons, foodCards, searchInput);
-      });
+			// Inisialisasi: tampilkan semua
+			filterFood(categoryButtons, foodCards, searchInput);
+		});
 
-      // Inisialisasi: tampilkan semua
-      filterFood(categoryButtons, foodCards, searchInput);
-    });
-
-    return $render;
-  };
+		return $render;
+	};
 </script>
 
-
-
 <style>
-  :root {
-    --f7-theme-color: #2196f3;
-    --f7-hot-color: #ff5722;
-    --f7-page-bg-color: #f4f4f4;
-    --f7-text-color: #333;
-    --f7-text-color-light: #666;
-    --f7-toolbar-height: 50px;
-    --f7-navbar-height: 56px;
-  }
+	:root {
+		--f7-theme-color: #2196f3;
+		--f7-hot-color: #ff5722;
+		--f7-page-bg-color: #f4f4f4;
+		--f7-text-color: #333;
+		--f7-text-color-light: #666;
+		--f7-toolbar-height: 50px;
+		--f7-navbar-height: 56px;
+	}
 
-  /* ==================== NAVBAR STYLES ==================== */
-  .navbar {
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  .navbar-inner {
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: var(--f7-navbar-height);
-  }
-  .navbar .left-icon {
-    width: auto;
-    height: auto;
-    background-color: transparent;
-    color: transparent; /* Hapus warna Font Awesome */
-    font-size: 24px;
-    font-weight: normal;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0; /* Hapus padding yang tidak perlu jika menggunakan gambar */
-  }
-  /* CSS untuk gambar logo */
-  .navbar .left-icon .app-logo {
-    height: 30px; /* Ukuran logo */
-    width: auto;
-    display: block;
-    margin-top: 3px; /* Penyesuaian vertikal agar pas */
-  }
+	/* ==================== NAVBAR STYLES ==================== */
+	.navbar {
+		background-color: #fff;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+	.navbar-inner {
+		padding: 8px 15px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: var(--f7-navbar-height);
+	}
+	.navbar .left-icon {
+		width: auto;
+		height: auto;
+		background-color: transparent;
+		color: transparent; /* Hapus warna Font Awesome */
+		font-size: 24px;
+		font-weight: normal;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0; /* Hapus padding yang tidak perlu jika menggunakan gambar */
+	}
+	/* CSS untuk gambar logo */
+	.navbar .left-icon .app-logo {
+		height: 30px; /* Ukuran logo */
+		width: auto;
+		display: block;
+		margin-top: 3px; /* Penyesuaian vertikal agar pas */
+	}
 
-  .navbar .location-info {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: var(--f7-text-color);
-    font-weight: 500;
-  }
-  .navbar .location-info i {
-    color: var(--f7-theme-color);
-    margin-right: 5px;
-  }
-  .navbar .right-icons a {
-    color: var(--f7-text-color-light);
-    margin-left: 15px;
-    font-size: 20px;
-  }
-  .navbar .right-icons .cart-icon {
-    color: var(--f7-theme-color);
-  }
+	.navbar .location-info {
+		display: flex;
+		align-items: center;
+		font-size: 14px;
+		color: var(--f7-text-color);
+		font-weight: 500;
+	}
+	.navbar .location-info i {
+		color: var(--f7-theme-color);
+		margin-right: 5px;
+	}
+	.navbar .right-icons a {
+		color: var(--f7-text-color-light);
+		margin-left: 15px;
+		font-size: 20px;
+	}
+	.navbar .right-icons .cart-icon {
+		color: var(--f7-theme-color);
+	}
 
-  /* ==================== SEARCHBAR STYLES ==================== */
-  .searchbar-inline {
-  background: #f2f2f7;
-  border-radius: 12px;
-}
+	/* ==================== SEARCHBAR STYLES ==================== */
+	.searchbar-inline {
+		background: #f2f2f7;
+		border-radius: 12px;
+	}
 
-.searchbar-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+	.searchbar-input-wrap {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
 
-.searchbar-input-wrap input {
-  border: none;
-  background: transparent;
-  width: 100%;
-  padding: 8px 0;
-  font-size: 16px;
-}
+	.searchbar-input-wrap input {
+		border: none;
+		background: transparent;
+		width: 100%;
+		padding: 8px 0;
+		font-size: 16px;
+	}
 
-.searchbar-input-wrap .icon {
-  color: #8e8e93;
-}
+	.searchbar-input-wrap .icon {
+		color: #8e8e93;
+	}
 
-  /* ==================== CATEGORIES STYLES ==================== */
-  .categories {
-    display: flex;
-    overflow-x: scroll;
-    padding: 10px 15px;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
-  }
-  .categories::-webkit-scrollbar {
-    display: none;
-  }
-  .category-item {
-    flex-shrink: 0;
-    width: 70px;
-    margin-right: 15px;
-    text-align: center;
-  }
-  .category-button {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    background-color: #e0e0e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 5px auto;
-    color: var(--f7-text-color);
-    font-size: 24px;
-    pointer-events: auto;
-  }
-  .category-button.active {
-    background-color: var(--f7-theme-color);
-    color: #fff;
-  }
-  .category-item span {
-    font-size: 12px;
-    color: var(--f7-text-color);
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+	/* ==================== CATEGORIES STYLES ==================== */
+	.categories {
+		display: flex;
+		overflow-x: scroll;
+		padding: 10px 15px;
+		-webkit-overflow-scrolling: touch;
+		white-space: nowrap;
+	}
+	.categories::-webkit-scrollbar {
+		display: none;
+	}
+	.category-item {
+		flex-shrink: 0;
+		width: 70px;
+		margin-right: 15px;
+		text-align: center;
+	}
+	.category-button {
+		width: 60px;
+		height: 60px;
+		border-radius: 12px;
+		background-color: #e0e0e0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 5px auto;
+		color: var(--f7-text-color);
+		font-size: 24px;
+		pointer-events: auto;
+	}
+	.category-button.active {
+		background-color: var(--f7-theme-color);
+		color: #fff;
+	}
+	.category-item span {
+		font-size: 12px;
+		color: var(--f7-text-color);
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
-  /* ==================== FOOD GRID STYLES ==================== */
-  .food-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 15px;
-  }
-  .food-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  .food-card img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-  }
-  .food-card-content {
-    padding: 10px;
-  }
-  .food-card-title {
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
-  }
-  .food-card-title .fire-icon {
-    color: orange;
-    margin-left: 5px;
-    font-size: 14px;
-  }
-  .food-card-subtitle {
-    font-size: 12px;
-    color: var(--f7-text-color-light);
-    margin-bottom: 5px;
-  }
-  .food-card-rating {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    color: #ffc107;
-    margin-bottom: 5px;
-  }
-  .food-card-rating i {
-    margin-right: 2px;
-  }
-  .food-card-price {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--f7-text-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .food-card-price .star-icon {
-    color: var(--f7-theme-color);
-    font-size: 18px;
-  }
+	/* ==================== FOOD GRID STYLES ==================== */
+	.food-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 15px;
+		padding: 15px;
+	}
+	.food-card {
+		background-color: #ffffff;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+	.food-card img {
+		width: 100%;
+		height: 120px;
+		object-fit: cover;
+	}
+	.food-card-content {
+		padding: 10px;
+	}
+	.food-card-title {
+		font-weight: 600;
+		font-size: 15px;
+		margin-bottom: 5px;
+		display: flex;
+		align-items: center;
+	}
+	.food-card-title .fire-icon {
+		color: orange;
+		margin-left: 5px;
+		font-size: 14px;
+	}
+	.food-card-subtitle {
+		font-size: 12px;
+		color: var(--f7-text-color-light);
+		margin-bottom: 5px;
+	}
+	.food-card-rating {
+		display: flex;
+		align-items: center;
+		font-size: 12px;
+		color: #ffc107;
+		margin-bottom: 5px;
+	}
+	.food-card-rating i {
+		margin-right: 2px;
+	}
+	.food-card-price {
+		font-weight: 600;
+		font-size: 14px;
+		color: var(--f7-text-color);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.food-card-price .star-icon {
+		color: var(--f7-theme-color);
+		font-size: 18px;
+	}
 
-  /* ==================== TOOLBAR STYLES ==================== */
-  .toolbar {
-    background-color: #ffffff;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
-    height: var(--f7-toolbar-height);
+	/* ==================== TOOLBAR STYLES ==================== */
+	.toolbar {
+		background-color: #ffffff;
+		box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+		height: var(--f7-toolbar-height);
 
-    /* FIX: Mengubah absolute menjadi FIXED */
-    position: fixed;
+		/* FIX: Mengubah absolute menjadi FIXED */
+		position: fixed;
 
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 500;
-    padding-bottom: constant(safe-area-inset-bottom);
-    padding-bottom: env(safe-area-inset-bottom);
-    box-sizing: content-box;
-  }
-  .toolbar-inner {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding-top: 5px;
-    height: 100%;
-  }
-  .toolbar-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 12px;
-    color: var(--f7-text-color-light);
-    text-decoration: none;
-    flex-grow: 1;
-  }
-  .toolbar-link.active {
-    color: var(--f7-theme-color);
-  }
-  .toolbar-link i {
-    font-size: 24px;
-    margin-bottom: 2px;
-  }
-  .toolbar-link span {
-    font-size: 10px;
-  }
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 500;
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
+		box-sizing: content-box;
+	}
+	.toolbar-inner {
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		padding-top: 5px;
+		height: 100%;
+	}
+	.toolbar-link {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		font-size: 12px;
+		color: var(--f7-text-color-light);
+		text-decoration: none;
+		flex-grow: 1;
+	}
+	.toolbar-link.active {
+		color: var(--f7-theme-color);
+	}
+	.toolbar-link i {
+		font-size: 24px;
+		margin-bottom: 2px;
+	}
+	.toolbar-link span {
+		font-size: 10px;
+	}
 
-  /* ==================== PAGE CONTENT PADDING ==================== */
-  .page-content {
-    padding-bottom: calc(
-      var(--f7-toolbar-height) + constant(safe-area-inset-bottom)
-    );
-    padding-bottom: calc(
-      var(--f7-toolbar-height) + env(safe-area-inset-bottom)
-    );
+	/* ==================== PAGE CONTENT PADDING ==================== */
+	.page-content {
+		padding-bottom: calc(
+			var(--f7-toolbar-height) + constant(safe-area-inset-bottom)
+		);
+		padding-bottom: calc(
+			var(--f7-toolbar-height) + env(safe-area-inset-bottom)
+		);
 
-    padding-top: 70px !important;
-  }
+		padding-top: 70px !important;
+	}
 </style>

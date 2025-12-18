@@ -73,7 +73,7 @@
 </template>
 
 <script>
-	export default (props, { $f7, $f7router }) => {
+	export default (props, { $f7, $f7router, $on }) => {
 		const register = async () => {
 			let name = document.getElementById("reg-name").value;
 			let email = document.getElementById("reg-email").value;
@@ -97,14 +97,14 @@
 			});
 		};
 
-		return {
-			on: {
-				pageInit() {
-					document
-						.getElementById("btn-register")
-						.addEventListener("click", register);
-				},
-			},
-		};
+		// ✅ EVENT HARUS PAKE $on
+		$on("pageInit", () => {
+			document
+				.getElementById("btn-register")
+				.addEventListener("click", register);
+		});
+
+		// ✅ WAJIB
+		return $render;
 	};
 </script>
