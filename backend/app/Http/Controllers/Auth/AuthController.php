@@ -25,7 +25,14 @@ class AuthController extends Controller
             'role' => $request->role
         ]);
 
-        return response()->json(['message' => 'Registered']);
+        $token = $user->createToken('mobile')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Register berhasil',
+            'token'   => $token,
+            'role'    => $user->role,
+            'user'    => $user
+        ]);
     }
 
     public function login(Request $request)
