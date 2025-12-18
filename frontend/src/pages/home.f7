@@ -16,7 +16,7 @@
                 <a href="#" class="link icon-only cart-icon"
                   ><i class="fas fa-shopping-cart"></i
                 ></a>
-                <a href="/profile" class="link icon-only"
+                <a href="/profile/" class="link icon-only"
                   ><i class="fas fa-user-circle"></i
                 ></a>
         </div>
@@ -170,15 +170,15 @@
           <i class="fas fa-home"></i>
           <span>Home</span>
         </a>
-        <a href="/riwayat-pesanan" class="toolbar-link">
+        <a href="/riwayat-pesanan/" class="toolbar-link">
           <i class="fas fa-receipt"></i>
           <span>Riwayat Pesanan</span>
         </a>
-        <a href="/riwayat-transaksi" class="toolbar-link">
+        <a href="/riwayat-transaksi/" class="toolbar-link">
           <i class="fas fa-wallet"></i>
           <span>Riwayat Transaksi</span>
         </a>
-        <a href="/profile" class="toolbar-link">
+        <a href="/profile/" class="toolbar-link">
           <i class="fas fa-user-circle"></i>
           <span>Profile</span>
         </a>

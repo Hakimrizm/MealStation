@@ -13,12 +13,12 @@ import NotFoundPage from "../pages/404.f7";
 var routes = [
 
   {
-    path: "/login",
+    path: "/login/",
     component: LoginPage,
   },
 
   {
-    path: "/register",
+    path: "/register/",
     component: registerPage,
   },
 
@@ -28,18 +28,18 @@ var routes = [
   },
 
   {
-    path: '/riwayat-pesanan',
+    path: '/riwayat-pesanan/',
     component: riwayatPesananPage,
   },
 
   {
-    path: '/riwayat-transaksi',
+    path: '/riwayat-transaksi/',
     component: RiwayatTransaksiPage,
   },
 
   
   {
-    path: "/profile",
+    path: "/profile/",
     component: ProfilePage
   },
 
