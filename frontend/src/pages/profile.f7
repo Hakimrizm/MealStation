@@ -1,252 +1,291 @@
 <template>
-  <div class="page" data-name="profile">
-    <div class="navbar navbar-fixed">
-      <div class="navbar-inner">
-        <a class="link icon-only back">
-          <i class="icon f7-icons">arrow_left</i>
-        </a>
-      </div>
-    </div>
+	<div class="page" data-name="profile">
+		<div class="navbar navbar-fixed">
+			<div class="navbar-inner">
+				<a class="link icon-only back">
+					<i class="icon f7-icons">arrow_left</i>
+				</a>
+			</div>
+		</div>
 
-    <div class="page-content ptr-content">
-      <div class="block-header text-align-center">
-        <div class="profile-picture-container padding-bottom-half">
-          <div class="profile-picture-circle"></div>
-        </div>
-        <div class="text-color-black font-weight-bold text-align-center">
-          Syifa Mustika
-        </div>
-        <div class="text-align-center text-color-gray text-small">
-          syifamustika21@gmail.com
-        </div>
-      </div>
+		<div class="page-content ptr-content">
+			<div class="block-header text-align-center">
+				<div class="profile-picture-container padding-bottom-half">
+					<div class="profile-picture-circle"></div>
+				</div>
+				<div
+					class="text-color-black font-weight-bold text-align-center username-text"
+				></div>
+				<div
+					class="text-align-center text-color-gray text-small email-text"
+				></div>
+			</div>
 
-      <div class="stats-flex padding-horizontal padding-bottom">
-        <div class="stat-card active" data-type="proses">
-          <div class="stat-icon icon-purple">
-            <i class="f7-icons">hourglass</i>
-          </div>
-          <div class="stat-number">90</div>
-          <div class="stat-label">Dalam Proses</div>
-        </div>
+			<div class="stats-flex padding-horizontal padding-bottom">
+				<div class="stat-card active" data-type="proses">
+					<div class="stat-icon icon-purple">
+						<i class="f7-icons">hourglass</i>
+					</div>
+					<div class="stat-number">90</div>
+					<div class="stat-label">Dalam Proses</div>
+				</div>
 
-        <div class="stat-card" data-type="pending">
-          <div class="stat-icon icon-yellow">
-            <i class="f7-icons">clock</i>
-          </div>
-          <div class="stat-number">01</div>
-          <div class="stat-label">Pending</div>
-        </div>
+				<div class="stat-card" data-type="pending">
+					<div class="stat-icon icon-yellow">
+						<i class="f7-icons">clock</i>
+					</div>
+					<div class="stat-number">01</div>
+					<div class="stat-label">Pending</div>
+				</div>
 
-        <div class="stat-card" data-type="selesai">
-          <div class="stat-icon icon-green">
-            <i class="f7-icons">checkmark_seal</i>
-          </div>
-          <div class="stat-number">25</div>
-          <div class="stat-label">Selesai</div>
-        </div>
-      </div>
+				<div class="stat-card" data-type="selesai">
+					<div class="stat-icon icon-green">
+						<i class="f7-icons">checkmark_seal</i>
+					</div>
+					<div class="stat-number">25</div>
+					<div class="stat-label">Selesai</div>
+				</div>
+			</div>
 
-      <div class="list strong inset dividers-ios">
-        <ul>
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-floating-label">Username</div>
-                <div class="item-input-wrap">
-                  <input id="username" type="text" value="@usernam_id" />
-                  <a
-                    href="#"
-                    class="item-link item-after icon-only link edit-btn"
-                    data-field="username"
-                  >
-                    <i class="icon f7-icons text-color-gray">pencil</i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </li>
+			<div class="list strong inset dividers-ios">
+				<ul>
+					<li>
+						<div class="item-content item-input">
+							<div class="item-inner">
+								<div class="item-title item-floating-label">Username</div>
+								<div class="item-input-wrap">
+									<input id="username" type="text" />
+									<a
+										href="#"
+										class="item-link item-after icon-only link edit-btn"
+										data-field="username"
+									>
+										<i class="icon f7-icons text-color-gray">pencil</i>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
 
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-floating-label">Nama Lengkap</div>
-                <div class="item-input-wrap">
-                  <input id="namaLengkap" type="text" value="Syifa Mustika" />
-                  <a
-                    href="#"
-                    class="item-link item-after icon-only link edit-btn"
-                    data-field="namaLengkap"
-                  >
-                    <i class="icon f7-icons text-color-gray">pencil</i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-floating-label">Alamat</div>
-                <div class="item-input-wrap">
-                  <input id="alamat" type="text" value="Bandung" />
-                  <a
-                    href="#"
-                    class="item-link item-after icon-only link edit-btn"
-                    data-field="alamat"
-                  >
-                    <i class="icon f7-icons text-color-gray">pencil</i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-floating-label">No. Telepon</div>
-                <div class="item-input-wrap">
-                  <input id="notelepon" type="text" value="0927269717" />
-                  <a
-                    href="#"
-                    class="item-link item-after icon-only link edit-btn"
-                    data-field="notelepon"
-                  >
-                    <i class="icon f7-icons text-color-gray">pencil</i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+					<li>
+						<div class="item-content item-input">
+							<div class="item-inner">
+								<div class="item-title item-floating-label">Email</div>
+								<div class="item-input-wrap">
+									<input id="namaLengkap" type="text" />
+									<a
+										href="#"
+										class="item-link item-after icon-only link edit-btn"
+										data-field="namaLengkap"
+									>
+										<i class="icon f7-icons text-color-gray">pencil</i>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="item-content item-input">
+							<div class="item-inner">
+								<div class="item-title item-floating-label">Alamat</div>
+								<div class="item-input-wrap">
+									<input id="alamat" type="text" />
+									<a
+										href="#"
+										class="item-link item-after icon-only link edit-btn"
+										data-field="alamat"
+									>
+										<i class="icon f7-icons text-color-gray">pencil</i>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="item-content item-input">
+							<div class="item-inner">
+								<div class="item-title item-floating-label">No. Telepon</div>
+								<div class="item-input-wrap">
+									<input id="notelepon" type="text" />
+									<a
+										href="#"
+										class="item-link item-after icon-only link edit-btn"
+										data-field="notelepon"
+									>
+										<i class="icon f7-icons text-color-gray">pencil</i>
+									</a>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
 
-    <div class="toolbar toolbar-bottom">
-      <div class="toolbar-inner">
-        <a href="#" class="toolbar-link active">
-          <i class="fas fa-home"></i>
-          <span>Pesanan Saya</span>
-        </a>
+			<div class="block padding-horizontal">
+				<a href="#" class="button button-fill color-red logout-btn">
+					<i class="f7-icons">arrow_right_square</i>
+					Logout
+				</a>
+			</div>
+		</div>
 
-        <a href="/riwayat-pesanan.f7/" class="toolbar-link">
-          <i class="fas fa-receipt"></i>
-          <span>Riwayat Pesanan</span>
-        </a>
+		<div class="toolbar toolbar-bottom">
+			<div class="toolbar-inner">
+				<a href="#" class="toolbar-link active">
+					<i class="fas fa-home"></i>
+					<span>Pesanan Saya</span>
+				</a>
 
-        <a href="../pages/Riwayat-Transaki.f7" class="toolbar-link">
-          <i class="fas fa-wallet"></i>
-          <span>Riwayat Transaksi</span>
-        </a>
+				<a href="/riwayat-pesanan.f7/" class="toolbar-link">
+					<i class="fas fa-receipt"></i>
+					<span>Riwayat Pesanan</span>
+				</a>
 
-        <a href="/profile/" class="toolbar-link">
-          <i class="fas fa-user-circle"></i>
-          <span>Profile</span>
-        </a>
-      </div>
-    </div>
-  </div>
+				<a href="../pages/Riwayat-Transaki.f7" class="toolbar-link">
+					<i class="fas fa-wallet"></i>
+					<span>Riwayat Transaksi</span>
+				</a>
+
+				<a href="/profile/" class="toolbar-link">
+					<i class="fas fa-user-circle"></i>
+					<span>Profile</span>
+				</a>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
-  export default (props, { $, $on }) => {
-    $on("pageInit", () => {
-      console.log("Profile page loaded");
+	import { getUser } from "./../js/auth.js";
+	export default (props, { $, $on, $f7 }) => {
+		$on("pageInit", () => {
+			const user = getUser();
+			$(".username-text").text(user.name);
+			$(".email-text").text(user.email);
 
-      // Efek active pada badge statistik
-      $(".stat-card").on("click", function () {
-        $(".stat-card").removeClass("active");
-        $(this).addClass("active");
-      });
+			$("#username").val(user.name || "");
+			$("#namaLengkap").val(user.email || "");
+			$("#alamat").val(user.alamat || "");
+			$("#notelepon").val(user.no_telepon || "");
 
-      // Tombol edit
-      $(".edit-btn").on("click", function () {
-        const field = $(this).data("field");
-        const input = $("#" + field);
-        input.focus();
-      });
-    });
+			$(".stat-card").on("click", function () {
+				$(".stat-card").removeClass("active");
+				$(this).addClass("active");
+			});
 
-    return $render;
-  };
+			// Tombol edit
+			$(".edit-btn").on("click", function () {
+				const field = $(this).data("field");
+				const input = $("#" + field);
+				input.focus();
+			});
+			// 🔴 LOGOUT
+			$(".logout-btn").on("click", function () {
+				$f7.dialog.confirm("Yakin ingin logout?", "Logout", async function () {
+					try {
+						const res = await fetch("http://localhost:8000/api/logout", {
+							method: "POST",
+							headers: {
+								Authorization: "Bearer " + localStorage.getItem("token"),
+								Accept: "application/json",
+							},
+						});
+
+						localStorage.removeItem("token");
+						localStorage.removeItem("role");
+						localStorage.removeItem("user");
+
+						$f7.views.main.router.navigate("/login/", {
+							clearPreviousHistory: true,
+						});
+					} catch (err) {
+						$f7.dialog.alert("Logout gagal!", "Logout Gagal!");
+						console.log(err);
+					}
+				});
+			});
+		});
+
+		return $render;
+	};
 </script>
 
 <style>
-/* Navbar agar fixed */
-.navbar.navbar-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-}
+	/* Navbar agar fixed */
+	.navbar.navbar-fixed {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 999;
+	}
 
-/* Tambahkan padding top hanya ke halaman profile */
-.page[data-name="profile"] .page-content {
-  padding-top: 90px;  /* aman untuk navbar custom */
-}
+	/* Tambahkan padding top hanya ke halaman profile */
+	.page[data-name="profile"] .page-content {
+		padding-top: 90px; /* aman untuk navbar custom */
+	}
 
-  .stats-flex {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 0 16px 16px 16px;
-  }
+	.stats-flex {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+		padding: 0 16px 16px 16px;
+	}
 
-  .stat-card {
-    flex: 1;
-    background: #f7f7f7;
-    border-radius: 12px;
-    padding: 12px 4px;
-    text-align: center;
-    transition: 0.2s;
-    border: 2px solid transparent;
-  }
+	.stat-card {
+		flex: 1;
+		background: #f7f7f7;
+		border-radius: 12px;
+		padding: 12px 4px;
+		text-align: center;
+		transition: 0.2s;
+		border: 2px solid transparent;
+	}
 
-  .stat-card.active {
-    border-color: #007aff;
-    background: rgba(0, 122, 255, 0.1);
-  }
+	.stat-card.active {
+		border-color: #007aff;
+		background: rgba(0, 122, 255, 0.1);
+	}
 
-  .stat-card:hover {
-    cursor: pointer;
-    background: #eef4ff;
-  }
+	.stat-card:hover {
+		cursor: pointer;
+		background: #eef4ff;
+	}
 
-  .stat-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    margin: 0 auto 6px;
-  }
+	.stat-icon {
+		width: 42px;
+		height: 42px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		margin: 0 auto 6px;
+	}
 
-  .icon-purple {
-    background: #8e44ad;
-  }
-  .icon-yellow {
-    background: #f1c40f;
-    color: #444;
-  }
-  .icon-green {
-    background: #27ae60;
-  }
+	.icon-purple {
+		background: #8e44ad;
+	}
+	.icon-yellow {
+		background: #f1c40f;
+		color: #444;
+	}
+	.icon-green {
+		background: #27ae60;
+	}
 
-  .stat-number {
-    font-size: 20px;
-    font-weight: bold;
-  }
+	.stat-number {
+		font-size: 20px;
+		font-weight: bold;
+	}
 
-  .stat-label {
-    font-size: 12px;
-    color: #555;
-  }
+	.stat-label {
+		font-size: 12px;
+		color: #555;
+	}
 
-  /* Form edit */
-  .item-input-wrap a.link {
-    padding: 0 6px;
-  }
+	/* Form edit */
+	.item-input-wrap a.link {
+		padding: 0 6px;
+	}
 </style>

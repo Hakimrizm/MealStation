@@ -7,7 +7,7 @@
 		</div>
 
 		<div class="page-content">
-			<form id="login-form" class="list no-hairlines-md">
+			<form id="login-data" class="list no-hairlines-md">
 				<ul>
 					<li class="item-content item-input">
 						<div class="item-inner">
@@ -42,37 +42,46 @@
 </template>
 
 <script>
+	import { saveToken, saveRole, saveUser } from "./../js/auth.js";
 	export default (props, { $, $on, $f7 }) => {
 		$on("pageInit", () => {
-			$("#btn-login").on("click", async () => {
-				const data = $f7.form.convertToData("#login-form");
-
-				if (!data.email || !data.password) {
-					return $f7.dialog.alert("Email dan password wajib diisi");
-				}
-
+			$("#btn-login").on("click", async function () {
+				const data = $f7.form.convertToData("#login-data");
 				try {
-					const res = await fetch("http://127.0.0.1:8000/api/login", {
+					const res = await fetch("http://localhost:8000/api/login", {
 						method: "POST",
-						headers: { "Content-Type": "application/json" },
+						headers: {
+							"Content-Type": "application/json",
+							Accept: "application/json",
+						},
 						body: JSON.stringify(data),
 					});
 
-					const result = await res.json();
-
 					if (!res.ok) {
-						return $f7.dialog.alert(result.message || "Login gagal");
+						throw new Error("Login gagal");
 					}
 
-					localStorage.setItem("token", result.token);
+					const result = await res.json();
 
-					$f7.views.main.router.navigate("/home/");
-				} catch (e) {
-					$f7.dialog.alert("Server error");
+					saveToken(result.token);
+					saveRole(result.role);
+					saveUser(result.user);
+
+					if (result.role === "tenant") {
+						$f7.views.main.router.navigate("/tenant/", {
+							reloadAll: true,
+						});
+					} else {
+						$f7.views.main.router.navigate("/", {
+							reloadAll: true,
+						});
+					}
+				} catch (err) {
+					$f7.dialog.alert("Email atau password salah", "Login Gagal!");
+					console.log(err);
 				}
 			});
 		});
-
 		return $render;
 	};
 </script>

@@ -15,7 +15,7 @@
 					<a href="#" class="link icon-only cart-icon"
 						><i class="fas fa-shopping-cart"></i
 					></a>
-					<a href="/login" class="link icon-only"
+					<a href="/register" class="link icon-only"
 						><i class="fas fa-user-circle"></i
 					></a>
 				</div>
@@ -166,7 +166,7 @@
 		<!-- TOOLBAR -->
 		<div class="toolbar toolbar-bottom">
 			<div class="toolbar-inner">
-				<a href="#" class="toolbar-link active">
+				<a href="/" class="toolbar-link active">
 					<i class="fas fa-home"></i>
 					<span>Home</span>
 				</a>
@@ -218,7 +218,6 @@
 		// Saat halaman mulai di-init
 		$on("pageInit", () => {
 			console.log("Dashboard pengguna loaded");
-
 			const categoryButtons = document.querySelectorAll(".category-button");
 			const foodCards = document.querySelectorAll(".food-card");
 			const searchInput = document.querySelector(".searchbar input");

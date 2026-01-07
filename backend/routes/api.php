@@ -16,4 +16,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware('role:tenant')->get('/tenant/dashboard', function () {
         return "Dashboard Tenant";
     });
+
+    Route::post('/logout', [AuthController::class, 'logout']);
 });

@@ -63,39 +63,57 @@
 </template>
 
 <script>
-	export default (props, { $, $on, $f7, $f7router }) => {
+	import { saveToken, saveRole, saveUser } from "./../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
 		$on("pageInit", () => {
 			$("#btn-register").on("click", async () => {
 				const data = $f7.form.convertToData("#register-form");
 
-				if (!data.name || !data.email || !data.password) {
-					return $f7.dialog.alert("Semua field wajib diisi");
-				}
-
 				try {
-					const res = await fetch("http://127.0.0.1:8000/api/register", {
+					const res = await fetch("http://localhost:8000/api/register", {
 						method: "POST",
-						headers: { "Content-Type": "application/json" },
+						headers: {
+							"Content-Type": "application/json",
+							Accept: "application/json",
+						},
 						body: JSON.stringify(data),
 					});
 
-					const result = await res.json();
-
 					if (!res.ok) {
-						return $f7.dialog.alert(result.message || "Register gagal");
+						const err = await res.json();
+						throw err;
 					}
 
-					// 🔥 SIMPAN TOKEN & ROLE
+					const result = await res.json();
+
+					// ✅ SIMPAN DATA (AUTO LOGIN)
 					saveToken(result.token);
 					saveRole(result.role);
+					saveUser(result.user);
 
-					$f7.dialog.alert("Register berhasil", () => {
-						// 🔁 REDIRECT KE HOME
-						$f7router.navigate("/home/");
-					});
-				} catch (e) {
-					console.error(e);
-					$f7.dialog.alert("Server error");
+					// ✅ REDIRECT SESUAI ROLE
+					if (result.role === "tenant") {
+						$f7.views.main.router.navigate("/tenant/", {
+							reloadAll: true,
+						});
+					} else {
+						$f7.views.main.router.navigate("/", {
+							reloadAll: true,
+						});
+					}
+				} catch (err) {
+					// 🔴 TAMPILKAN ERROR VALIDASI
+					let message = "Register gagal";
+
+					if (err.errors) {
+						message = Object.values(err.errors)
+							.map((e) => e[0])
+							.join("<br>");
+					}
+
+					$f7.dialog.alert(message, "Register Gagal");
+					console.log(err);
 				}
 			});
 		});

@@ -5,50 +5,70 @@ import ProfilePage from "../pages/profile.f7";
 import riwayatPesananPage from "../pages/riwayat-pesanan.f7";
 import RiwayatTransaksiPage from "../pages/riwayat-transaksi.f7";
 
-
 import DynamicRoutePage from "../pages/dynamic-route.f7";
 import RequestAndLoad from "../pages/request-and-load.f7";
 import NotFoundPage from "../pages/404.f7";
+import { isLoggedIn } from "./auth";
+
+function guestOnly({ resolve, router }) {
+	if (isLoggedIn()) {
+		router.navigate("/", { clearPreviousHistory: true });
+		return;
+	}
+	resolve();
+}
+
+function authOnly({ resolve, router }) {
+	if (!isLoggedIn()) {
+		router.navigate("/login", { clearPreviousHistory: true });
+		return;
+	}
+	resolve();
+}
 
 var routes = [
+	{
+		path: "/login",
+		component: LoginPage,
+		beforeEnter: guestOnly,
+	},
 
-  {
-    path: "/login/",
-    component: LoginPage,
-  },
+	{
+		path: "/register",
+		component: registerPage,
+		beforeEnter: guestOnly,
+	},
 
-  {
-    path: "/register/",
-    component: registerPage,
-  },
+	{
+		path: "/",
+		component: HomePage,
+		beforeEnter: authOnly,
+	},
 
-  {
-    path: "/",
-    component: HomePage,
-  },
+	{
+		path: "/riwayat-pesanan",
+		component: riwayatPesananPage,
+		beforeEnter: authOnly,
+	},
 
-  {
-    path: '/riwayat-pesanan/',
-    component: riwayatPesananPage,
-  },
+	{
+		path: "/riwayat-transaksi",
+		component: RiwayatTransaksiPage,
+		beforeEnter: authOnly,
+	},
 
-  {
-    path: '/riwayat-transaksi/',
-    component: RiwayatTransaksiPage,
-  },
+	{
+		path: "/profile",
+		component: ProfilePage,
+		beforeEnter: authOnly,
+	},
 
-  
-  {
-    path: "/profile/",
-    component: ProfilePage
-  },
+	{
+		path: "(.*)",
+		component: NotFoundPage,
+	},
 
-  {
-    path: "(.*)",
-    component: NotFoundPage,
-  },
-
-  {
+	{
 		path: "/dynamic-route/blog/:blogId/post/:postId/",
 		component: DynamicRoutePage,
 	},
