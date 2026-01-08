@@ -12,10 +12,10 @@
 					<span>Current Location: Kantin LPKIA</span>
 				</div>
 				<div class="right right-icons">
-					<a href="#" class="link icon-only cart-icon"
+					<a href="/keranjang" class="link icon-only cart-icon"
 						><i class="fas fa-shopping-cart"></i
 					></a>
-					<a href="/register" class="link icon-only"
+					<a href="/profile" class="link icon-only"
 						><i class="fas fa-user-circle"></i
 					></a>
 				</div>
@@ -82,34 +82,41 @@
 
 			<!-- FOOD GRID -->
 			<div class="food-grid">
-				<div class="food-card" data-category="makanan">
-					<img src="menus/nasi.jpeg" />
-					<div class="food-card-content">
-						<div class="food-card-title">
-							Nasi Goreng <i class="fas fa-fire fire-icon"></i>
-						</div>
-						<div class="food-card-subtitle">Hot & Fresh</div>
-						<div class="food-card-rating"><i class="fas fa-star"></i> 4.8</div>
-						<div class="food-card-price">
-							$12.50
-							<i class="fas fa-plus star-icon"></i>
-						</div>
-					</div>
-				</div>
-
-				<div class="food-card" data-category="makanan">
-					<img src="menus/mie.jpeg" />
-					<div class="food-card-content">
-						<div class="food-card-title">Mie Goreng</div>
-						<div class="food-card-subtitle">Extra Cheese</div>
-						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-						<div class="food-card-price">
-							$9.90
-							<i class="fas fa-plus star-icon"></i>
+				<a href="/order-detail" class="food-card-link">
+					<div class="food-card" data-category="makanan">
+						<img src="menus/nasi.jpeg" />
+						<div class="food-card-content">
+							<div class="food-card-title">
+								Nasi Goreng <i class="fas fa-fire fire-icon"></i>
+							</div>
+							<div class="food-card-subtitle">Hot & Fresh</div>
+							<div class="food-card-rating">
+								<i class="fas fa-star"></i> 4.8
+							</div>
+							<div class="food-card-price">
+								$12.50
+								<i class="fas fa-plus star-icon"></i>
+							</div>
 						</div>
 					</div>
-				</div>
+				</a>
+			
+				<a href="/order-detail" class="food-card-link">
+					<div class="food-card" data-category="makanan">
+						<img src="menus/mie.jpeg" />
+						<div class="food-card-content">
+							<div class="food-card-title">Mie Goreng</div>
+							<div class="food-card-subtitle">Extra Cheese</div>
+							<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
+							<div class="food-card-price">
+								$9.90
+								<i class="fas fa-plus star-icon"></i>
+							</div>
+						</div>
+					</div>
+				</a>
 
+				<a href="/order-detail" class="food-card-link">
 				<div class="food-card">
 					<img src="menus/nasi.jpeg" data-category="makanan" />
 					<div class="food-card-content">
@@ -122,7 +129,9 @@
 						</div>
 					</div>
 				</div>
+				</a>
 
+				<a href="/order-detail" class="food-card-link">
 				<div class="food-card" data-category="minuman">
 					<img src="menus/minuman.jpeg" />
 					<div class="food-card-content">
@@ -135,7 +144,9 @@
 						</div>
 					</div>
 				</div>
+				</a>	
 
+				<a href="/order-detail" class="food-card-link">
 				<div class="food-card" data-category="dessert">
 					<img src="menus/dessert.jpeg" />
 					<div class="food-card-content">
@@ -148,7 +159,8 @@
 						</div>
 					</div>
 				</div>
-
+				</a>
+				<a href="/order-detail" class="food-card-link">
 				<div class="food-card" data-category="Lainnya">
 					<img src="menus/jas.jpeg" />
 					<div class="food-card-content">
@@ -161,6 +173,7 @@
 						</div>
 					</div>
 				</div>
+				</a>
 			</div>
 		</div>
 		<!-- TOOLBAR -->

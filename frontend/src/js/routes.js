@@ -5,6 +5,8 @@ import ProfilePage from "../pages/profile.f7";
 import riwayatPesananPage from "../pages/riwayat-pesanan.f7";
 import RiwayatTransaksiPage from "../pages/riwayat-transaksi.f7";
 import TenantPage from "../pages/tenant.f7";
+import orderDetailPage from "../pages/order-detail.f7";
+import keranjangPage from "../pages/keranjang.f7";
 
 import DynamicRoutePage from "../pages/dynamic-route.f7";
 import RequestAndLoad from "../pages/request-and-load.f7";
@@ -84,6 +86,16 @@ var routes = [
 	{
 		path: "/profile",
 		component: ProfilePage,
+		beforeEnter: authWithRole,
+	},
+	{
+		path: "/order-detail",
+		component: orderDetailPage,
+		beforeEnter: authWithRole,
+	},
+	{
+		path: "/keranjang",
+		component: keranjangPage,
 		beforeEnter: authWithRole,
 	},
 

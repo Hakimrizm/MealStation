@@ -1,0 +1,285 @@
+<template>
+	<div class="page" data-name="cart">
+		<!-- NAVBAR -->
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="left">
+					<a href="#" class="link back">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+				</div>
+				<div class="title">Keranjang</div>
+			</div>
+		</div>
+
+		<!-- PAGE CONTENT -->
+		<div class="page-content cart-page">
+			<div id="cartList"></div>
+
+			<!-- EMPTY STATE -->
+			<div class="empty-cart" id="emptyCart">
+				<i class="fas fa-shopping-cart"></i>
+				<p>Keranjang masih kosong</p>
+			</div>
+		</div>
+
+		<!-- FOOTER -->
+		<div class="cart-footer">
+			<div class="total">
+				<span>Total Pembayaran</span>
+				<strong id="grandTotal">Rp 0</strong>
+			</div>
+			<button class="btn-checkout">Checkout</button>
+		</div>
+	</div>
+</template>
+
+
+<style>
+	:root {
+		--primary: #ff9800;
+		--text: #333;
+		--muted: #777;
+		--bg: #f5f5f5;
+	}
+
+	.cart-page {
+		background: var(--bg);
+		padding-bottom: 140px;
+	}
+
+	/* CART ITEM */
+	.cart-item {
+		display: flex;
+		background: #fff;
+		margin: 10px;
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	}
+
+	.cart-item img {
+		width: 90px;
+		height: 90px;
+		object-fit: cover;
+	}
+
+	.cart-info {
+		flex: 1;
+		padding: 10px;
+		position: relative;
+	}
+
+	.cart-info h3 {
+		font-size: 15px;
+		margin-bottom: 4px;
+	}
+
+	.note {
+		font-size: 12px;
+		color: var(--muted);
+		margin-bottom: 8px;
+	}
+
+	.cart-bottom {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.price {
+		font-weight: bold;
+		font-size: 14px;
+	}
+
+	/* QTY */
+	.qty {
+		display: flex;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	.qty button {
+		width: 28px;
+		height: 28px;
+		border: none;
+		background: #f2f2f2;
+		font-size: 16px;
+	}
+
+	.qty span {
+		width: 28px;
+		text-align: center;
+		font-weight: bold;
+		font-size: 13px;
+	}
+
+	/* REMOVE */
+	.btn-remove {
+		position: absolute;
+		right: 10px;
+		bottom: 10px;
+		background: none;
+		border: none;
+		color: #e53935;
+		font-size: 12px;
+	}
+
+	/* EMPTY */
+	.empty-cart {
+		text-align: center;
+		margin-top: 80px;
+		color: var(--muted);
+		display: none;
+	}
+
+	.empty-cart i {
+		font-size: 40px;
+		margin-bottom: 10px;
+	}
+
+	/* FOOTER */
+	.cart-footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: #fff;
+		padding: 12px;
+		box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.total {
+		display: flex;
+		justify-content: space-between;
+		font-size: 14px;
+		margin-bottom: 10px;
+	}
+
+	.btn-checkout {
+		width: 100%;
+		background: var(--primary);
+		color: #fff;
+		border: none;
+		border-radius: 10px;
+		padding: 12px;
+		font-size: 15px;
+	}
+</style>
+<script>
+	export default (props, { $on }) => {
+		$on("pageInit", () => {
+			let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+			const cartList = document.getElementById("cartList");
+			const emptyCart = document.getElementById("emptyCart");
+			const grandTotalEl = document.getElementById("grandTotal");
+
+			function formatRupiah(num) {
+				return "Rp " + num.toLocaleString("id-ID");
+			}
+
+			function renderCart() {
+				if (!cart.length) {
+					cartList.innerHTML = "";
+					emptyCart.style.display = "block";
+					grandTotalEl.textContent = "Rp 0";
+					return;
+				}
+
+				emptyCart.style.display = "none";
+				cartList.innerHTML = "";
+
+				let grandTotal = 0;
+
+				cart.forEach((item, index) => {
+					const extrasText = item.extras.length
+						? item.extras.map((e) => `+ ${e.name}`).join(", ")
+						: "Tanpa tambahan";
+
+					grandTotal += item.total;
+
+					cartList.innerHTML += `
+						<div class="cart-item">
+							<img src="${item.image}" />
+
+							<div class="cart-info">
+								<h3>${item.name}</h3>
+								<p class="note">${extrasText}</p>
+
+								<div class="cart-bottom">
+									<span class="price">${formatRupiah(item.total)}</span>
+
+									<div class="qty">
+										<button class="btn-minus" data-index="${index}">-</button>
+										<span class="qty-value">${item.qty}</span>
+										<button class="btn-plus" data-index="${index}">+</button>
+									</div>
+								</div>
+
+								<button class="btn-remove" data-index="${index}">
+									Hapus
+								</button>
+							</div>
+						</div>
+					`;
+				});
+
+				grandTotalEl.textContent = formatRupiah(grandTotal);
+
+				bindEvents();
+			}
+
+			function bindEvents() {
+				document.querySelectorAll(".btn-plus").forEach((btn) => {
+					btn.onclick = () => {
+						const i = btn.dataset.index;
+						cart[i].qty++;
+						recalculateItem(i);
+					};
+				});
+
+				document.querySelectorAll(".btn-minus").forEach((btn) => {
+					btn.onclick = () => {
+						const i = btn.dataset.index;
+						if (cart[i].qty > 1) {
+							cart[i].qty--;
+							recalculateItem(i);
+						}
+					};
+				});
+
+				document.querySelectorAll(".btn-remove").forEach((btn) => {
+					btn.onclick = () => {
+						const i = btn.dataset.index;
+						cart.splice(i, 1);
+						saveCart();
+						renderCart();
+					};
+				});
+			}
+
+			function recalculateItem(index) {
+				const extrasTotal = cart[index].extras.reduce(
+					(sum, e) => sum + e.price,
+					0
+				);
+
+				cart[index].total =
+					(cart[index].price + extrasTotal) * cart[index].qty;
+
+				saveCart();
+				renderCart();
+			}
+
+			function saveCart() {
+				localStorage.setItem("cart", JSON.stringify(cart));
+			}
+
+			renderCart();
+		});
+
+		return $render;
+	};
+</script>

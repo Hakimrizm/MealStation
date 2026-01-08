@@ -1,0 +1,278 @@
+<template>
+	<div class="page" data-name="order-detail">
+		<!-- NAVBAR -->
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="left">
+					<a href="#" class="link back">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+				</div>
+				<div class="title">Detail Pesanan</div>
+			</div>
+		</div>
+
+		<!-- PAGE CONTENT -->
+		<div class="page-content order-detail-page">
+			<!-- IMAGE -->
+			<div class="order-image">
+				<img src="menus/nasi.jpeg" />
+			</div>
+
+			<!-- INFO -->
+			<div class="order-info">
+				<h2>
+					Nasi Goreng Spesial <span class="hot">🔥</span>
+				</h2>
+				<p class="vendor">Warung Ibu Budi</p>
+
+				<div class="rating">
+					<i class="fas fa-star"></i> 4.7 <span>(254)</span>
+				</div>
+
+				<div class="price">Rp 18.000</div>
+			</div>
+
+			<!-- OPTIONS -->
+			<div class="order-options">
+				<h3>Opsi Tambahan</h3>
+
+				<label class="option-item">
+					<input type="radio" name="pedas" checked />
+					<span>Tidak Pedas</span>
+				</label>
+
+				<label class="option-item">
+					<input type="radio" name="pedas" />
+					<span>Pedas Sedang <small>(Rekomendasi)</small></span>
+				</label>
+
+				<label class="option-item checkbox">
+					<input type="checkbox" class="extra" data-price="4000" />
+					<span>Tambah Telur Mata Sapi</span>
+					<strong>+ Rp 4.000</strong>
+				</label>
+          
+				<label class="option-item checkbox">
+					<input type="checkbox" class="extra" data-price="8000" />
+					<span>Tambah Sate Ayam</span>
+					<strong>+ Rp 8.000</strong>
+				</label>
+			</div>
+
+            <div class="qty">
+				<button class="btn-minus">-</button>
+				<span class="qty-value">1</span>
+				<button class="btn-plus">+</button>
+			</div>
+
+			<button class="add-cart">
+				Tambahkan ke Keranjang
+				<span>Total: <b id="totalPrice">Rp 18.000</b></span>
+			</button>
+		</div>
+
+		<!-- FOOTER -->
+		<div class="order-footer">
+			
+		</div>
+	</div>
+</template>
+
+
+<style>
+	:root {
+		--primary: #ff9800;
+		--text: #333;
+		--muted: #777;
+		--bg: #f5f5f5;
+	}
+
+	.order-detail-page {
+		background: var(--bg);
+		padding-bottom: 130px;
+	}
+
+	.order-image img {
+		width: 100%;
+		height: 220px;
+		object-fit: cover;
+	}
+
+	.order-info,
+	.order-options {
+		background: #fff;
+		padding: 15px;
+		margin-bottom: 10px;
+	}
+
+	.order-info h2 {
+		font-size: 18px;
+		margin-bottom: 5px;
+	}
+
+	.vendor {
+		font-size: 13px;
+		color: var(--muted);
+	}
+
+	.rating {
+		font-size: 13px;
+		color: #ffc107;
+		margin: 8px 0;
+	}
+
+	.price {
+		font-size: 18px;
+		font-weight: bold;
+	}
+
+	.order-options h3 {
+		font-size: 15px;
+		margin-bottom: 10px;
+	}
+
+	.option-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 0;
+		border-bottom: 1px solid #eee;
+		font-size: 14px;
+	}
+
+	.option-item span small {
+		color: var(--primary);
+		font-size: 11px;
+	}
+
+	.option-item strong {
+		color: var(--primary);
+		font-size: 13px;
+	}
+
+	.order-footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: #fff;
+		display: flex;
+		align-items: center;
+		padding: 10px;
+		box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.qty {
+		display: flex;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		overflow: hidden;
+		margin-right: 10px;
+	}
+
+	.qty button {
+		width: 32px;
+		height: 32px;
+		border: none;
+		background: #f2f2f2;
+		font-size: 18px;
+	}
+
+	.qty span {
+		width: 30px;
+		text-align: center;
+		font-weight: bold;
+	}
+
+	.add-cart {
+		flex: 1;
+		background: var(--primary);
+		color: #fff;
+		border: none;
+		border-radius: 10px;
+		padding: 10px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		font-size: 14px;
+	}
+</style>
+
+
+<script>
+	export default (props, { $on }) => {
+	$on("pageInit", () => {
+		const basePrice = 18000;
+		let qty = 1;
+
+		const extras = document.querySelectorAll(".extra");
+		const qtyValue = document.querySelector(".qty-value");
+		const totalPriceEl = document.getElementById("totalPrice");
+		const btnAddCart = document.getElementById("btnAddCart");
+
+		function formatRupiah(num) {
+			return "Rp " + num.toLocaleString("id-ID");
+		}
+
+		function calculateTotal() {
+			let extraTotal = 0;
+			let selectedExtras = [];
+
+			extras.forEach((item) => {
+				if (item.checked) {
+					const price = parseInt(item.dataset.price);
+					extraTotal += price;
+					selectedExtras.push({
+						name: item.nextElementSibling.textContent,
+						price,
+					});
+				}
+			});
+
+			const total = (basePrice + extraTotal) * qty;
+			totalPriceEl.textContent = formatRupiah(total);
+
+			return { total, selectedExtras };
+		}
+
+		document.querySelector(".btn-plus").onclick = () => {
+			qty++;
+			qtyValue.textContent = qty;
+			calculateTotal();
+		};
+
+		document.querySelector(".btn-minus").onclick = () => {
+			if (qty > 1) {
+				qty--;
+				qtyValue.textContent = qty;
+				calculateTotal();
+			}
+		};
+
+		extras.forEach((e) => e.addEventListener("change", calculateTotal));
+
+		btnAddCart.onclick = () => {
+			const cart = JSON.parse(localStorage.getItem("cart")) || [];
+			const result = calculateTotal();
+
+			cart.push({
+				id: Date.now(),
+				name: "Nasi Goreng Spesial",
+				price: basePrice,
+				qty,
+				extras: result.selectedExtras,
+				total: result.total,
+				image: "menus/nasi.jpeg",
+			});
+
+			localStorage.setItem("cart", JSON.stringify(cart));
+			app.views.main.router.navigate("/cart");
+		};
+
+		calculateTotal();
+	});
+
+	return $render;
+};
+</script>
