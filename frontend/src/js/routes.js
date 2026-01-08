@@ -4,11 +4,12 @@ import registerPage from "../pages/register.f7";
 import ProfilePage from "../pages/profile.f7";
 import riwayatPesananPage from "../pages/riwayat-pesanan.f7";
 import RiwayatTransaksiPage from "../pages/riwayat-transaksi.f7";
+import TenantPage from "../pages/tenant.f7";
 
 import DynamicRoutePage from "../pages/dynamic-route.f7";
 import RequestAndLoad from "../pages/request-and-load.f7";
 import NotFoundPage from "../pages/404.f7";
-import { isLoggedIn } from "./auth";
+import { isLoggedIn, getRole } from "./auth";
 
 function guestOnly({ resolve, router }) {
 	if (isLoggedIn()) {
@@ -23,6 +24,29 @@ function authOnly({ resolve, router }) {
 		router.navigate("/login", { clearPreviousHistory: true });
 		return;
 	}
+	resolve();
+}
+
+function authWithRole({ resolve, router, to }) {
+	if (!isLoggedIn()) {
+		router.navigate("/login", { clearPreviousHistory: true });
+		return;
+	}
+
+	const role = getRole();
+
+	// Tenant tidak boleh ke Home user
+	if (role === "tenant" && to.path === "/") {
+		router.navigate("/tenant", { clearPreviousHistory: true });
+		return;
+	}
+
+	// User biasa tidak boleh ke halaman tenant
+	if (role !== "tenant" && to.path === "/tenant") {
+		router.navigate("/", { clearPreviousHistory: true });
+		return;
+	}
+
 	resolve();
 }
 
@@ -42,25 +66,31 @@ var routes = [
 	{
 		path: "/",
 		component: HomePage,
-		beforeEnter: authOnly,
+		beforeEnter: authWithRole,
 	},
 
 	{
 		path: "/riwayat-pesanan",
 		component: riwayatPesananPage,
-		beforeEnter: authOnly,
+		beforeEnter: authWithRole,
 	},
 
 	{
 		path: "/riwayat-transaksi",
 		component: RiwayatTransaksiPage,
-		beforeEnter: authOnly,
+		beforeEnter: authWithRole,
 	},
 
 	{
 		path: "/profile",
 		component: ProfilePage,
-		beforeEnter: authOnly,
+		beforeEnter: authWithRole,
+	},
+
+	{
+		path: "/tenant",
+		component: TenantPage,
+		beforeEnter: authWithRole,
 	},
 
 	{

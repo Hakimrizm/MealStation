@@ -68,7 +68,7 @@
 					saveUser(result.user);
 
 					if (result.role === "tenant") {
-						$f7.views.main.router.navigate("/tenant/", {
+						$f7.views.main.router.navigate("/tenant", {
 							reloadAll: true,
 						});
 					} else {
