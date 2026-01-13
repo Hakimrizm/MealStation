@@ -29,26 +29,26 @@
       </div>
     </div>
 
-    <div class="toolbar tabbar tabbar-labels toolbar-bottom" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);">
-      <div class="toolbar-inner">
-        <a class="tab-link tab-link-active">
-          <i class="icon f7-icons">house_fill</i>
-          <span class="tabbar-label">Home</span>
-        </a>
-        <a class="tab-link">
-          <i class="icon f7-icons">doc_text_fill</i>
-          <span class="tabbar-label">Pesanan</span>
-        </a>
-        <a class="tab-link">
-          <i class="icon f7-icons">chart_bar_fill</i>
-          <span class="tabbar-label">Laporan</span>
-        </a>
-        <a class="tab-link">
-          <i class="icon f7-icons">gear_alt_fill</i>
-          <span class="tabbar-label">Akun</span>
-        </a>
-      </div>
-    </div>
+   <div class="toolbar tabbar toolbar-bottom">
+			<div class="toolbar-inner">
+				<a class="tab-link tab-link-active" data-index="0">
+					<i class="icon f7-icons">house_fill</i>
+					<span class="tabbar-label">Beranda</span>
+				</a>
+				<a class="tab-link" data-index="1">
+					<i class="icon f7-icons">square_list_fill</i>
+					<span class="tabbar-label">Menu</span>
+				</a>
+				<a class="tab-link" data-index="2">
+					<i class="icon f7-icons">timer_fill</i>
+					<span class="tabbar-label">Riwayat</span>
+				</a>
+				<a class="tab-link" href="/profile" data-index="3">
+					<i class="icon f7-icons">person_circle_fill</i>
+					<span class="tabbar-label">Profil</span>
+				</a>
+			</div>
+		</div>
 
     <div class="page-content" style="padding-top: 70px; padding-bottom: 90px;">
 
@@ -233,7 +233,7 @@ export default (props, { $h, $update, $f7 }) => {
 
   // Data Pesanan (Mutable)
   let orders = [
-    { id: 'ORD-8821', time: 'Baru Saja', items: 2, desc: 'Nasi Goreng Spesial, Es Teh', price: '45.000', customer: 'test', status: 'new' },
+    { id: 'ORD-8821', time: 'Baru Saja', items: 2, desc: 'Nasi Goreng Spesial, Es Teh', price: '45.000', customer: 'budi', status: 'new' },
     { id: 'ORD-8820', time: '5 mnt lalu', items: 1, desc: 'Mie Goreng Extra Cheese', price: '22.000', customer: 'tama', status: 'new' },
     { id: 'ORD-8819', time: '12 mnt lalu', items: 3, desc: 'Ayam Bakar, Nasi Putih, Jeruk', price: '55.000', customer: 'jamal', status: 'process' },
     { id: 'ORD-8815', time: '30 mnt lalu', items: 1, desc: 'Es Kopi Susu', price: '15.000', customer: 'usup', status: 'done' },
