@@ -336,10 +336,15 @@
 			if (!token) throw new Error("Silakan login dulu");
 
 			const tenantIds = [
-				...new Set(cart.map((it) => it.vendor_id).filter(Boolean)),
+				...new Set(cart.map((it) => it.tenant_id).filter(Boolean)),
 			];
 			if (tenantIds.length > 1) {
 				throw new Error("Checkout hanya bisa 1 tenant per transaksi");
+			}
+			if (tenantIds.length === 0) {
+				throw new Error(
+					"Tenant tidak ditemukan di cart. Silakan tambah menu lagi."
+				);
 			}
 
 			const payload = {

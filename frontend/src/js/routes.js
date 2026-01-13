@@ -12,6 +12,7 @@ import TenantMenuCreate from "../pages/menuTenant/tenant-menu-create.f7";
 import TenantMenuEdit from "../pages/menuTenant/tenant-menu-edit.f7";
 import PaymentPage from "../pages/payment.f7";
 import RiwayatDetailTransaksiPage from "../pages/riwayat-detail-transaksi.f7";
+import TenantRiwayat from "../pages/tenant-riwayat.f7";
 
 import DynamicRoutePage from "../pages/dynamic-route.f7";
 import RequestAndLoad from "../pages/request-and-load.f7";
@@ -139,6 +140,12 @@ var routes = [
 	{
 		path: "/tenant/menu/:id/edit",
 		component: TenantMenuEdit,
+		beforeEnter: authWithRole,
+	},
+
+	{
+		path: "/tenant/riwayat",
+		component: TenantRiwayat,
 		beforeEnter: authWithRole,
 	},
 

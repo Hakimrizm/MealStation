@@ -135,28 +135,6 @@
 				<a class="button button-fill" id="btn-save-menu">Simpan Menu</a>
 			</div>
 		</div>
-
-		<!-- Tabbar -->
-		<div class="toolbar tabbar toolbar-bottom">
-			<div class="toolbar-inner">
-				<a class="tab-link" href="/tenant" data-index="0">
-					<i class="icon f7-icons">house_fill</i>
-					<span class="tabbar-label">Beranda</span>
-				</a>
-				<a class="tab-link tab-link-active" data-index="1">
-					<i class="icon f7-icons">square_list_fill</i>
-					<span class="tabbar-label">Menu</span>
-				</a>
-				<a class="tab-link" href="/history" data-index="2">
-					<i class="icon f7-icons">timer_fill</i>
-					<span class="tabbar-label">Riwayat</span>
-				</a>
-				<a class="tab-link" href="/profile" data-index="3">
-					<i class="icon f7-icons">person_circle_fill</i>
-					<span class="tabbar-label">Profil</span>
-				</a>
-			</div>
-		</div>
 	</div>
 </template>
 

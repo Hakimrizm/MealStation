@@ -1,5 +1,9 @@
 <template>
-	<div class="page" data-name="profile">
+	<div
+		class="page"
+		data-name="profile"
+		style="padding-bottom: calc(var(--f7-toolbar-height) + 20px)"
+	>
 		<div class="navbar navbar-fixed">
 			<div class="navbar-inner">
 				<a class="link icon-only back">
@@ -121,6 +125,77 @@
 				</ul>
 			</div>
 
+			<div class="block tenant-only-qris" style="display: none">
+				<div class="list strong inset dividers-ios">
+					<ul>
+						<li class="item-content item-input">
+							<div class="item-inner">
+								<div class="item-title item-floating-label">
+									Nama Merchant (opsional)
+								</div>
+								<div class="item-input-wrap">
+									<input id="qrisName" type="text" />
+								</div>
+							</div>
+						</li>
+
+						<li class="item-content">
+							<div class="item-inner">
+								<div class="item-title">QRIS</div>
+								<div class="item-after">
+									<a
+										href="#"
+										class="button button-small button-fill upload-qris-btn"
+										>Upload</a
+									>
+								</div>
+							</div>
+						</li>
+
+						<li class="item-content qris-preview-row" style="display: none">
+							<div class="item-inner">
+								<div class="item-title">Preview</div>
+								<div class="item-after">
+									<img
+										class="qris-preview"
+										src=""
+										style="height: 48px; border-radius: 8px"
+									/>
+									<a
+										href="#"
+										class="link text-color-red remove-qris-btn"
+										style="margin-left: 10px"
+									>
+										Hapus
+									</a>
+								</div>
+							</div>
+						</li>
+
+						<li class="item-content">
+							<div class="item-inner">
+								<div class="item-title">Merchant</div>
+								<div class="item-after qris-name-text"></div>
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<input
+					type="file"
+					id="qrisFile"
+					accept="image/*"
+					style="display: none"
+				/>
+			</div>
+
+			<div class="block padding-horizontal">
+				<a href="#" class="button button-fill save-profile-btn">
+					<i class="f7-icons">checkmark</i>
+					Simpan Perubahan
+				</a>
+			</div>
+
 			<div class="block padding-horizontal">
 				<a href="#" class="button button-fill color-red logout-btn">
 					<i class="f7-icons">arrow_right_square</i>
@@ -131,11 +206,11 @@
 
 		<div class="toolbar tabbar toolbar-bottom">
 			<div class="toolbar-inner">
-				<a class="tab-link tab-link-active" data-index="0">
+				<a class="tab-link" data-index="0" href="/tenant">
 					<i class="icon f7-icons">house_fill</i>
 					<span class="tabbar-label">Beranda</span>
 				</a>
-				<a class="tab-link" data-index="1">
+				<a class="tab-link" data-index="1" href="/tenant/menus">
 					<i class="icon f7-icons">square_list_fill</i>
 					<span class="tabbar-label">Menu</span>
 				</a>
@@ -143,7 +218,7 @@
 					<i class="icon f7-icons">timer_fill</i>
 					<span class="tabbar-label">Riwayat</span>
 				</a>
-				<a class="tab-link" href="/profile" data-index="3">
+				<a class="tab-link tab-link-active" href="/profile" data-index="3">
 					<i class="icon f7-icons">person_circle_fill</i>
 					<span class="tabbar-label">Profil</span>
 				</a>
@@ -151,61 +226,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-	import { getUser } from "./../js/auth.js";
-	export default (props, { $, $on, $f7 }) => {
-		$on("pageInit", () => {
-			const user = getUser();
-			$(".username-text").text(user.name);
-			$(".email-text").text(user.email);
-
-			$("#username").val(user.name || "");
-			$("#namaLengkap").val(user.email || "");
-			$("#alamat").val(user.alamat || "");
-			$("#notelepon").val(user.no_telepon || "");
-
-			$(".stat-card").on("click", function () {
-				$(".stat-card").removeClass("active");
-				$(this).addClass("active");
-			});
-
-			// Tombol edit
-			$(".edit-btn").on("click", function () {
-				const field = $(this).data("field");
-				const input = $("#" + field);
-				input.focus();
-			});
-			// 🔴 LOGOUT
-			$(".logout-btn").on("click", function () {
-				$f7.dialog.confirm("Yakin ingin logout?", "Logout", async function () {
-					try {
-						const res = await fetch("http://localhost:8000/api/logout", {
-							method: "POST",
-							headers: {
-								Authorization: "Bearer " + localStorage.getItem("token"),
-								Accept: "application/json",
-							},
-						});
-
-						localStorage.removeItem("token");
-						localStorage.removeItem("role");
-						localStorage.removeItem("user");
-
-						$f7.views.main.router.navigate("/login/", {
-							clearPreviousHistory: true,
-						});
-					} catch (err) {
-						$f7.dialog.alert("Logout gagal!", "Logout Gagal!");
-						console.log(err);
-					}
-				});
-			});
-		});
-
-		return $render;
-	};
-</script>
 
 <style>
 	/* Navbar agar fixed */
@@ -286,3 +306,312 @@
 		padding: 0 6px;
 	}
 </style>
+
+<script>
+	import { getUser } from "./../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+
+		function getToken() {
+			return localStorage.getItem("token");
+		}
+
+		function saveUserToLocal(user) {
+			localStorage.setItem("user", JSON.stringify(user));
+		}
+
+		function getLocalUserSafe() {
+			try {
+				return getUser(); // dari auth.js kamu
+			} catch (e) {
+				const raw = localStorage.getItem("user");
+				return raw ? JSON.parse(raw) : null;
+			}
+		}
+
+		function setProfileUI(user) {
+			$(".username-text").text(user?.name || "-");
+			$(".email-text").text(user?.email || "-");
+
+			$("#username").val(user?.name || "");
+			$("#namaLengkap").val(user?.email || "");
+		}
+
+		// (opsional) refresh user dari backend biar data selalu up-to-date
+		async function fetchMe() {
+			const res = await fetch(`${API_BASE}/user`, {
+				method: "GET",
+				headers: {
+					Authorization: "Bearer " + getToken(),
+					Accept: "application/json",
+				},
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data?.message || "Gagal ambil data user");
+
+			// backend kamu: { user: {...} }
+			return data.user;
+		}
+
+		async function updateProfile(name, email) {
+			const res = await fetch(`${API_BASE}/profile`, {
+				method: "PUT",
+				headers: {
+					Authorization: "Bearer " + getToken(),
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ name, email }),
+			});
+
+			const data = await res.json();
+			if (!res.ok) throw new Error(data?.message || "Gagal update profile");
+
+			// rekomendasi response: { message, user }
+			return data.user;
+		}
+
+		async function uploadQris(file, qrisName = "") {
+			const formData = new FormData();
+			formData.append("qris", file);
+			formData.append("qris_name", qrisName ?? "");
+
+			const res = await fetch(`${API_BASE}/tenant/qris`, {
+				method: "POST",
+				headers: {
+					Authorization: "Bearer " + getToken(),
+					Accept: "application/json",
+				},
+				body: formData,
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) throw new Error(data?.message || "Upload QRIS gagal");
+			return data;
+		}
+
+		async function removeQris() {
+			const res = await fetch(`${API_BASE}/tenant/qris`, {
+				method: "DELETE",
+				headers: {
+					Authorization: "Bearer " + getToken(),
+					Accept: "application/json",
+				},
+			});
+
+			const data = await res.json();
+			if (!res.ok) throw new Error(data?.message || "Hapus QRIS gagal");
+
+			return data;
+		}
+
+		function ensureTenantSection(role) {
+			// Pastikan kamu punya container QRIS dengan class `.tenant-only-qris`
+			if (role === "tenant") {
+				$(".tenant-only-qris").show();
+			} else {
+				$(".tenant-only-qris").hide();
+			}
+		}
+
+		// Helper: bikin URL gambar dari path storage (kalau backend return path "qris/xxx.png")
+		function makeStorageUrl(path) {
+			// asumsi laravel storage public di: http://localhost:8000/storage/...
+			if (!path) return "";
+			if (path.startsWith("http")) return path;
+			return `http://localhost:8000/storage/${path}`;
+		}
+
+		function setQrisUI(user) {
+			// container preview wajib ada:
+			// - .qris-preview-row
+			// - img.qris-preview
+			// - .qris-name-text (opsional)
+			const path = user?.qris_image;
+			if (path) {
+				$(".qris-preview").attr("src", makeStorageUrl(path));
+				$(".qris-preview-row").show();
+				$(".qris-name-text").text(user?.qris_name || "");
+			} else {
+				$(".qris-preview").attr("src", "");
+				$(".qris-preview-row").hide();
+				$(".qris-name-text").text("");
+			}
+		}
+
+		$on("pageInit", async () => {
+			// ====== 0) init UI ======
+			let user = getLocalUserSafe();
+			if (!user) {
+				$f7.dialog.alert("User tidak ditemukan, silakan login ulang.");
+				$f7.views.main.router.navigate("/login/", {
+					clearPreviousHistory: true,
+				});
+				return;
+			}
+
+			setProfileUI(user);
+			ensureTenantSection(user.role);
+			setQrisUI(user);
+
+			// ====== 1) optional: refresh dari backend ======
+			try {
+				const freshUser = await fetchMe();
+				user = freshUser;
+				saveUserToLocal(user);
+				setProfileUI(user);
+				ensureTenantSection(user.role);
+				setQrisUI(user);
+			} catch (err) {
+				// kalau gagal refresh, pakai local saja
+				console.log("fetchMe failed:", err);
+			}
+
+			// ====== 2) stat card click ======
+			$(".stat-card").on("click", function () {
+				$(".stat-card").removeClass("active");
+				$(this).addClass("active");
+			});
+
+			// ====== 3) tombol edit (focus input) ======
+			$(".edit-btn").on("click", function (e) {
+				e.preventDefault();
+				const field = $(this).data("field");
+				const input = $("#" + field);
+				input.focus();
+			});
+
+			// ====== 4) SAVE PROFILE (semua user) ======
+			// Kamu perlu tombol dengan class `.save-profile-btn` di HTML
+			$(".save-profile-btn").on("click", async function (e) {
+				e.preventDefault();
+
+				const name = $("#username").val().trim();
+				const email = $("#namaLengkap").val().trim();
+
+				if (!name || !email) {
+					$f7.dialog.alert("Nama dan email wajib diisi");
+					return;
+				}
+
+				try {
+					$f7.preloader.show();
+
+					const updatedUser = await updateProfile(name, email);
+
+					user = { ...user, ...updatedUser };
+					saveUserToLocal(user);
+
+					setProfileUI(user);
+					$f7.dialog.alert("Profile berhasil diupdate");
+				} catch (err) {
+					console.log(err);
+					$f7.dialog.alert(err.message || "Update profile gagal");
+				} finally {
+					$f7.preloader.hide();
+				}
+			});
+
+			// ====== 5) QRIS: tenant only ======
+			// pastikan ada:
+			// - button .upload-qris-btn
+			// - button .remove-qris-btn
+			// - input file #qrisFile (hidden)
+			// - optional input text #qrisName
+			$(".upload-qris-btn").on("click", function (e) {
+				e.preventDefault();
+				if (user.role !== "tenant") return;
+				$("#qrisFile").click();
+			});
+
+			$("#qrisFile").on("change", async function () {
+				if (user.role !== "tenant") return;
+
+				const file = this.files?.[0];
+				if (!file) return;
+
+				// optional: ambil nama merchant dari input (kalau ada)
+				const qrisName = $("#qrisName").length
+					? $("#qrisName").val().trim()
+					: null;
+
+				try {
+					$f7.preloader.show();
+
+					const data = await uploadQris(file, qrisName);
+
+					// update user local (qris_image di DB)
+					user = {
+						...user,
+						qris_image: data.qris_image,
+						qris_name: data.qris_name,
+					};
+
+					saveUserToLocal(user);
+					setQrisUI(user);
+
+					$f7.dialog.alert("QRIS berhasil diupload");
+				} catch (err) {
+					console.log(err);
+					$f7.dialog.alert(err.message || "Upload QRIS gagal");
+				} finally {
+					$f7.preloader.hide();
+					$("#qrisFile").val("");
+				}
+			});
+
+			$(".remove-qris-btn").on("click", function (e) {
+				e.preventDefault();
+				if (user.role !== "tenant") return;
+
+				$f7.dialog.confirm("Yakin hapus QRIS?", "Konfirmasi", async () => {
+					try {
+						$f7.preloader.show();
+
+						await removeQris();
+
+						user = { ...user, qris_image: null, qris_name: null };
+						saveUserToLocal(user);
+						setQrisUI(user);
+
+						$f7.dialog.alert("QRIS berhasil dihapus");
+					} catch (err) {
+						console.log(err);
+						$f7.dialog.alert(err.message || "Hapus QRIS gagal");
+					} finally {
+						$f7.preloader.hide();
+					}
+				});
+			});
+
+			// ====== 6) LOGOUT ======
+			$(".logout-btn").on("click", function () {
+				$f7.dialog.confirm("Yakin ingin logout?", "Logout", async function () {
+					try {
+						await fetch(`${API_BASE}/logout`, {
+							method: "POST",
+							headers: {
+								Authorization: "Bearer " + getToken(),
+								Accept: "application/json",
+							},
+						});
+
+						localStorage.removeItem("token");
+						localStorage.removeItem("role");
+						localStorage.removeItem("user");
+
+						$f7.views.main.router.navigate("/login/", {
+							clearPreviousHistory: true,
+						});
+					} catch (err) {
+						$f7.dialog.alert("Logout gagal!", "Logout Gagal!");
+						console.log(err);
+					}
+				});
+			});
+		});
+
+		return $render;
+	};
+</script>

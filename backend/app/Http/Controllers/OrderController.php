@@ -96,11 +96,16 @@ class OrderController extends Controller
     // USER: detail order
     public function myOrderShow(Request $request, Order $order)
     {
+        // pastikan order milik user login
         if ($order->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        return response()->json($order->load(['items', 'tenant:id,name']));
+        $order->load([
+            'tenant:id,name,qris_image,qris_name'
+        ]);
+
+        return response()->json($order);
     }
 
     // TENANT: list order yang masuk ke tenant

@@ -117,7 +117,7 @@
 					<i class="icon f7-icons">square_list_fill</i>
 					<span class="tabbar-label">Menu</span>
 				</a>
-				<a class="tab-link" href="/history" data-index="2">
+				<a class="tab-link" href="/tenant/riwayat" data-index="2">
 					<i class="icon f7-icons">timer_fill</i>
 					<span class="tabbar-label">Riwayat</span>
 				</a>

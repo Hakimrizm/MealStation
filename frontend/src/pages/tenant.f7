@@ -59,7 +59,7 @@
 					<i class="icon f7-icons">square_list_fill</i>
 					<span class="tabbar-label">Menu</span>
 				</a>
-				<a class="tab-link" data-index="2">
+				<a class="tab-link" data-index="2" href="/tenant/riwayat">
 					<i class="icon f7-icons">timer_fill</i>
 					<span class="tabbar-label">Riwayat</span>
 				</a>

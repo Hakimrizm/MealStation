@@ -289,9 +289,24 @@
 
 		const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
 
+		function makeStorageUrl(path) {
+			if (!path) return "";
+			if (path.startsWith("http")) return path;
+			return `http://localhost:8000/storage/${path}`;
+		}
+
 		function setSelected(id) {
 			selected = id;
 			$(".method-card").removeClass("item-selected");
+
+			// kalau qris-card disembunyikan dan user maksa setSelected("qris"), cegah
+			if (id === "qris" && $("#qris-card").css("display") === "none") {
+				selected = "";
+				$("#btn-pay").addClass("disabled");
+				$("#qris-proof").hide();
+				return;
+			}
+
 			$(`#${id}-card`).addClass("item-selected");
 			$("#btn-pay").removeClass("disabled");
 
@@ -320,12 +335,31 @@
 			$("#billTotal").text(rupiah(total));
 			$("#popupTotal").text(rupiah(total));
 			$("#invId").text(`INV-${o.id}`);
+		}
 
-			// QR dummy dari order id + total (biar beda tiap order)
-			$("#qrisImg").attr(
-				"src",
-				`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ORDER-${o.id}-TOTAL-${total}`
-			);
+		// ✅ ini yang penting: hide/show QRIS berdasarkan tenant.qris_image
+		function setupQrisAvailability(o) {
+			const tenant = o?.tenant; // <-- HARUS ADA dari backend
+			const qrisPath = tenant?.qris_image;
+
+			if (qrisPath) {
+				// tampilkan card QRIS
+				$("#qris-card").show();
+
+				// set gambar QRIS tenant pada popup
+				$("#qrisImg").attr("src", makeStorageUrl(qrisPath));
+			} else {
+				// tenant belum upload qris => QRIS tidak ada
+				$("#qris-card").hide();
+
+				// kalau user sudah terlanjur pilih qris, reset
+				if (selected === "qris") {
+					selected = "";
+					$(".method-card").removeClass("item-selected");
+					$("#qris-proof").hide();
+					$("#btn-pay").addClass("disabled");
+				}
+			}
 		}
 
 		async function payCash() {
@@ -348,6 +382,12 @@
 
 		async function payQrisWithProof() {
 			const token = getToken();
+
+			// safety: kalau qris-card hidden jangan lanjut
+			if ($("#qris-card").css("display") === "none") {
+				throw new Error("Metode QRIS tidak tersedia untuk tenant ini");
+			}
+
 			const fileInput = document.getElementById("proofFile");
 			if (!fileInput?.files?.[0]) throw new Error("Upload bukti dulu ya");
 
@@ -380,8 +420,20 @@
 
 				renderBilling(order);
 
+				// ✅ hide/show QRIS sesuai tenant punya qris atau tidak
+				setupQrisAvailability(order);
+
 				$("#pick-qris").on("click", (e) => {
 					e.preventDefault();
+
+					// tenant tidak punya qris => stop
+					if ($("#qris-card").css("display") === "none") {
+						$f7.dialog.alert(
+							"Tenant belum menyediakan QRIS, pilih metode lain."
+						);
+						return;
+					}
+
 					setSelected("qris");
 					$f7.popup.open(".popup-qris");
 				});
@@ -403,8 +455,8 @@
 					try {
 						if ($("#btn-pay").hasClass("disabled")) return;
 
-						// kalau QRIS wajib upload
 						if (selected === "qris") {
+							// QRIS wajib upload bukti
 							const fileInput = document.getElementById("proofFile");
 							if (!fileInput?.files?.[0]) {
 								$f7.dialog.alert("Upload bukti QRIS dulu ya");
@@ -425,9 +477,7 @@
 						$f7.sheet.open(".sheet-success");
 
 						setTimeout(() => {
-							$f7.views.main.router.navigate("/riwayat-transaksi", {
-								reloadAll: true,
-							});
+							$f7.views.main.router.navigate("/riwayat-transaksi");
 						}, 700);
 					} catch (err) {
 						$f7.dialog.close();

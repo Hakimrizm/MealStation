@@ -199,6 +199,10 @@
 			return STORAGE_BASE + imgPath;
 		}
 
+		function getTenantIdFromMenu(m) {
+			return m?.tenant?.id || m?.tenant_id || m?.user_id || null;
+		}
+
 		async function fetchMenuDetail() {
 			const token = getToken(); // kalau endpoint detail butuh auth
 			const res = await fetch(`${API_BASE}/menus/${menuId}`, {
@@ -260,22 +264,58 @@
 				const notes = document.getElementById("notes")?.value || "";
 				const total = calculateTotal();
 
+				const tenantId = getTenantIdFromMenu(menu);
+				if (!tenantId) {
+					$f7.dialog.alert("Tenant menu tidak ditemukan.");
+					return;
+				}
+
 				const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+				// ✅ cek tenant sebelumnya di cart
+				const existingTenantId = cart?.[0]?.tenant_id;
+				if (existingTenantId && String(existingTenantId) !== String(tenantId)) {
+					$f7.dialog.confirm(
+						"Keranjang kamu berisi pesanan dari tenant lain. Hapus keranjang dulu dan tambah dari tenant ini?",
+						"Tenant berbeda",
+						() => {
+							// user setuju => kosongkan cart lalu tambah item baru
+							const newCart = [
+								{
+									cart_id: Date.now(),
+									menu_id: menu.id,
+									tenant_id: tenantId, // ✅ simpan tenant_id
+									name: menu.name,
+									price: basePrice,
+									qty,
+									notes,
+									total,
+									image: menu.image,
+									vendor: menu?.tenant?.name || "Kantin",
+								},
+							];
+							localStorage.setItem("cart", JSON.stringify(newCart));
+							$f7.views.main.router.navigate("/keranjang");
+						}
+					);
+					return;
+				}
+
+				// ✅ tenant sama / cart kosong => lanjut tambah
 				cart.push({
 					cart_id: Date.now(),
 					menu_id: menu.id,
+					tenant_id: tenantId, // ✅ simpan tenant_id
 					name: menu.name,
 					price: basePrice,
 					qty,
 					notes,
 					total,
-					image: menu.image, // simpan path asli
-					vendor: menu?.tenant?.name || "Kantin LPKIA",
+					image: menu.image,
+					vendor: menu?.tenant?.name || "Kantin",
 				});
 
 				localStorage.setItem("cart", JSON.stringify(cart));
-
-				// sesuaikan route keranjang kamu:
 				$f7.views.main.router.navigate("/keranjang");
 			};
 		}
