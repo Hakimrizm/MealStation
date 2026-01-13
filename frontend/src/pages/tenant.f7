@@ -39,13 +39,7 @@
 		</div>
 
 		<!-- Page Content -->
-		<div class="page-content" style="padding-top: 56px; overflow: hidden">
-			<!-- FAB -->
-			<a class="fab fab-extended fab-right-bottom color-blue">
-				<i class="icon f7-icons">plus</i>
-				<div class="fab-text">Pesanan Baru</div>
-			</a>
-		</div>
+		<div class="page-content" style="padding-top: 56px; overflow: hidden"></div>
 	</div>
 </template>
 

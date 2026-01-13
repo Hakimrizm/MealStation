@@ -84,7 +84,7 @@
 							</div>
 						</div>
 					</li>
-					<li>
+					<!-- <li>
 						<div class="item-content item-input">
 							<div class="item-inner">
 								<div class="item-title item-floating-label">Alamat</div>
@@ -100,8 +100,8 @@
 								</div>
 							</div>
 						</div>
-					</li>
-					<li>
+					</li> -->
+					<!-- <li>
 						<div class="item-content item-input">
 							<div class="item-inner">
 								<div class="item-title item-floating-label">No. Telepon</div>
@@ -117,7 +117,7 @@
 								</div>
 							</div>
 						</div>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 
