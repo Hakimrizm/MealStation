@@ -1,0 +1,445 @@
+<template>
+	<div class="page" data-name="payment" style="background: #fff">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="left"><a class="link back">Kembali</a></div>
+				<div class="title">Pembayaran</div>
+			</div>
+		</div>
+
+		<div class="page-content" style="padding: 24px; padding-bottom: 140px">
+			<!-- Billing -->
+			<div class="billing-section">
+				<p>Total Tagihan</p>
+				<h1 id="billTotal">Rp 0</h1>
+				<div class="id-badge" id="invId">INV-</div>
+			</div>
+
+			<div style="padding: 0 10px; margin-bottom: 16px">
+				<span style="font-weight: 800; color: #1e293b; font-size: 18px"
+					>Pilih Metode</span
+				>
+			</div>
+
+			<div class="list no-hairlines no-chevron" style="margin: 0">
+				<ul>
+					<li class="method-card" id="qris-card">
+						<a href="#" class="item-link item-content" id="pick-qris">
+							<div class="item-media">
+								<div class="icon-wrapper bg-blue-soft">
+									<i class="fa-solid fa-qrcode"></i>
+								</div>
+							</div>
+							<div class="item-inner">
+								<div class="item-title">
+									<div style="font-weight: 700; color: #1e293b">QRIS</div>
+									<div style="font-size: 13px; color: #94a3b8">
+										E-Wallet & M-Banking
+									</div>
+								</div>
+							</div>
+						</a>
+					</li>
+
+					<li class="method-card" id="cash-card">
+						<a href="#" class="item-link item-content" id="pick-cash">
+							<div class="item-media">
+								<div class="icon-wrapper bg-orange-soft">
+									<i class="fa-solid fa-wallet"></i>
+								</div>
+							</div>
+							<div class="item-inner">
+								<div class="item-title">
+									<div style="font-weight: 700; color: #1e293b">Tunai</div>
+									<div style="font-size: 13px; color: #94a3b8">
+										Bayar ke kasir
+									</div>
+								</div>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<!-- spacer -->
+			<div style="height: 20px"></div>
+
+			<!-- Upload bukti (muncul kalau QRIS dipilih) -->
+			<div id="qris-proof" style="display: none; margin-top: 10px">
+				<div class="block-title" style="margin: 12px 0 8px; font-weight: 800">
+					Upload Bukti QRIS
+				</div>
+				<div class="list no-hairlines-md">
+					<ul>
+						<li class="item-content item-input">
+							<div class="item-inner">
+								<div class="item-title">Bukti Bayar</div>
+								<div class="item-input-wrap">
+									<input type="file" id="proofFile" accept="image/*" />
+								</div>
+							</div>
+						</li>
+						<li class="item-content">
+							<div class="item-inner">
+								<img
+									id="proofPreview"
+									style="width: 100%; border-radius: 18px; display: none"
+								/>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<!-- Floating action -->
+		<div class="action-area">
+			<a
+				class="button button-fill button-large btn-confirm disabled"
+				id="btn-pay"
+			>
+				Konfirmasi & Bayar
+			</a>
+		</div>
+
+		<!-- Popup QRIS (optional, buat visual scan) -->
+		<div class="popup popup-qris">
+			<div class="page">
+				<div
+					class="page-content display-flex flex-direction-column align-items-center justify-content-center"
+					style="padding: 30px"
+				>
+					<div
+						style="
+							width: 40px;
+							height: 5px;
+							background: #e2e8f0;
+							border-radius: 10px;
+							position: absolute;
+							top: 15px;
+						"
+					></div>
+
+					<h2 style="font-weight: 800; margin-bottom: 25px">Scan QRIS</h2>
+
+					<div
+						style="
+							background: white;
+							padding: 20px;
+							border-radius: 30px;
+							box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+							border: 1px solid #f1f5f9;
+						"
+					>
+						<img id="qrisImg" width="230" />
+					</div>
+
+					<div style="margin-top: 24px; text-align: center">
+						<div style="color: #94a3b8; font-size: 14px; margin-bottom: 5px">
+							Total Bayar
+						</div>
+						<div
+							id="popupTotal"
+							style="font-size: 28px; font-weight: 800; color: #1e293b"
+						>
+							Rp 0
+						</div>
+					</div>
+
+					<a
+						class="button button-fill button-large bg-color-blue popup-close"
+						style="
+							border-radius: 20px;
+							height: 60px;
+							width: 100%;
+							margin-top: 16px;
+						"
+					>
+						Tutup
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Sheet success -->
+		<div class="sheet-modal sheet-success" style="height: auto">
+			<div class="sheet-modal-inner p-40 text-align-center">
+				<div class="success-icon">
+					<i class="fa-solid fa-circle-check"></i>
+				</div>
+				<h2 style="font-weight: 800; font-size: 24px; margin: 0">Berhasil!</h2>
+				<p style="color: #94a3b8; margin: 10px 0 20px">
+					Pembayaran kamu sudah dikirim. Menunggu konfirmasi tenant.
+				</p>
+				<a
+					class="button button-fill button-large bg-color-black sheet-close"
+					style="border-radius: 18px; height: 56px"
+				>
+					Kembali
+				</a>
+			</div>
+		</div>
+	</div>
+</template>
+
+<style>
+	:root {
+		--f7-theme-color: #2563eb;
+	}
+	.billing-section {
+		text-align: center;
+		padding: 32px 0 18px;
+	}
+	.billing-section p {
+		color: #94a3b8;
+		font-weight: 600;
+		margin: 0;
+	}
+	.billing-section h1 {
+		font-size: 42px;
+		font-weight: 800;
+		color: #1e293b;
+		margin: 4px 0;
+		letter-spacing: -1px;
+	}
+	.id-badge {
+		display: inline-block;
+		background: #f1f5f9;
+		color: #64748b;
+		padding: 6px 16px;
+		border-radius: 100px;
+		font-size: 11px;
+		font-weight: 800;
+		margin-top: 10px;
+	}
+
+	.method-card {
+		background: #f8fafc !important;
+		border-radius: 24px !important;
+		border: 2px solid transparent !important;
+		margin-bottom: 14px !important;
+		padding: 4px 0;
+		transition: 0.25s;
+	}
+	.method-card.item-selected {
+		background: #fff !important;
+		border-color: #2563eb !important;
+		box-shadow: 0 16px 24px rgba(37, 99, 235, 0.1) !important;
+	}
+
+	.icon-wrapper {
+		width: 56px;
+		height: 56px;
+		border-radius: 18px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 22px;
+	}
+	.bg-blue-soft {
+		background: #eff6ff;
+		color: #2563eb;
+	}
+	.bg-orange-soft {
+		background: #fff7ed;
+		color: #ff7e33;
+	}
+
+	.action-area {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(16px);
+		padding: 16px 20px calc(24px + env(safe-area-inset-bottom));
+		border-top: 1px solid #f1f5f9;
+		box-sizing: border-box;
+		z-index: 500;
+	}
+	.btn-confirm {
+		background: #ff7e33 !important;
+		height: 60px !important;
+		border-radius: 20px !important;
+		font-size: 16px !important;
+		font-weight: 800 !important;
+		text-transform: none !important;
+		box-shadow: 0 10px 18px rgba(255, 126, 51, 0.22) !important;
+	}
+	.btn-confirm.disabled {
+		opacity: 0.45;
+		pointer-events: none;
+	}
+
+	.success-icon {
+		font-size: 72px;
+		color: #22c55e;
+		margin-bottom: 14px;
+	}
+</style>
+
+<script>
+	import { getToken } from "./../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+		let selected = "";
+		let orderId = null;
+		let order = null;
+
+		const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+		function setSelected(id) {
+			selected = id;
+			$(".method-card").removeClass("item-selected");
+			$(`#${id}-card`).addClass("item-selected");
+			$("#btn-pay").removeClass("disabled");
+
+			if (id === "qris") $("#qris-proof").show();
+			else $("#qris-proof").hide();
+		}
+
+		async function fetchOrder() {
+			const token = getToken();
+			if (!token) throw new Error("Silakan login dulu");
+
+			const res = await fetch(`${API_BASE}/my/orders/${orderId}`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) throw new Error(data?.message || "Gagal ambil data order");
+			return data;
+		}
+
+		function renderBilling(o) {
+			const total = Number(o?.grand_total || 0);
+			$("#billTotal").text(rupiah(total));
+			$("#popupTotal").text(rupiah(total));
+			$("#invId").text(`INV-${o.id}`);
+
+			// QR dummy dari order id + total (biar beda tiap order)
+			$("#qrisImg").attr(
+				"src",
+				`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=ORDER-${o.id}-TOTAL-${total}`
+			);
+		}
+
+		async function payCash() {
+			const token = getToken();
+			const res = await fetch(`${API_BASE}/my/orders/${orderId}/pay`, {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({ method: "cash" }),
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok)
+				throw new Error(data?.message || "Gagal set pembayaran tunai");
+			return data;
+		}
+
+		async function payQrisWithProof() {
+			const token = getToken();
+			const fileInput = document.getElementById("proofFile");
+			if (!fileInput?.files?.[0]) throw new Error("Upload bukti dulu ya");
+
+			const fd = new FormData();
+			fd.append("method", "qris");
+			fd.append("proof", fileInput.files[0]);
+
+			const res = await fetch(`${API_BASE}/my/orders/${orderId}/pay`, {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: fd,
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) throw new Error(data?.message || "Gagal kirim bukti bayar");
+			return data;
+		}
+
+		$on("pageInit", async () => {
+			try {
+				orderId = props?.id || $f7?.route?.params?.id;
+				if (!orderId) throw new Error("Order ID tidak ditemukan di route");
+
+				$f7.dialog.preloader("Memuat pembayaran...");
+				order = await fetchOrder();
+				$f7.dialog.close();
+
+				renderBilling(order);
+
+				$("#pick-qris").on("click", (e) => {
+					e.preventDefault();
+					setSelected("qris");
+					$f7.popup.open(".popup-qris");
+				});
+
+				$("#pick-cash").on("click", (e) => {
+					e.preventDefault();
+					setSelected("cash");
+				});
+
+				$("#proofFile").on("change", function () {
+					const f = this.files?.[0];
+					if (!f) return;
+					const img = document.getElementById("proofPreview");
+					img.src = URL.createObjectURL(f);
+					img.style.display = "block";
+				});
+
+				$("#btn-pay").on("click", async () => {
+					try {
+						if ($("#btn-pay").hasClass("disabled")) return;
+
+						// kalau QRIS wajib upload
+						if (selected === "qris") {
+							const fileInput = document.getElementById("proofFile");
+							if (!fileInput?.files?.[0]) {
+								$f7.dialog.alert("Upload bukti QRIS dulu ya");
+								return;
+							}
+						}
+
+						$f7.dialog.preloader("Memproses...");
+						if (selected === "cash") {
+							await payCash();
+						} else if (selected === "qris") {
+							await payQrisWithProof();
+						} else {
+							throw new Error("Pilih metode dulu");
+						}
+						$f7.dialog.close();
+
+						$f7.sheet.open(".sheet-success");
+
+						setTimeout(() => {
+							$f7.views.main.router.navigate("/riwayat-transaksi", {
+								reloadAll: true,
+							});
+						}, 700);
+					} catch (err) {
+						$f7.dialog.close();
+						$f7.dialog.alert(String(err.message || err), "Error");
+					}
+				});
+			} catch (err) {
+				$f7.dialog.close();
+				$f7.dialog.alert(String(err.message || err), "Error");
+			}
+		});
+
+		return $render;
+	};
+</script>

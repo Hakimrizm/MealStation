@@ -1,0 +1,318 @@
+<template>
+	<div
+		class="page"
+		data-name="tenant-menu-edit"
+		style="padding-bottom: calc(var(--f7-toolbar-height) + 20px)"
+	>
+		<!-- Navbar -->
+		<div class="navbar navbar-transparent">
+			<div class="navbar-bg" style="background-color: #fff"></div>
+			<div class="navbar-inner">
+				<div class="left">
+					<div
+						style="
+							padding-left: 16px;
+							display: flex;
+							align-items: center;
+							gap: 8px;
+						"
+					>
+						<div class="icon-container-small">
+							<i class="icon f7-icons text-color-blue" style="font-size: 20px"
+								>building_2_fill</i
+							>
+						</div>
+						<div>
+							<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
+								Lokasi Saat Ini
+							</div>
+							<div style="font-size: 14px; font-weight: 700; color: #1a1a1a">
+								Kantin LPKIA
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="right">
+					<a class="link icon-only">
+						<i class="icon f7-icons text-color-black">bell</i>
+						<span
+							class="badge color-red"
+							style="
+								position: absolute;
+								top: 8px;
+								right: 8px;
+								transform: scale(0.7);
+							"
+						>
+							0
+						</span>
+					</a>
+					<a class="link icon-only" href="/profile">
+						<i class="icon f7-icons text-color-black">person_circle</i>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="page-content">
+			<form id="menu-edit-form" class="list no-hairlines-md">
+				<ul>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Nama Menu</div>
+							<div class="item-input-wrap">
+								<input type="text" name="name" id="name" required />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Harga</div>
+							<div class="item-input-wrap">
+								<input type="number" name="price" id="price" required />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Deskripsi</div>
+							<div class="item-input-wrap">
+								<textarea name="description" id="description"></textarea>
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Kategori</div>
+							<div class="item-input-wrap">
+								<input type="text" name="category" id="category" />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Hot?</div>
+							<div class="item-input-wrap">
+								<label class="toggle toggle-init">
+									<input type="checkbox" name="is_hot" id="is_hot" />
+									<span class="toggle-icon"></span>
+								</label>
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Ganti Gambar (opsional)</div>
+							<div class="item-input-wrap">
+								<input type="file" id="image" name="image" accept="image/*" />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content">
+						<div class="item-inner">
+							<div class="item-title">Preview</div>
+						</div>
+					</li>
+					<li class="item-content">
+						<div class="item-inner">
+							<img
+								id="preview"
+								style="max-width: 100%; border-radius: 12px; display: none"
+							/>
+						</div>
+					</li>
+				</ul>
+			</form>
+
+			<div class="block">
+				<a class="button button-fill" id="btn-update-menu">Update</a>
+				<a class="button button-fill color-red margin-top" id="btn-delete-menu"
+					>Hapus</a
+				>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import { getToken } from "./../../js/auth.js";
+
+	function setF7InputValue(selector, value) {
+		const el = document.querySelector(selector);
+		if (!el) return;
+
+		el.value = value ?? "";
+		el.dispatchEvent(new Event("input", { bubbles: true }));
+		el.dispatchEvent(new Event("change", { bubbles: true }));
+
+		// Biar floating label naik (Framework7 style)
+		const itemInput = el.closest(".item-input");
+		if (itemInput) {
+			if (el.value && String(el.value).length > 0) {
+				itemInput.classList.add("item-input-with-value");
+			} else {
+				itemInput.classList.remove("item-input-with-value");
+			}
+		}
+	}
+
+	const imageUrl = (imgPath) => {
+		if (!imgPath) return "";
+		if (String(imgPath).startsWith("http")) return imgPath;
+		return `http://localhost:8000/storage/${imgPath}`;
+	};
+
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+		const menuId = props?.id || $f7?.route?.params?.id; // sesuaikan dengan router kamu
+
+		async function fetchMenuDetail() {
+			const token = getToken();
+			const res = await fetch(`${API_BASE}/menus/${menuId}`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const result = await res.json().catch(() => ({}));
+			if (!res.ok)
+				throw new Error(result?.message || "Gagal ambil detail menu");
+
+			return result;
+		}
+
+		$on("pageInit", async () => {
+			try {
+				// load data awal
+				$f7.dialog.preloader("Memuat...");
+				const menu = await fetchMenuDetail();
+				$f7.dialog.close();
+
+				// isi form
+				setF7InputValue("#name", menu.name);
+				setF7InputValue("#price", menu.price);
+				setF7InputValue("#description", menu.description);
+				setF7InputValue("#category", menu.category);
+				document.getElementById("is_hot").checked = !!menu.is_hot;
+
+				// kalau API kamu punya image_url, tampilkan
+				const oldImg = imageUrl(menu.image);
+				if (oldImg) {
+					const img = document.getElementById("preview");
+					img.src = oldImg;
+					img.style.display = "block";
+				}
+
+				// preview gambar baru
+				$("#image").on("change", function () {
+					const file = this.files?.[0];
+					if (!file) return;
+					const img = document.getElementById("preview");
+					img.src = URL.createObjectURL(file);
+					img.style.display = "block";
+				});
+
+				// update
+				$("#btn-update-menu").on("click", async function () {
+					try {
+						const token = getToken();
+						if (!token) return $f7.dialog.alert("Silakan login dulu.");
+
+						const data = $f7.form.convertToData("#menu-edit-form");
+
+						const fd = new FormData();
+						// method spoofing biar aman untuk multipart
+						fd.append("_method", "PUT");
+
+						// kirim hanya field yang kamu mau update (di controller kamu pakai sometimes|required)
+						fd.append("name", data.name || "");
+						fd.append("price", data.price || "");
+						fd.append("description", data.description || "");
+						fd.append("category", data.category || "");
+						fd.append("is_hot", data.is_hot ? "1" : "0");
+
+						const fileInput = document.getElementById("image");
+						if (fileInput.files && fileInput.files[0]) {
+							fd.append("image", fileInput.files[0]);
+						}
+
+						$f7.dialog.preloader("Mengupdate...");
+						const res = await fetch(`${API_BASE}/menus/${menuId}`, {
+							method: "POST", // POST + _method=PUT
+							headers: {
+								Accept: "application/json",
+								Authorization: `Bearer ${token}`,
+							},
+							body: fd,
+						});
+
+						const result = await res.json().catch(() => ({}));
+						if (!res.ok) {
+							const msg =
+								result?.message ||
+								(result?.errors
+									? JSON.stringify(result.errors)
+									: "Update gagal");
+							throw new Error(msg);
+						}
+
+						$f7.dialog.close();
+						$f7.dialog.alert("Menu berhasil diupdate!");
+						$f7.views.main.router.back();
+					} catch (err) {
+						$f7.dialog.close();
+						console.log(err);
+						$f7.dialog.alert(String(err.message || err), "Error");
+					}
+				});
+
+				// delete (button di bawah)
+				$("#btn-delete-menu").on("click", function () {
+					$f7.dialog.confirm(
+						"Yakin mau hapus menu ini?",
+						"Konfirmasi",
+						async () => {
+							try {
+								const token = getToken();
+								$f7.dialog.preloader("Menghapus...");
+
+								const res = await fetch(`${API_BASE}/menus/${menuId}`, {
+									method: "DELETE",
+									headers: {
+										Accept: "application/json",
+										Authorization: `Bearer ${token}`,
+									},
+								});
+
+								const result = await res.json().catch(() => ({}));
+								if (!res.ok) throw new Error(result?.message || "Hapus gagal");
+
+								$f7.dialog.close();
+								$f7.dialog.alert("Menu berhasil dihapus!");
+								$f7.views.main.router.back();
+							} catch (err) {
+								$f7.dialog.close();
+								console.log(err);
+								$f7.dialog.alert(String(err.message || err), "Error");
+							}
+						}
+					);
+				});
+			} catch (err) {
+				$f7.dialog.close();
+				console.log(err);
+				$f7.dialog.alert(String(err.message || err), "Error");
+			}
+		});
+
+		return $render;
+	};
+</script>

@@ -1,5 +1,5 @@
 <template>
-	<div class="page" data-name="riwayat-pesanan">
+	<div class="page" data-name="riwayat-transaksi">
 		<!-- NAVBAR -->
 		<div class="navbar">
 			<div class="navbar-inner">
@@ -10,13 +10,12 @@
 			</div>
 		</div>
 
-		<!-- PAGE CONTENT -->
 		<div class="page-content">
 			<!-- FILTER -->
 			<div class="block">
 				<div class="segmented segmented-raised">
 					<a href="#" class="button button-active" data-filter="all">Semua</a>
-					<a href="#" class="button" data-filter="pending">Bayar</a>
+					<a href="#" class="button" data-filter="pending">Berjalan</a>
 					<a href="#" class="button" data-filter="completed">Selesai</a>
 					<a href="#" class="button" data-filter="cancelled">Batal</a>
 				</div>
@@ -24,86 +23,204 @@
 
 			<!-- LIST -->
 			<div id="order-list-container"></div>
+
+			<!-- EMPTY -->
+			<div
+				id="empty-state"
+				class="block text-align-center"
+				style="display: none; color: #8e8e93; margin-top: 30px"
+			>
+				Belum ada transaksi.
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-	export default (props, { $on, $el }) => {
-		const orders = [
-			{
-				id: "#ORD-8832",
-				date: "18 Nov 2025",
-				total: "Rp 150.000",
-				items: "Nasi Goreng Spesial (2)",
-				status: "completed",
-				label: "Selesai",
-			},
-			{
-				id: "#ORD-8833",
-				date: "17 Nov 2025",
-				total: "Rp 75.000",
-				items: "Ayam Bakar Madu (1)",
-				status: "pending",
-				label: "Menunggu Bayar",
-			},
-			{
-				id: "#ORD-8834",
-				date: "10 Nov 2025",
-				total: "Rp 300.000",
-				items: "Paket Keluarga A",
-				status: "cancelled",
-				label: "Dibatalkan",
-			},
-		];
+	import { getToken } from "./../js/auth.js"; // sesuaikan path seperti login kamu
 
-		function renderOrders(filter = "all") {
-			const container = $el.querySelector("#order-list-container");
-			if (!container) return;
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
 
-			const data =
-				filter === "all" ? orders : orders.filter((o) => o.status === filter);
+		let orders = [];
+		let activeFilter = "all";
 
-			container.innerHTML = data
-				.map(
-					(o) => `
-      <div class="card">
-        <div class="card-header">
-          <b>${o.id}</b>
-          <span>${o.date}</span>
-        </div>
-        <div class="card-content card-content-padding">
-          <div>${o.items}</div>
-          <div class="text-bold margin-top">${o.total}</div>
-        </div>
-        <div class="card-footer">
-          <span class="badge color-${
-						o.status === "completed"
-							? "green"
-							: o.status === "pending"
-							? "orange"
-							: "red"
-					}">
-            ${o.label}
-          </span>
-        </div>
-      </div>
-    `
-				)
-				.join("");
+		const formatRupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+		function formatDate(dt) {
+			try {
+				const d = new Date(dt);
+				return d.toLocaleDateString("id-ID", {
+					day: "2-digit",
+					month: "short",
+					year: "numeric",
+				});
+			} catch {
+				return "-";
+			}
 		}
 
-		$on("pageInit", () => {
-			renderOrders();
+		function statusToUi(status) {
+			if (status === "done") return "completed";
+			if (status === "cancelled") return "cancelled";
+			return "pending"; // new / process
+		}
 
-			$el.querySelectorAll("[data-filter]").forEach((btn) => {
-				btn.addEventListener("click", (e) => {
-					e.preventDefault();
-					renderOrders(btn.dataset.filter);
-				});
+		function labelStatus(o) {
+			// PRIORITAS: status pembayaran dulu
+			if (o.payment_status === "paid") {
+				// kalau sudah paid, tampilkan status pesanan
+				if (o.status === "done") return "Selesai";
+				if (o.status === "process") return "Diproses";
+				if (o.status === "cancelled") return "Dibatalkan";
+				return "Menunggu Diproses"; // status new tapi sudah paid
+			}
+
+			if (o.payment_status === "waiting_confirmation")
+				return "Menunggu Konfirmasi";
+			if (o.payment_status === "rejected") return "Bukti Ditolak";
+			return "Belum Bayar"; // unpaid
+		}
+
+		function badgeColor(o) {
+			if (o.payment_status === "paid") {
+				if (o.status === "done") return "green";
+				if (o.status === "process") return "orange";
+				if (o.status === "cancelled") return "red";
+				return "blue";
+			}
+
+			if (o.payment_status === "waiting_confirmation") return "orange";
+			if (o.payment_status === "rejected") return "red";
+			return "blue";
+		}
+
+		function canPay(o) {
+			// hanya bisa bayar kalau unpaid atau rejected (biar bisa upload ulang)
+			if (o.status === "cancelled" || o.status === "done") return false;
+			return o.payment_status === "unpaid" || o.payment_status === "rejected";
+		}
+
+		function detailLink(o) {
+			// kalau masih bisa bayar -> ke payment
+			if (canPay(o)) return `/payment/${o.id}`;
+			// selain itu -> detail order biasa
+			return `/riwayat-transaksi/${o.id}`;
+		}
+
+		function itemsSummary(items) {
+			if (!Array.isArray(items) || items.length === 0) return "—";
+			return items
+				.map((it) => `${it.menu_name || "Menu"} (${it.qty || 0})`)
+				.join(", ");
+		}
+
+		async function fetchMyOrders() {
+			const token = getToken();
+			if (!token) throw new Error("Silakan login dulu");
+
+			const res = await fetch(`${API_BASE}/my/orders`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
 			});
+
+			const data = await res.json().catch(() => []);
+			if (!res.ok) throw new Error(data?.message || "Gagal ambil riwayat");
+			return data;
+		}
+
+		function renderOrders(list) {
+			const $container = $("#order-list-container");
+			const $empty = $("#empty-state");
+
+			if (!list || list.length === 0) {
+				$container.html("");
+				$empty.show();
+				return;
+			}
+
+			$empty.hide();
+
+			const html = list
+				.map((o) => {
+					const title = `#ORD-${o.id}`;
+					const date = formatDate(o.created_at);
+					const total = formatRupiah(o.grand_total);
+					const items = itemsSummary(o.items);
+					const tenantName = o.tenant?.name || "Kantin";
+					const isUnpaid = o.status === "new"; // atau logika kamu sendiri
+					const payable = canPay(o);
+					const detailHref = detailLink(o);
+
+					return `
+						<div class="card">
+							<div class="card-header">
+								<b>${title}</b>
+								<span>${date}</span>
+							</div>
+
+							<div class="card-content card-content-padding">
+								<div style="color:#8e8e93;font-size:12px;margin-bottom:6px;">
+									${tenantName}
+								</div>
+								<div>${items}</div>
+								<div class="text-bold margin-top">${total}</div>
+							</div>
+
+							<div class="card-footer">
+								<span class="badge color-${badgeColor(o)}">
+									${labelStatus(o)}
+								</span>
+
+								<a class="link" href="${detailHref}">
+									${payable ? "Bayar" : "Detail"}
+								</a>
+							</div>
+						</div>
+					`;
+				})
+				.join("");
+
+			$container.html(html);
+		}
+
+		function applyFilter() {
+			const list =
+				activeFilter === "all"
+					? orders
+					: orders.filter((o) => statusToUi(o.status) === activeFilter);
+
+			renderOrders(list);
+		}
+
+		$on("pageInit", async () => {
+			try {
+				// bind filter buttons
+				$("[data-filter]").on("click", function (e) {
+					e.preventDefault();
+
+					// active class segmented
+					$("[data-filter]").removeClass("button-active");
+					$(this).addClass("button-active");
+
+					activeFilter = $(this).attr("data-filter");
+					applyFilter();
+				});
+
+				$f7.dialog.preloader("Memuat riwayat...");
+				orders = await fetchMyOrders();
+				$f7.dialog.close();
+
+				applyFilter();
+			} catch (err) {
+				$f7.dialog.close();
+				console.log(err);
+				$f7.dialog.alert(String(err.message || err), "Error");
+			}
 		});
 
-		return $render; // ⬅️ WAJIB & SEKARANG VALID
+		return $render;
 	};
 </script>

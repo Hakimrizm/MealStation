@@ -34,109 +34,154 @@
 	</div>
 </template>
 
-
 <style>
 	:root {
 		--primary: #ff9800;
-		--text: #333;
-		--muted: #777;
+		--text: #1a1a1a;
+		--muted: #8e8e93;
 		--bg: #f5f5f5;
+		--card: #ffffff;
+		--line: rgba(0, 0, 0, 0.06);
 	}
 
+	/* PAGE */
 	.cart-page {
 		background: var(--bg);
-		padding-bottom: 140px;
+		padding-bottom: calc(160px + env(safe-area-inset-bottom));
+		padding-bottom: calc(160px + constant(safe-area-inset-bottom));
 	}
 
-	/* CART ITEM */
+	/* CARD */
 	.cart-item {
 		display: flex;
-		background: #fff;
-		margin: 10px;
-		border-radius: 12px;
-		overflow: hidden;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+		gap: 12px;
+		align-items: stretch;
+		background: var(--card);
+		margin: 10px 12px;
+		border-radius: 16px;
+		padding: 10px;
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+		border: 1px solid var(--line);
 	}
 
+	/* IMAGE */
 	.cart-item img {
-		width: 90px;
-		height: 90px;
+		width: 76px;
+		height: 76px;
+		border-radius: 14px;
 		object-fit: cover;
+		flex: 0 0 76px;
 	}
 
+	/* INFO WRAP */
 	.cart-info {
 		flex: 1;
-		padding: 10px;
+		min-width: 0;
 		position: relative;
+		padding-right: 34px; /* ruang buat tombol X */
 	}
 
+	/* TITLE */
 	.cart-info h3 {
 		font-size: 15px;
-		margin-bottom: 4px;
+		line-height: 1.2;
+		margin: 2px 0 6px;
+		font-weight: 800;
+		color: var(--text);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
+	/* NOTE */
 	.note {
 		font-size: 12px;
 		color: var(--muted);
-		margin-bottom: 8px;
+		margin: 0 0 10px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
+	/* BOTTOM ROW */
 	.cart-bottom {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
 	}
 
+	/* PRICE */
 	.price {
-		font-weight: bold;
+		font-weight: 900;
 		font-size: 14px;
+		color: var(--text);
 	}
 
-	/* QTY */
+	/* QTY MODERN */
 	.qty {
-		display: flex;
-		border: 1px solid #ddd;
-		border-radius: 8px;
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid var(--line);
+		background: #f7f7f9;
+		border-radius: 12px;
 		overflow: hidden;
+		height: 34px;
 	}
 
 	.qty button {
-		width: 28px;
-		height: 28px;
+		width: 36px;
+		height: 34px;
 		border: none;
-		background: #f2f2f2;
-		font-size: 16px;
+		background: transparent;
+		font-size: 18px;
+		font-weight: 800;
+		color: var(--text);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
 	}
 
-	.qty span {
-		width: 28px;
-		text-align: center;
-		font-weight: bold;
+	.qty button:active {
+		transform: scale(0.96);
+	}
+
+	.qty-value {
+		width: 34px;
+		height: 34px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 900;
 		font-size: 13px;
+		color: var(--text);
+		border-left: 1px solid var(--line);
+		border-right: 1px solid var(--line);
+		background: #fff;
 	}
 
-	/* REMOVE */
-	.btn-remove {
+	/* REMOVE TOP */
+	.btn-remove-top {
 		position: absolute;
-		right: 10px;
-		bottom: 10px;
-		background: none;
-		border: none;
-		color: #e53935;
-		font-size: 12px;
+		top: 0;
+		right: 0;
+		width: 30px;
+		height: 30px;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		background: #fff;
+		color: #ff3b30;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 16px;
+		cursor: pointer;
+		box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
 	}
 
-	/* EMPTY */
-	.empty-cart {
-		text-align: center;
-		margin-top: 80px;
-		color: var(--muted);
-		display: none;
-	}
-
-	.empty-cart i {
-		font-size: 40px;
-		margin-bottom: 10px;
+	.btn-remove-top:active {
+		transform: scale(0.96);
 	}
 
 	/* FOOTER */
@@ -145,16 +190,28 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
-		background: #fff;
-		padding: 12px;
-		box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+		background: rgba(255, 255, 255, 0.92);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+		padding: 12px 12px calc(12px + constant(safe-area-inset-bottom));
+		box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.08);
+		z-index: 1000;
+		border-top: 1px solid var(--line);
 	}
 
 	.total {
 		display: flex;
 		justify-content: space-between;
-		font-size: 14px;
+		font-size: 13px;
+		color: var(--muted);
 		margin-bottom: 10px;
+	}
+
+	.total strong {
+		font-size: 15px;
+		color: var(--text);
+		font-weight: 900;
 	}
 
 	.btn-checkout {
@@ -162,122 +219,240 @@
 		background: var(--primary);
 		color: #fff;
 		border: none;
-		border-radius: 10px;
+		border-radius: 14px;
 		padding: 12px;
 		font-size: 15px;
+		font-weight: 800;
 	}
 </style>
-<script>
-	export default (props, { $on }) => {
-		$on("pageInit", () => {
-			let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+<script>
+	import { getToken } from "../js/auth.js";
+
+	export default (props, { $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+		const STORAGE_BASE = "http://localhost:8000/storage/";
+
+		let cart = [];
+
+		const imgUrl = (p) => {
+			if (!p) return "icons/placeholder-food.png";
+			if (String(p).startsWith("http")) return p;
+			return STORAGE_BASE + p;
+		};
+
+		const formatRupiah = (num) =>
+			"Rp " + Number(num || 0).toLocaleString("id-ID");
+
+		function loadCart() {
+			cart = JSON.parse(localStorage.getItem("cart")) || [];
+		}
+
+		function saveCart() {
+			localStorage.setItem("cart", JSON.stringify(cart));
+		}
+
+		function recalculateItem(i) {
+			cart[i].total = Number(cart[i].price || 0) * Number(cart[i].qty || 1);
+		}
+
+		function calculateGrandTotal() {
+			return cart.reduce((sum, it) => sum + Number(it.total || 0), 0);
+		}
+
+		function updateGrandTotal() {
+			const grandTotalEl = document.getElementById("grandTotal");
+			if (!grandTotalEl) return;
+			grandTotalEl.textContent = formatRupiah(calculateGrandTotal());
+		}
+
+		function updateRow(index) {
+			const row = document.querySelector(`.cart-item[data-index="${index}"]`);
+			if (!row) return;
+
+			const qtyEl = row.querySelector(".qty-value");
+			if (qtyEl) qtyEl.textContent = cart[index].qty;
+
+			const priceEl = row.querySelector(".price");
+			if (priceEl) priceEl.textContent = formatRupiah(cart[index].total);
+		}
+
+		function renderCart() {
 			const cartList = document.getElementById("cartList");
 			const emptyCart = document.getElementById("emptyCart");
 			const grandTotalEl = document.getElementById("grandTotal");
 
-			function formatRupiah(num) {
-				return "Rp " + num.toLocaleString("id-ID");
+			if (!cartList || !emptyCart || !grandTotalEl) return;
+
+			if (!cart.length) {
+				cartList.innerHTML = "";
+				emptyCart.style.display = "block";
+				grandTotalEl.textContent = "Rp 0";
+				return;
 			}
 
-			function renderCart() {
-				if (!cart.length) {
-					cartList.innerHTML = "";
-					emptyCart.style.display = "block";
-					grandTotalEl.textContent = "Rp 0";
-					return;
-				}
+			emptyCart.style.display = "none";
 
-				emptyCart.style.display = "none";
-				cartList.innerHTML = "";
-
-				let grandTotal = 0;
-
-				cart.forEach((item, index) => {
-					const extrasText = item.extras.length
-						? item.extras.map((e) => `+ ${e.name}`).join(", ")
-						: "Tanpa tambahan";
-
-					grandTotal += item.total;
-
-					cartList.innerHTML += `
-						<div class="cart-item">
-							<img src="${item.image}" />
+			cartList.innerHTML = cart
+				.map(
+					(item, index) => `
+						<div class="cart-item" data-index="${index}">
+							<img src="${imgUrl(item.image)}" />
 
 							<div class="cart-info">
-								<h3>${item.name}</h3>
-								<p class="note">${extrasText}</p>
+								<button
+									type="button"
+									class="btn-remove-top"
+									data-action="remove"
+									data-index="${index}"
+									aria-label="Hapus"
+								>
+									<i class="fas fa-times"></i>
+								</button>
+
+								<h3>${item.name || "-"}</h3>
+								<p class="note">${item.notes ? item.notes : "Tanpa catatan"}</p>
 
 								<div class="cart-bottom">
 									<span class="price">${formatRupiah(item.total)}</span>
 
 									<div class="qty">
-										<button class="btn-minus" data-index="${index}">-</button>
+										<button type="button" data-action="minus" data-index="${index}">-</button>
 										<span class="qty-value">${item.qty}</span>
-										<button class="btn-plus" data-index="${index}">+</button>
+										<button type="button" data-action="plus" data-index="${index}">+</button>
 									</div>
 								</div>
-
-								<button class="btn-remove" data-index="${index}">
-									Hapus
-								</button>
 							</div>
 						</div>
-					`;
-				});
+				`
+				)
+				.join("");
 
-				grandTotalEl.textContent = formatRupiah(grandTotal);
+			updateGrandTotal();
+		}
 
-				bindEvents();
+		async function checkout() {
+			const token = getToken();
+			if (!token) throw new Error("Silakan login dulu");
+
+			const tenantIds = [
+				...new Set(cart.map((it) => it.vendor_id).filter(Boolean)),
+			];
+			if (tenantIds.length > 1) {
+				throw new Error("Checkout hanya bisa 1 tenant per transaksi");
 			}
 
-			function bindEvents() {
-				document.querySelectorAll(".btn-plus").forEach((btn) => {
-					btn.onclick = () => {
-						const i = btn.dataset.index;
-						cart[i].qty++;
+			const payload = {
+				items: cart.map((it) => ({
+					menu_id: it.menu_id,
+					qty: it.qty,
+					notes: it.notes || null,
+				})),
+			};
+
+			const res = await fetch(`${API_BASE}/checkout`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(payload),
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) throw new Error(data?.message || "Checkout gagal");
+			return data;
+		}
+
+		// ✅ EVENT DELEGATION: 1 listener untuk semua tombol + - hapus
+		function attachCartEvents() {
+			const cartList = document.getElementById("cartList");
+			if (!cartList) return;
+
+			cartList.addEventListener("click", (e) => {
+				const btn = e.target.closest("button");
+				if (!btn) return;
+
+				const action = btn.dataset.action;
+				const i = Number(btn.dataset.index);
+
+				if (Number.isNaN(i) || !action) return;
+				if (!cart[i]) return;
+
+				if (action === "plus") {
+					cart[i].qty = Number(cart[i].qty || 1) + 1;
+					recalculateItem(i);
+					saveCart();
+
+					// update UI tanpa render ulang
+					updateRow(i);
+					updateGrandTotal();
+					return;
+				}
+
+				if (action === "minus") {
+					if (Number(cart[i].qty || 1) > 1) {
+						cart[i].qty = Number(cart[i].qty || 1) - 1;
 						recalculateItem(i);
-					};
-				});
-
-				document.querySelectorAll(".btn-minus").forEach((btn) => {
-					btn.onclick = () => {
-						const i = btn.dataset.index;
-						if (cart[i].qty > 1) {
-							cart[i].qty--;
-							recalculateItem(i);
-						}
-					};
-				});
-
-				document.querySelectorAll(".btn-remove").forEach((btn) => {
-					btn.onclick = () => {
-						const i = btn.dataset.index;
-						cart.splice(i, 1);
 						saveCart();
-						renderCart();
-					};
-				});
-			}
 
-			function recalculateItem(index) {
-				const extrasTotal = cart[index].extras.reduce(
-					(sum, e) => sum + e.price,
-					0
-				);
+						updateRow(i);
+						updateGrandTotal();
+					}
+					return;
+				}
 
-				cart[index].total =
-					(cart[index].price + extrasTotal) * cart[index].qty;
+				if (action === "remove") {
+					cart.splice(i, 1);
+					saveCart();
+					renderCart(); // remove perlu render ulang biar index rapih
+					return;
+				}
+			});
+		}
 
-				saveCart();
-				renderCart();
-			}
+		$on("pageInit", () => {
+			loadCart();
 
-			function saveCart() {
-				localStorage.setItem("cart", JSON.stringify(cart));
-			}
+			// pastikan total sudah benar
+			cart.forEach((_, i) => recalculateItem(i));
+			saveCart();
 
 			renderCart();
+			attachCartEvents();
+
+			// checkout
+			const checkoutBtn = document.querySelector(".btn-checkout");
+			if (checkoutBtn) {
+				checkoutBtn.onclick = () => {
+					if (!cart.length) return $f7.dialog.alert("Keranjang masih kosong");
+
+					$f7.dialog.confirm(
+						"Yakin mau checkout sekarang?",
+						"Konfirmasi",
+						async () => {
+							try {
+								$f7.dialog.preloader("Memproses...");
+								await checkout();
+								$f7.dialog.close();
+
+								localStorage.removeItem("cart");
+								cart = [];
+								renderCart();
+
+								$f7.toast
+									.create({ text: "Checkout berhasil!", closeTimeout: 2000 })
+									.open();
+								$f7.views.main.router.navigate("/riwayat-transaksi");
+							} catch (err) {
+								$f7.dialog.close();
+								$f7.dialog.alert(String(err.message || err), "Error");
+							}
+						}
+					);
+				};
+			}
 		});
 
 		return $render;

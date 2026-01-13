@@ -7,6 +7,11 @@ import RiwayatTransaksiPage from "../pages/riwayat-transaksi.f7";
 import TenantPage from "../pages/tenant.f7";
 import orderDetailPage from "../pages/order-detail.f7";
 import keranjangPage from "../pages/keranjang.f7";
+import TenantMenus from "../pages/menuTenant/tenant-menus.f7";
+import TenantMenuCreate from "../pages/menuTenant/tenant-menu-create.f7";
+import TenantMenuEdit from "../pages/menuTenant/tenant-menu-edit.f7";
+import PaymentPage from "../pages/payment.f7";
+import RiwayatDetailTransaksiPage from "../pages/riwayat-detail-transaksi.f7";
 
 import DynamicRoutePage from "../pages/dynamic-route.f7";
 import RequestAndLoad from "../pages/request-and-load.f7";
@@ -84,15 +89,23 @@ var routes = [
 	},
 
 	{
+		path: "/riwayat-transaksi/:id",
+		component: RiwayatDetailTransaksiPage,
+		beforeEnter: authWithRole,
+	},
+
+	{
 		path: "/profile",
 		component: ProfilePage,
 		beforeEnter: authWithRole,
 	},
+
 	{
-		path: "/order-detail",
+		path: "/order-detail/:id/",
 		component: orderDetailPage,
 		beforeEnter: authWithRole,
 	},
+
 	{
 		path: "/keranjang",
 		component: keranjangPage,
@@ -100,8 +113,32 @@ var routes = [
 	},
 
 	{
+		path: "/payment/:id",
+		component: PaymentPage,
+		beforeEnter: authWithRole,
+	},
+
+	{
 		path: "/tenant",
 		component: TenantPage,
+		beforeEnter: authWithRole,
+	},
+
+	{
+		path: "/tenant/menus",
+		component: TenantMenus,
+		beforeEnter: authWithRole,
+	},
+
+	{
+		path: "/tenant/menu/create",
+		component: TenantMenuCreate,
+		beforeEnter: authWithRole,
+	},
+
+	{
+		path: "/tenant/menu/:id/edit",
+		component: TenantMenuEdit,
 		beforeEnter: authWithRole,
 	},
 

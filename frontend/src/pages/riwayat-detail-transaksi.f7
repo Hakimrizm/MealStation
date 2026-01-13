@@ -1,0 +1,649 @@
+<template>
+	<div class="page" data-name="riwayat-transaksi-detail">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="left">
+					<a class="link back">Kembali</a>
+				</div>
+				<div class="title">Detail Transaksi</div>
+			</div>
+		</div>
+
+		<div class="page-content">
+			<!-- skeleton/loading -->
+			<div id="loadingBox" class="block">
+				<div class="skeleton-card">
+					<div class="sk-row sk-title"></div>
+					<div class="sk-row"></div>
+					<div class="sk-row"></div>
+					<div class="sk-row sk-small"></div>
+				</div>
+			</div>
+
+			<!-- content -->
+			<div id="contentBox" style="display: none">
+				<!-- HERO SUMMARY -->
+				<div class="block">
+					<div class="hero">
+						<div class="hero-top">
+							<div>
+								<div class="hero-label">Invoice</div>
+								<div class="hero-id" id="invId">INV-</div>
+							</div>
+							<div class="badge" id="statusBadge">—</div>
+						</div>
+
+						<div class="hero-amount" id="grandTotal">Rp 0</div>
+						<div class="hero-meta">
+							<div class="meta-item">
+								<div class="meta-label">Tanggal</div>
+								<div class="meta-value" id="orderDate">-</div>
+							</div>
+							<div class="meta-dot"></div>
+							<div class="meta-item">
+								<div class="meta-label">Tenant</div>
+								<div class="meta-value" id="tenantName">Kantin</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- PAYMENT CARD -->
+				<div class="block-title">Pembayaran</div>
+				<div class="list media-list no-hairlines no-chevron payment-card">
+					<ul>
+						<li>
+							<div class="item-content">
+								<div class="item-media">
+									<div class="pay-icon" id="payIcon">💳</div>
+								</div>
+								<div class="item-inner">
+									<div class="item-title-row">
+										<div class="item-title" id="payMethod">-</div>
+										<div class="item-after" id="payStatusText">-</div>
+									</div>
+									<div class="item-subtitle" id="payHint">-</div>
+								</div>
+							</div>
+						</li>
+
+						<li id="proofRow" style="display: none">
+							<a class="item-link item-content" href="#" id="btnViewProof">
+								<div class="item-media">
+									<div class="pay-icon soft">🧾</div>
+								</div>
+								<div class="item-inner">
+									<div class="item-title">Lihat Bukti Pembayaran</div>
+									<div class="item-after">Buka</div>
+								</div>
+							</a>
+						</li>
+
+						<li id="paidAtRow" style="display: none">
+							<div class="item-content">
+								<div class="item-media">
+									<div class="pay-icon soft">✅</div>
+								</div>
+								<div class="item-inner">
+									<div class="item-title">Dibayar pada</div>
+									<div class="item-after" id="paidAtText">-</div>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<!-- ITEMS -->
+				<div class="block-title">Item Pesanan</div>
+				<div class="block">
+					<div id="itemsList" class="items"></div>
+				</div>
+
+				<!-- NOTES -->
+				<div id="notesWrap" style="display: none">
+					<div class="block-title">Catatan</div>
+					<div class="block">
+						<div class="notes" id="orderNotes"></div>
+					</div>
+				</div>
+
+				<!-- CTA -->
+				<div style="height: 90px"></div>
+			</div>
+		</div>
+
+		<!-- Floating CTA -->
+		<div class="cta-bar" id="ctaBar" style="display: none">
+			<div class="cta-left">
+				<div class="cta-label">Total</div>
+				<div class="cta-total" id="ctaTotal">Rp 0</div>
+			</div>
+			<a class="button button-fill cta-btn" id="ctaBtn" href="#">—</a>
+		</div>
+
+		<!-- Proof popup -->
+		<div class="popup popup-proof">
+			<div class="page">
+				<div class="navbar">
+					<div class="navbar-inner">
+						<div class="left"><a class="link popup-close">Tutup</a></div>
+						<div class="title">Bukti Pembayaran</div>
+					</div>
+				</div>
+				<div class="page-content" style="padding: 16px">
+					<img
+						id="proofImg"
+						style="width: 100%; border-radius: 18px; display: block"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import { getToken } from "./../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+		const STORAGE_BASE = "http://localhost:8000/storage/";
+
+		let orderId = null;
+		let order = null;
+
+		const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+		const formatDate = (dt) => {
+			try {
+				const d = new Date(dt);
+				return d.toLocaleDateString("id-ID", {
+					day: "2-digit",
+					month: "short",
+					year: "numeric",
+				});
+			} catch {
+				return "-";
+			}
+		};
+		const formatDateTime = (dt) => {
+			try {
+				const d = new Date(dt);
+				return d.toLocaleString("id-ID", {
+					day: "2-digit",
+					month: "short",
+					year: "numeric",
+					hour: "2-digit",
+					minute: "2-digit",
+				});
+			} catch {
+				return "-";
+			}
+		};
+
+		const proofUrl = (p) => {
+			if (!p) return "";
+			if (String(p).startsWith("http")) return p;
+			return STORAGE_BASE + p;
+		};
+
+		function badgeText(o) {
+			// payment first
+			if (o.payment_status === "paid") {
+				if (o.status === "done") return "Selesai";
+				if (o.status === "process") return "Diproses";
+				if (o.status === "cancelled") return "Dibatalkan";
+				return "Menunggu Diproses";
+			}
+			if (o.payment_status === "waiting_confirmation")
+				return "Menunggu Konfirmasi";
+			if (o.payment_status === "rejected") return "Bukti Ditolak";
+			return "Belum Bayar";
+		}
+
+		function badgeClass(o) {
+			if (o.payment_status === "paid") {
+				if (o.status === "done") return "badge-green";
+				if (o.status === "process") return "badge-orange";
+				if (o.status === "cancelled") return "badge-red";
+				return "badge-blue";
+			}
+			if (o.payment_status === "waiting_confirmation") return "badge-orange";
+			if (o.payment_status === "rejected") return "badge-red";
+			return "badge-blue";
+		}
+
+		function canPay(o) {
+			if (o.status === "done" || o.status === "cancelled") return false;
+			return o.payment_status === "unpaid" || o.payment_status === "rejected";
+		}
+
+		function payMethodLabel(o) {
+			if (!o.payment_method) return "Belum dipilih";
+			return o.payment_method === "qris" ? "QRIS" : "Tunai";
+		}
+
+		function payStatusLabel(o) {
+			if (o.payment_status === "paid") return "Paid";
+			if (o.payment_status === "waiting_confirmation") return "Waiting";
+			if (o.payment_status === "rejected") return "Rejected";
+			return "Unpaid";
+		}
+
+		function payHint(o) {
+			if (o.payment_status === "paid") return "Pembayaran sudah diterima.";
+			if (o.payment_status === "waiting_confirmation")
+				return "Bukti sudah dikirim. Menunggu tenant mengonfirmasi.";
+			if (o.payment_status === "rejected")
+				return "Bukti ditolak. Silakan bayar ulang.";
+			return "Belum ada pembayaran. Silakan lanjut ke halaman pembayaran.";
+		}
+
+		function payIcon(o) {
+			if (o.payment_method === "qris") return "📱";
+			if (o.payment_method === "cash") return "💵";
+			return "💳";
+		}
+
+		function renderItems(items) {
+			const $wrap = $("#itemsList");
+			if (!$wrap.length) return;
+
+			if (!Array.isArray(items) || !items.length) {
+				$wrap.html(`<div class="muted">Tidak ada item.</div>`);
+				return;
+			}
+
+			const html = items
+				.map((it) => {
+					const qty = Number(it.qty || 0);
+					const unit = Number(it.unit_price || 0);
+					const sub = Number(it.subtotal || unit * qty);
+					const note = it.notes
+						? `<div class="item-note">${it.notes}</div>`
+						: "";
+
+					return `
+          <div class="item-row">
+            <div class="item-main">
+              <div class="item-name">${it.menu_name || "Menu"}</div>
+              <div class="item-sub">${qty} x ${rupiah(unit)}</div>
+              ${note}
+            </div>
+            <div class="item-price">${rupiah(sub)}</div>
+          </div>
+        `;
+				})
+				.join("");
+
+			$wrap.html(html);
+		}
+
+		function renderOrder(o) {
+			$("#loadingBox").hide();
+			$("#contentBox").show();
+
+			$("#invId").text(`INV-${o.id}`);
+			$("#grandTotal").text(rupiah(o.grand_total));
+			$("#ctaTotal").text(rupiah(o.grand_total));
+			$("#orderDate").text(formatDate(o.created_at));
+			$("#tenantName").text(o.tenant?.name || "Kantin");
+
+			const badge = $("#statusBadge");
+			badge.text(badgeText(o));
+			badge.removeClass("badge-blue badge-green badge-red badge-orange");
+			badge.addClass(badgeClass(o));
+
+			$("#payIcon").text(payIcon(o));
+			$("#payMethod").text(payMethodLabel(o));
+			$("#payStatusText").text(payStatusLabel(o));
+			$("#payHint").text(payHint(o));
+
+			// proof
+			if (o.payment_method === "qris" && o.payment_proof) {
+				$("#proofRow").show();
+				$("#btnViewProof")
+					.off("click")
+					.on("click", (e) => {
+						e.preventDefault();
+						$("#proofImg").attr("src", proofUrl(o.payment_proof));
+						$f7.popup.open(".popup-proof");
+					});
+			} else {
+				$("#proofRow").hide();
+			}
+
+			// paid at
+			if (o.paid_at) {
+				$("#paidAtRow").show();
+				$("#paidAtText").text(formatDateTime(o.paid_at));
+			} else {
+				$("#paidAtRow").hide();
+			}
+
+			// notes
+			if (o.notes) {
+				$("#notesWrap").show();
+				$("#orderNotes").text(o.notes);
+			} else {
+				$("#notesWrap").hide();
+			}
+
+			renderItems(o.items);
+
+			// CTA
+			$("#ctaBar").show();
+			const btn = $("#ctaBtn");
+			btn.off("click");
+
+			if (canPay(o)) {
+				btn.text("Bayar Sekarang");
+				btn.removeClass("disabled");
+				btn.on("click", (e) => {
+					e.preventDefault();
+					$f7.views.main.router.navigate(`/payment/${o.id}/`, {
+						reloadCurrent: false,
+					});
+				});
+			} else if (o.payment_status === "waiting_confirmation") {
+				btn.text("Menunggu Konfirmasi");
+				btn.addClass("disabled");
+			} else {
+				btn.text("Lihat Riwayat");
+				btn.removeClass("disabled");
+				btn.on("click", (e) => {
+					e.preventDefault();
+					$f7.views.main.router.back();
+				});
+			}
+		}
+
+		async function fetchOrder() {
+			const token = getToken();
+			if (!token) throw new Error("Silakan login dulu");
+
+			const res = await fetch(`${API_BASE}/my/orders/${orderId}`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) throw new Error(data?.message || "Gagal ambil detail order");
+			return data;
+		}
+
+		$on("pageInit", async () => {
+			try {
+				orderId = props?.id || $f7?.route?.params?.id;
+				if (!orderId) throw new Error("Order ID tidak ditemukan");
+
+				$("#loadingBox").show();
+				$("#contentBox").hide();
+				$("#ctaBar").hide();
+
+				order = await fetchOrder();
+				renderOrder(order);
+			} catch (err) {
+				console.log(err);
+				$f7.dialog.alert(String(err.message || err), "Error");
+			}
+		});
+
+		return $render;
+	};
+</script>
+
+<style>
+	:root {
+		--f7-theme-color: #2563eb;
+	}
+
+	/* Skeleton */
+	.skeleton-card {
+		border-radius: 20px;
+		padding: 16px;
+		background: #fff;
+		box-shadow: 0 10px 24px rgba(2, 6, 23, 0.06);
+	}
+	.sk-row {
+		height: 12px;
+		border-radius: 10px;
+		background: #eef2f7;
+		margin-bottom: 10px;
+	}
+	.sk-title {
+		height: 18px;
+		width: 65%;
+	}
+	.sk-small {
+		width: 45%;
+	}
+
+	/* Hero */
+	.hero {
+		background: linear-gradient(
+			135deg,
+			rgba(37, 99, 235, 0.1),
+			rgba(255, 126, 51, 0.1)
+		);
+		border: 1px solid rgba(2, 6, 23, 0.06);
+		border-radius: 24px;
+		padding: 16px;
+	}
+	.hero-top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 12px;
+		margin-bottom: 10px;
+	}
+	.hero-label {
+		font-size: 12px;
+		color: #64748b;
+		font-weight: 700;
+	}
+	.hero-id {
+		font-size: 16px;
+		font-weight: 900;
+		color: #0f172a;
+		letter-spacing: 0.2px;
+	}
+	.hero-amount {
+		font-size: 34px;
+		font-weight: 900;
+		color: #0f172a;
+		margin-top: 6px;
+	}
+	.hero-meta {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 10px;
+		color: #64748b;
+		font-weight: 700;
+		font-size: 12px;
+	}
+	.meta-item .meta-label {
+		font-weight: 800;
+		color: #94a3b8;
+		font-size: 11px;
+	}
+	.meta-item .meta-value {
+		color: #334155;
+		font-weight: 900;
+		font-size: 12px;
+	}
+	.meta-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #cbd5e1;
+	}
+
+	/* Badge */
+	.badge {
+		padding: 8px 12px;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 900;
+		border: 1px solid rgba(2, 6, 23, 0.06);
+		background: #fff;
+		color: #0f172a;
+		white-space: nowrap;
+	}
+	.badge-blue {
+		background: #eff6ff;
+		color: #1d4ed8;
+		border-color: rgba(29, 78, 216, 0.15);
+	}
+	.badge-orange {
+		background: #fff7ed;
+		color: #c2410c;
+		border-color: rgba(194, 65, 12, 0.15);
+	}
+	.badge-green {
+		background: #ecfdf5;
+		color: #047857;
+		border-color: rgba(4, 120, 87, 0.15);
+	}
+	.badge-red {
+		background: #fef2f2;
+		color: #b91c1c;
+		border-color: rgba(185, 28, 28, 0.15);
+	}
+
+	/* Payment card */
+	.payment-card {
+		border-radius: 20px;
+		overflow: hidden;
+		box-shadow: 0 10px 24px rgba(2, 6, 23, 0.06);
+		border: 1px solid rgba(2, 6, 23, 0.06);
+		margin: 0 16px 16px !important;
+		background: #fff;
+	}
+	.pay-icon {
+		width: 44px;
+		height: 44px;
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #eff6ff;
+		color: #1d4ed8;
+		font-size: 20px;
+		font-weight: 900;
+	}
+	.pay-icon.soft {
+		background: #f1f5f9;
+		color: #0f172a;
+	}
+
+	/* Items */
+	.items {
+		background: #fff;
+		border-radius: 20px;
+		border: 1px solid rgba(2, 6, 23, 0.06);
+		box-shadow: 0 10px 24px rgba(2, 6, 23, 0.06);
+		padding: 8px 14px;
+	}
+	.item-row {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 12px 0;
+		border-bottom: 1px solid #f1f5f9;
+	}
+	.item-row:last-child {
+		border-bottom: none;
+	}
+	.item-name {
+		font-weight: 900;
+		color: #0f172a;
+		font-size: 14px;
+	}
+	.item-sub {
+		color: #64748b;
+		font-weight: 800;
+		font-size: 12px;
+		margin-top: 3px;
+	}
+	.item-note {
+		margin-top: 6px;
+		font-size: 12px;
+		color: #475569;
+		font-weight: 700;
+		background: #f8fafc;
+		padding: 8px 10px;
+		border-radius: 12px;
+	}
+	.item-price {
+		font-weight: 900;
+		color: #0f172a;
+		white-space: nowrap;
+		font-size: 13px;
+	}
+
+	/* Notes */
+	.notes {
+		background: #fff;
+		border-radius: 18px;
+		border: 1px solid rgba(2, 6, 23, 0.06);
+		box-shadow: 0 10px 24px rgba(2, 6, 23, 0.06);
+		padding: 14px 14px;
+		color: #334155;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	/* CTA bar */
+	.cta-bar {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(16px);
+		border-top: 1px solid #eef2f7;
+		z-index: 500;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.cta-left {
+		display: flex;
+		flex-direction: column;
+	}
+	.cta-label {
+		font-size: 11px;
+		color: #94a3b8;
+		font-weight: 900;
+	}
+	.cta-total {
+		font-size: 16px;
+		color: #0f172a;
+		font-weight: 900;
+	}
+	.cta-btn {
+		min-width: 160px;
+		height: 54px;
+		border-radius: 18px !important;
+		font-weight: 900 !important;
+		text-transform: none !important;
+		background: #ff7e33 !important;
+		box-shadow: 0 12px 22px rgba(255, 126, 51, 0.22) !important;
+	}
+	.cta-btn.disabled {
+		opacity: 0.55;
+		pointer-events: none;
+		background: #cbd5e1 !important;
+		box-shadow: none !important;
+	}
+
+	.muted {
+		color: #94a3b8;
+		font-weight: 800;
+		padding: 10px 0;
+	}
+</style>

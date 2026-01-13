@@ -16,69 +16,51 @@
 		<div class="page-content order-detail-page">
 			<!-- IMAGE -->
 			<div class="order-image">
-				<img src="menus/nasi.jpeg" />
+				<img id="menuImage" src="icons/placeholder-food.png" />
 			</div>
 
 			<!-- INFO -->
 			<div class="order-info">
-				<h2>
-					Nasi Goreng Spesial <span class="hot">🔥</span>
+				<h2 id="menuName">
+					-
+					<span id="hotBadge" class="hot" style="display: none">🔥</span>
 				</h2>
-				<p class="vendor">Warung Ibu Budi</p>
+
+				<p class="vendor" id="menuVendor">Kantin LPKIA</p>
 
 				<div class="rating">
-					<i class="fas fa-star"></i> 4.7 <span>(254)</span>
+					<i class="fas fa-star"></i>
+					<span id="menuRating">0.0</span>
 				</div>
 
-				<div class="price">Rp 18.000</div>
+				<div class="price" id="menuPrice">Rp 0</div>
 			</div>
 
-			<!-- OPTIONS -->
-			<div class="order-options">
-				<h3>Opsi Tambahan</h3>
-
-				<label class="option-item">
-					<input type="radio" name="pedas" checked />
-					<span>Tidak Pedas</span>
-				</label>
-
-				<label class="option-item">
-					<input type="radio" name="pedas" />
-					<span>Pedas Sedang <small>(Rekomendasi)</small></span>
-				</label>
-
-				<label class="option-item checkbox">
-					<input type="checkbox" class="extra" data-price="4000" />
-					<span>Tambah Telur Mata Sapi</span>
-					<strong>+ Rp 4.000</strong>
-				</label>
-          
-				<label class="option-item checkbox">
-					<input type="checkbox" class="extra" data-price="8000" />
-					<span>Tambah Sate Ayam</span>
-					<strong>+ Rp 8.000</strong>
-				</label>
+			<!-- INPUT CATATAN -->
+			<div class="order-notes">
+				<h3>Catatan untuk penjual</h3>
+				<textarea
+					id="notes"
+					placeholder="Contoh: jangan pakai sambal, tanpa bawang, dll."
+				></textarea>
 			</div>
 
-            <div class="qty">
-				<button class="btn-minus">-</button>
-				<span class="qty-value">1</span>
-				<button class="btn-plus">+</button>
+			<!-- QTY -->
+			<div class="order-footer">
+				<div class="qty">
+					<button class="btn-minus">-</button>
+					<span class="qty-value">1</span>
+					<button class="btn-plus">+</button>
+				</div>
+
+				<button class="add-cart" id="btnAddCart">
+					Tambahkan ke Keranjang
+					<span>Total: <b id="totalPrice">Rp 0</b></span>
+				</button>
 			</div>
-
-			<button class="add-cart">
-				Tambahkan ke Keranjang
-				<span>Total: <b id="totalPrice">Rp 18.000</b></span>
-			</button>
-		</div>
-
-		<!-- FOOTER -->
-		<div class="order-footer">
-			
 		</div>
 	</div>
 </template>
-
 
 <style>
 	:root {
@@ -100,7 +82,7 @@
 	}
 
 	.order-info,
-	.order-options {
+	.order-notes {
 		background: #fff;
 		padding: 15px;
 		margin-bottom: 10px;
@@ -127,28 +109,21 @@
 		font-weight: bold;
 	}
 
-	.order-options h3 {
+	.order-notes h3 {
 		font-size: 15px;
 		margin-bottom: 10px;
 	}
 
-	.option-item {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 10px 0;
-		border-bottom: 1px solid #eee;
+	.order-notes textarea {
+		width: 100%;
+		min-height: 90px;
+		border: 1px solid #eee;
+		border-radius: 10px;
+		padding: 10px;
+		outline: none;
+		resize: none;
 		font-size: 14px;
-	}
-
-	.option-item span small {
-		color: var(--primary);
-		font-size: 11px;
-	}
-
-	.option-item strong {
-		color: var(--primary);
-		font-size: 13px;
+		box-sizing: border-box;
 	}
 
 	.order-footer {
@@ -160,6 +135,7 @@
 		display: flex;
 		align-items: center;
 		padding: 10px;
+		gap: 10px;
 		box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
 	}
 
@@ -168,20 +144,21 @@
 		border: 1px solid #ddd;
 		border-radius: 8px;
 		overflow: hidden;
-		margin-right: 10px;
 	}
 
 	.qty button {
-		width: 32px;
-		height: 32px;
+		width: 34px;
+		height: 36px;
 		border: none;
 		background: #f2f2f2;
 		font-size: 18px;
 	}
 
 	.qty span {
-		width: 30px;
-		text-align: center;
+		width: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		font-weight: bold;
 	}
 
@@ -199,80 +176,128 @@
 	}
 </style>
 
-
 <script>
-	export default (props, { $on }) => {
-	$on("pageInit", () => {
-		const basePrice = 18000;
+	import { getToken } from "../js/auth.js"; // sesuaikan path jika file kamu beda lokasi
+
+	export default (props, { $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+		const STORAGE_BASE = "http://localhost:8000/storage/";
+
+		const menuId = props?.id || $f7?.route?.params?.id;
+
+		let menu = null;
+		let basePrice = 0;
 		let qty = 1;
 
-		const extras = document.querySelectorAll(".extra");
-		const qtyValue = document.querySelector(".qty-value");
-		const totalPriceEl = document.getElementById("totalPrice");
-		const btnAddCart = document.getElementById("btnAddCart");
-
 		function formatRupiah(num) {
-			return "Rp " + num.toLocaleString("id-ID");
+			return "Rp " + Number(num || 0).toLocaleString("id-ID");
+		}
+
+		function imageUrl(imgPath) {
+			if (!imgPath) return "icons/placeholder-food.png";
+			if (String(imgPath).startsWith("http")) return imgPath;
+			return STORAGE_BASE + imgPath;
+		}
+
+		async function fetchMenuDetail() {
+			const token = getToken(); // kalau endpoint detail butuh auth
+			const res = await fetch(`${API_BASE}/menus/${menuId}`, {
+				headers: {
+					Accept: "application/json",
+					...(token ? { Authorization: `Bearer ${token}` } : {}),
+				},
+			});
+
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok) throw new Error(data?.message || "Gagal ambil detail menu");
+			return data;
+		}
+
+		function renderMenu(m) {
+			document.getElementById("menuImage").src = imageUrl(m.image);
+			document.getElementById("menuName").childNodes[0].textContent =
+				(m.name || "-") + " ";
+			document.getElementById("menuPrice").textContent = formatRupiah(m.price);
+			document.getElementById("menuRating").textContent = m.rating
+				? Number(m.rating).toFixed(1)
+				: "0.0";
+			document.getElementById("hotBadge").style.display = m.is_hot
+				? "inline"
+				: "none";
+
+			const vendor = m?.tenant?.name || "Kantin LPKIA";
+			document.getElementById("menuVendor").textContent = vendor;
+
+			basePrice = Number(m.price || 0);
 		}
 
 		function calculateTotal() {
-			let extraTotal = 0;
-			let selectedExtras = [];
-
-			extras.forEach((item) => {
-				if (item.checked) {
-					const price = parseInt(item.dataset.price);
-					extraTotal += price;
-					selectedExtras.push({
-						name: item.nextElementSibling.textContent,
-						price,
-					});
-				}
-			});
-
-			const total = (basePrice + extraTotal) * qty;
-			totalPriceEl.textContent = formatRupiah(total);
-
-			return { total, selectedExtras };
+			const total = basePrice * qty;
+			document.getElementById("totalPrice").textContent = formatRupiah(total);
+			return total;
 		}
 
-		document.querySelector(".btn-plus").onclick = () => {
-			qty++;
-			qtyValue.textContent = qty;
-			calculateTotal();
-		};
+		function bindUi() {
+			const qtyValue = document.querySelector(".qty-value");
 
-		document.querySelector(".btn-minus").onclick = () => {
-			if (qty > 1) {
-				qty--;
+			document.querySelector(".btn-plus").onclick = () => {
+				qty++;
 				qtyValue.textContent = qty;
 				calculateTotal();
+			};
+
+			document.querySelector(".btn-minus").onclick = () => {
+				if (qty > 1) {
+					qty--;
+					qtyValue.textContent = qty;
+					calculateTotal();
+				}
+			};
+
+			document.getElementById("btnAddCart").onclick = () => {
+				if (!menu) return;
+
+				const notes = document.getElementById("notes")?.value || "";
+				const total = calculateTotal();
+
+				const cart = JSON.parse(localStorage.getItem("cart")) || [];
+				cart.push({
+					cart_id: Date.now(),
+					menu_id: menu.id,
+					name: menu.name,
+					price: basePrice,
+					qty,
+					notes,
+					total,
+					image: menu.image, // simpan path asli
+					vendor: menu?.tenant?.name || "Kantin LPKIA",
+				});
+
+				localStorage.setItem("cart", JSON.stringify(cart));
+
+				// sesuaikan route keranjang kamu:
+				$f7.views.main.router.navigate("/keranjang");
+			};
+		}
+
+		$on("pageInit", async () => {
+			try {
+				if (!menuId) throw new Error("Menu ID tidak ditemukan di route.");
+
+				$f7.preloader.show();
+				menu = await fetchMenuDetail();
+				renderMenu(menu);
+				$f7.preloader.hide();
+
+				bindUi();
+				calculateTotal();
+			} catch (err) {
+				$f7.preloader.hide();
+				console.log(err);
+				$f7.dialog.alert(String(err.message || err), "Error");
 			}
-		};
+		});
 
-		extras.forEach((e) => e.addEventListener("change", calculateTotal));
-
-		btnAddCart.onclick = () => {
-			const cart = JSON.parse(localStorage.getItem("cart")) || [];
-			const result = calculateTotal();
-
-			cart.push({
-				id: Date.now(),
-				name: "Nasi Goreng Spesial",
-				price: basePrice,
-				qty,
-				extras: result.selectedExtras,
-				total: result.total,
-				image: "menus/nasi.jpeg",
-			});
-
-			localStorage.setItem("cart", JSON.stringify(cart));
-			app.views.main.router.navigate("/cart");
-		};
-
-		calculateTotal();
-	});
-
-	return $render;
-};
+		return $render;
+	};
 </script>

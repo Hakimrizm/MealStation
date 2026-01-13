@@ -1,0 +1,318 @@
+<template>
+	<div class="page" data-name="tenant-menus" style="background-color: #f5f7fa">
+		<!-- Navbar -->
+		<div class="navbar navbar-transparent">
+			<div class="navbar-bg" style="background-color: #fff"></div>
+			<div class="navbar-inner">
+				<div class="left">
+					<div
+						style="
+							padding-left: 16px;
+							display: flex;
+							align-items: center;
+							gap: 8px;
+						"
+					>
+						<div class="icon-container-small">
+							<i class="icon f7-icons text-color-blue" style="font-size: 20px"
+								>building_2_fill</i
+							>
+						</div>
+						<div>
+							<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
+								Lokasi Saat Ini
+							</div>
+							<div style="font-size: 14px; font-weight: 700; color: #1a1a1a">
+								Kantin LPKIA
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="right">
+					<a class="link icon-only">
+						<i class="icon f7-icons text-color-black">bell</i>
+						<span
+							class="badge color-red"
+							style="
+								position: absolute;
+								top: 8px;
+								right: 8px;
+								transform: scale(0.7);
+							"
+						>
+							0
+						</span>
+					</a>
+					<a class="link icon-only" href="/profile">
+						<i class="icon f7-icons text-color-black">person_circle</i>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Content -->
+		<div class="page-content">
+			<!-- Header actions -->
+			<div
+				class="block"
+				style="
+					margin-top: 12px;
+					margin-bottom: 8px;
+					display: flex;
+					justify-content: space-between;
+					gap: 10px;
+					align-items: center;
+				"
+			>
+				<div style="font-size: 16px; font-weight: 800; color: #1a1a1a">
+					Menu Saya
+				</div>
+
+				<!-- tombol tambah -->
+				<a class="button button-fill" href="/tenant/menu/create">
+					<i class="icon f7-icons" style="font-size: 18px">plus</i>
+					Tambah
+				</a>
+			</div>
+
+			<!-- Search (opsional) -->
+			<div class="block" style="margin-top: 0">
+				<div
+					class="searchbar searchbar-init"
+					data-search-container=".menu-list"
+				>
+					<div class="searchbar-inner">
+						<div class="searchbar-input-wrap">
+							<input type="search" placeholder="Cari menu..." />
+							<i class="searchbar-icon"></i>
+							<span class="input-clear-button"></span>
+						</div>
+						<span class="searchbar-disable-button">Cancel</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- List -->
+			<div
+				class="list media-list no-hairlines-md menu-list"
+				style="margin-top: 8px"
+			>
+				<ul id="menu-items"></ul>
+			</div>
+
+			<div class="block" id="empty-state" style="display: none; color: #8e8e93">
+				Belum ada menu. Klik <b>Tambah</b> untuk membuat menu baru.
+			</div>
+		</div>
+
+		<!-- Tabbar -->
+		<div class="toolbar tabbar toolbar-bottom">
+			<div class="toolbar-inner">
+				<a class="tab-link" href="/tenant" data-index="0">
+					<i class="icon f7-icons">house_fill</i>
+					<span class="tabbar-label">Beranda</span>
+				</a>
+				<a class="tab-link tab-link-active" data-index="1">
+					<i class="icon f7-icons">square_list_fill</i>
+					<span class="tabbar-label">Menu</span>
+				</a>
+				<a class="tab-link" href="/history" data-index="2">
+					<i class="icon f7-icons">timer_fill</i>
+					<span class="tabbar-label">Riwayat</span>
+				</a>
+				<a class="tab-link" href="/profile" data-index="3">
+					<i class="icon f7-icons">person_circle_fill</i>
+					<span class="tabbar-label">Profil</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import { getToken } from "./../../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+
+		const rupiah = (n) => {
+			const num = Number(n || 0);
+			return new Intl.NumberFormat("id-ID", {
+				style: "currency",
+				currency: "IDR",
+				maximumFractionDigits: 0,
+			}).format(num);
+		};
+
+		// buat URL gambar (karena backend kamu simpan path "menus/xxx.jpg")
+		// sesuaikan kalau backend kamu sudah return image_url
+		const imageUrl = (imgPath) => {
+			if (!imgPath) return "";
+			// kalau ternyata sudah full URL, langsung pakai
+			if (String(imgPath).startsWith("http")) return imgPath;
+			return `http://localhost:8000/storage/${imgPath}`;
+		};
+
+		async function fetchMyMenus() {
+			const token = getToken();
+			const res = await fetch(`${API_BASE}/tenant/menus`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			const result = await res.json().catch(() => []);
+			if (!res.ok) {
+				const msg = result?.message || "Gagal mengambil menu";
+				throw new Error(msg);
+			}
+			return result; // array menus
+		}
+
+		async function deleteMenu(menuId) {
+			const token = getToken();
+			const res = await fetch(`${API_BASE}/menus/${menuId}`, {
+				method: "DELETE",
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const result = await res.json().catch(() => ({}));
+			if (!res.ok) {
+				throw new Error(result?.message || "Hapus menu gagal");
+			}
+			return result;
+		}
+
+		function renderMenus(menus) {
+			const $ul = $("#menu-items");
+			$ul.html("");
+
+			if (!menus || menus.length === 0) {
+				$("#empty-state").show();
+				return;
+			}
+			$("#empty-state").hide();
+
+			menus.forEach((m) => {
+				const img = imageUrl(m.image);
+				const hasImg = !!img;
+
+				const li = `
+          <li class="searchbar-found">
+            <div class="item-content">
+              ${
+								hasImg
+									? `<div class="item-media">
+                      <img src="${img}" style="width: 58px; height: 58px; object-fit: cover; border-radius: 14px;" />
+                    </div>`
+									: `<div class="item-media">
+                      <div style="width:58px;height:58px;border-radius:14px;background:#e9eef5;display:flex;align-items:center;justify-content:center;">
+                        <i class="icon f7-icons" style="font-size:22px;color:#8e8e93;">photo</i>
+                      </div>
+                    </div>`
+							}
+
+              <div class="item-inner">
+                <div class="item-title-row">
+                  <div class="item-title" style="font-weight:800;color:#1a1a1a;">
+                    ${m.name || "-"}
+                  </div>
+                  <div class="item-after" style="font-weight:800;">
+                    ${rupiah(m.price)}
+                  </div>
+                </div>
+
+                <div class="item-subtitle" style="color:#8e8e93;">
+                  ${m.category || "Tanpa kategori"}
+                  ${
+										m.is_hot
+											? ` • <span class="text-color-red" style="font-weight:700;">HOT</span>`
+											: ""
+									}
+                </div>
+
+                <div class="item-text" style="color:#555;">
+                  ${(m.description || "").slice(0, 80)}${
+					(m.description || "").length > 80 ? "..." : ""
+				}
+                </div>
+
+                <div style="margin-top:10px; display:flex; gap:8px;">
+                  <a class="button button-small" href="/tenant/menu/${
+										m.id
+									}/edit">
+                    <i class="icon f7-icons" style="font-size:16px;">pencil</i>
+                    Edit
+                  </a>
+
+                  <a class="button button-small color-red btn-delete" data-id="${
+										m.id
+									}">
+                    <i class="icon f7-icons" style="font-size:16px;">trash</i>
+                    Hapus
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+        `;
+
+				$ul.append(li);
+			});
+
+			// bind delete buttons
+			$(".btn-delete").on("click", function () {
+				const id = $(this).data("id");
+
+				$f7.dialog.confirm(
+					"Yakin mau hapus menu ini?",
+					"Konfirmasi",
+					async () => {
+						try {
+							$f7.dialog.preloader("Menghapus...");
+							await deleteMenu(id);
+							$f7.dialog.close();
+							$f7.toast
+								.create({ text: "Menu berhasil dihapus", closeTimeout: 2000 })
+								.open();
+
+							// refresh list setelah delete
+							$f7.dialog.preloader("Memuat...");
+							const menus = await fetchMyMenus();
+							$f7.dialog.close();
+							renderMenus(menus);
+						} catch (err) {
+							$f7.dialog.close();
+							$f7.dialog.alert(String(err.message || err), "Error");
+						}
+					}
+				);
+			});
+		}
+
+		$on("pageInit", async () => {
+			try {
+				const token = getToken();
+				if (!token) {
+					$f7.dialog.alert("Silakan login dulu.");
+					return;
+				}
+
+				$f7.dialog.preloader("Memuat menu...");
+				const menus = await fetchMyMenus();
+				$f7.dialog.close();
+				renderMenus(menus);
+			} catch (err) {
+				$f7.dialog.close();
+				console.log(err);
+				$f7.dialog.alert(String(err.message || err), "Error");
+			}
+		});
+
+		return $render;
+	};
+</script>

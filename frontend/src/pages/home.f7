@@ -81,99 +81,14 @@
 			</div>
 
 			<!-- FOOD GRID -->
-			<div class="food-grid">
-				<a href="/order-detail" class="food-card-link">
-					<div class="food-card" data-category="makanan">
-						<img src="menus/nasi.jpeg" />
-						<div class="food-card-content">
-							<div class="food-card-title">
-								Nasi Goreng <i class="fas fa-fire fire-icon"></i>
-							</div>
-							<div class="food-card-subtitle">Hot & Fresh</div>
-							<div class="food-card-rating">
-								<i class="fas fa-star"></i> 4.8
-							</div>
-							<div class="food-card-price">
-								$12.50
-								<i class="fas fa-plus star-icon"></i>
-							</div>
-						</div>
-					</div>
-				</a>
-			
-				<a href="/order-detail" class="food-card-link">
-					<div class="food-card" data-category="makanan">
-						<img src="menus/mie.jpeg" />
-						<div class="food-card-content">
-							<div class="food-card-title">Mie Goreng</div>
-							<div class="food-card-subtitle">Extra Cheese</div>
-							<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-							<div class="food-card-price">
-								$9.90
-								<i class="fas fa-plus star-icon"></i>
-							</div>
-						</div>
-					</div>
-				</a>
+			<div class="food-grid" id="menu-grid"></div>
 
-				<a href="/order-detail" class="food-card-link">
-				<div class="food-card">
-					<img src="menus/nasi.jpeg" data-category="makanan" />
-					<div class="food-card-content">
-						<div class="food-card-title">Nasi Goreng</div>
-						<div class="food-card-subtitle">Extra Cheese</div>
-						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-						<div class="food-card-price">
-							$9.90
-							<i class="fas fa-plus star-icon"></i>
-						</div>
-					</div>
-				</div>
-				</a>
-
-				<a href="/order-detail" class="food-card-link">
-				<div class="food-card" data-category="minuman">
-					<img src="menus/minuman.jpeg" />
-					<div class="food-card-content">
-						<div class="food-card-title">Es teh</div>
-						<div class="food-card-subtitle">Extra gula</div>
-						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-						<div class="food-card-price">
-							$9.90
-							<i class="fas fa-plus star-icon"></i>
-						</div>
-					</div>
-				</div>
-				</a>	
-
-				<a href="/order-detail" class="food-card-link">
-				<div class="food-card" data-category="dessert">
-					<img src="menus/dessert.jpeg" />
-					<div class="food-card-content">
-						<div class="food-card-title">dessert</div>
-						<div class="food-card-subtitle">Extra Cheese</div>
-						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-						<div class="food-card-price">
-							$9.90
-							<i class="fas fa-plus star-icon"></i>
-						</div>
-					</div>
-				</div>
-				</a>
-				<a href="/order-detail" class="food-card-link">
-				<div class="food-card" data-category="Lainnya">
-					<img src="menus/jas.jpeg" />
-					<div class="food-card-content">
-						<div class="food-card-title">jas</div>
-						<div class="food-card-subtitle">Extra Cheese</div>
-						<div class="food-card-rating"><i class="fas fa-star"></i> 4.6</div>
-						<div class="food-card-price">
-							$9.90
-							<i class="fas fa-plus star-icon"></i>
-						</div>
-					</div>
-				</div>
-				</a>
+			<!-- empty state -->
+			<div
+				id="empty-state"
+				style="padding: 0 15px; color: #8e8e93; display: none"
+			>
+				Tidak ada menu yang cocok.
 			</div>
 		</div>
 		<!-- TOOLBAR -->
@@ -201,61 +116,173 @@
 </template>
 
 <script>
-	export default (props, { $, $on }) => {
-		// Fungsi filter gabungan
-		function filterFood(categoryButtons, foodCards, searchInput) {
-			const activeFilter =
-				Array.from(categoryButtons)
-					.find((btn) => btn.classList.contains("active"))
-					?.getAttribute("data-filter") || "semua";
-			const query = searchInput.value.toLowerCase();
+	import { getToken } from "../js/auth.js";
 
-			foodCards.forEach((card) => {
-				const category = card.getAttribute("data-category") || "";
-				const title =
-					card.querySelector(".food-card-title")?.textContent.toLowerCase() ||
-					"";
-				const subtitle =
-					card
-						.querySelector(".food-card-subtitle")
-						?.textContent.toLowerCase() || "";
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+		const STORAGE_BASE = "http://localhost:8000/storage/";
+		const token = getToken();
 
-				const matchCategory =
-					activeFilter === "semua" || category === activeFilter;
-				const matchQuery = title.includes(query) || subtitle.includes(query);
+		let allMenus = [];
+		let activeCategory = "semua";
 
-				card.style.display = matchCategory && matchQuery ? "block" : "none";
+		const rupiah = (n) => {
+			const num = Number(n || 0);
+			return new Intl.NumberFormat("id-ID", {
+				style: "currency",
+				currency: "IDR",
+				maximumFractionDigits: 0,
+			}).format(num);
+		};
+
+		const imageUrl = (imgPath) => {
+			if (!imgPath) return "icons/placeholder-food.png"; // siapkan placeholder (opsional)
+			if (String(imgPath).startsWith("http")) return imgPath;
+			return STORAGE_BASE + imgPath;
+		};
+
+		async function fetchMenus() {
+			const res = await fetch(`${API_BASE}/menus`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			const data = await res.json().catch(() => []);
+			if (!res.ok) throw new Error(data?.message || "Gagal mengambil menu");
+			return data;
+		}
+
+		function normalizeCategory(c) {
+			const cat = String(c || "")
+				.trim()
+				.toLowerCase();
+			if (!cat) return "lainnya";
+			if (cat === "makanan") return "makanan";
+			if (cat === "minuman") return "minuman";
+			if (cat === "dessert") return "dessert";
+			return "lainnya";
+		}
+
+		function renderMenus(menus) {
+			const grid = document.getElementById("menu-grid");
+			const empty = document.getElementById("empty-state");
+			if (!grid) return;
+
+			grid.innerHTML = "";
+
+			if (!menus.length) {
+				empty.style.display = "block";
+				return;
+			}
+			empty.style.display = "none";
+
+			menus.forEach((m) => {
+				const cat = normalizeCategory(m.category);
+				const hot = m.is_hot ? `<i class="fas fa-fire fire-icon"></i>` : "";
+				const rating = m.rating ? Number(m.rating).toFixed(1) : "0.0";
+
+				const card = document.createElement("a");
+				card.className = "food-card-link";
+				// arahkan ke detail per id
+				card.href = `/order-detail/${m.id}/`;
+
+				card.innerHTML = `
+          <div class="food-card" data-category="${cat}">
+            <img src="${imageUrl(m.image)}" alt="${m.name || "Menu"}" />
+            <div class="food-card-content">
+              <div class="food-card-title">
+                ${m.name || "-"} ${hot}
+              </div>
+              <div class="food-card-subtitle">${m.category || "Lainnya"}</div>
+              <div class="food-card-rating">
+                <i class="fas fa-star"></i> ${rating}
+              </div>
+              <div class="food-card-price">
+                ${rupiah(m.price)}
+                <i class="fas fa-plus star-icon"></i>
+              </div>
+            </div>
+          </div>
+        `;
+
+				grid.appendChild(card);
 			});
 		}
 
-		// Saat halaman mulai di-init
-		$on("pageInit", () => {
-			console.log("Dashboard pengguna loaded");
-			const categoryButtons = document.querySelectorAll(".category-button");
-			const foodCards = document.querySelectorAll(".food-card");
-			const searchInput = document.querySelector(".searchbar input");
+		function applyFilters() {
+			const query =
+				document.querySelector(".searchbar input")?.value?.toLowerCase() || "";
 
-			// Tombol kategori
-			categoryButtons.forEach((btn) => {
+			const filtered = allMenus.filter((m) => {
+				const cat = normalizeCategory(m.category);
+				const matchCategory =
+					activeCategory === "semua" || cat === activeCategory;
+
+				const text = `${m.name || ""} ${m.description || ""} ${
+					m.category || ""
+				}`.toLowerCase();
+				const matchSearch = text.includes(query);
+
+				return matchCategory && matchSearch;
+			});
+
+			renderMenus(filtered);
+		}
+
+		function initCategoryButtons() {
+			const buttons = document.querySelectorAll(".category-button");
+			buttons.forEach((btn) => {
 				btn.addEventListener("click", (e) => {
 					e.preventDefault();
-
-					// Hilangkan active dari semua tombol
-					categoryButtons.forEach((b) => b.classList.remove("active"));
+					buttons.forEach((b) => b.classList.remove("active"));
 					btn.classList.add("active");
 
-					// Filter ulang
-					filterFood(categoryButtons, foodCards, searchInput);
+					activeCategory = (
+						btn.getAttribute("data-filter") || "semua"
+					).toLowerCase();
+					// samakan “Lainnya” -> “lainnya”
+					if (activeCategory === "lainnya") activeCategory = "lainnya";
+
+					applyFilters();
 				});
 			});
+		}
 
-			// Search bar
-			searchInput.addEventListener("input", () => {
-				filterFood(categoryButtons, foodCards, searchInput);
-			});
+		function initSearch() {
+			const input = document.querySelector(".searchbar input");
+			if (!input) return;
 
-			// Inisialisasi: tampilkan semua
-			filterFood(categoryButtons, foodCards, searchInput);
+			input.addEventListener("input", () => applyFilters());
+		}
+
+		// Pull to refresh (kalau mau pakai)
+		async function reloadMenus() {
+			$f7.preloader.show();
+			try {
+				allMenus = await fetchMenus();
+				applyFilters();
+			} finally {
+				$f7.preloader.hide();
+			}
+		}
+
+		$on("pageInit", async () => {
+			try {
+				initCategoryButtons();
+				initSearch();
+
+				// initial load
+				$f7.preloader.show();
+				allMenus = await fetchMenus();
+				$f7.preloader.hide();
+
+				applyFilters();
+			} catch (err) {
+				$f7.preloader.hide();
+				console.log(err);
+				$f7.dialog.alert(String(err.message || err), "Error");
+			}
 		});
 
 		return $render;

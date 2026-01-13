@@ -1,0 +1,244 @@
+<template>
+	<div
+		class="page"
+		data-name="tenant-menu-create"
+		style="padding-bottom: calc(var(--f7-toolbar-height) + 20px)"
+	>
+		<!-- Navbar -->
+		<div class="navbar navbar-transparent">
+			<div class="navbar-bg" style="background-color: #fff"></div>
+			<div class="navbar-inner">
+				<div class="left">
+					<div
+						style="
+							padding-left: 16px;
+							display: flex;
+							align-items: center;
+							gap: 8px;
+						"
+					>
+						<div class="icon-container-small">
+							<i class="icon f7-icons text-color-blue" style="font-size: 20px"
+								>building_2_fill</i
+							>
+						</div>
+						<div>
+							<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
+								Lokasi Saat Ini
+							</div>
+							<div style="font-size: 14px; font-weight: 700; color: #1a1a1a">
+								Kantin LPKIA
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="right">
+					<a class="link icon-only">
+						<i class="icon f7-icons text-color-black">bell</i>
+						<span
+							class="badge color-red"
+							style="
+								position: absolute;
+								top: 8px;
+								right: 8px;
+								transform: scale(0.7);
+							"
+						>
+							0
+						</span>
+					</a>
+					<a class="link icon-only" href="/profile">
+						<i class="icon f7-icons text-color-black">person_circle</i>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="page-content">
+			<form id="menu-form" class="list no-hairlines-md">
+				<ul>
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Nama Menu</div>
+							<div class="item-input-wrap">
+								<input type="text" name="name" required />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Harga</div>
+							<div class="item-input-wrap">
+								<input type="number" name="price" required />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Deskripsi</div>
+							<div class="item-input-wrap">
+								<textarea name="description"></textarea>
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title item-floating-label">Kategori</div>
+							<div class="item-input-wrap">
+								<input type="text" name="category" />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Hot?</div>
+							<div class="item-input-wrap">
+								<label class="toggle toggle-init">
+									<input type="checkbox" name="is_hot" />
+									<span class="toggle-icon"></span>
+								</label>
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content item-input">
+						<div class="item-inner">
+							<div class="item-title">Gambar</div>
+							<div class="item-input-wrap">
+								<input type="file" id="image" name="image" accept="image/*" />
+							</div>
+						</div>
+					</li>
+
+					<li class="item-content">
+						<div class="item-inner">
+							<div class="item-title">Preview</div>
+						</div>
+					</li>
+					<li class="item-content">
+						<div class="item-inner">
+							<img
+								id="preview"
+								style="max-width: 100%; border-radius: 12px; display: none"
+							/>
+						</div>
+					</li>
+				</ul>
+			</form>
+
+			<div class="block">
+				<a class="button button-fill" id="btn-save-menu">Simpan Menu</a>
+			</div>
+		</div>
+
+		<!-- Tabbar -->
+		<div class="toolbar tabbar toolbar-bottom">
+			<div class="toolbar-inner">
+				<a class="tab-link" href="/tenant" data-index="0">
+					<i class="icon f7-icons">house_fill</i>
+					<span class="tabbar-label">Beranda</span>
+				</a>
+				<a class="tab-link tab-link-active" data-index="1">
+					<i class="icon f7-icons">square_list_fill</i>
+					<span class="tabbar-label">Menu</span>
+				</a>
+				<a class="tab-link" href="/history" data-index="2">
+					<i class="icon f7-icons">timer_fill</i>
+					<span class="tabbar-label">Riwayat</span>
+				</a>
+				<a class="tab-link" href="/profile" data-index="3">
+					<i class="icon f7-icons">person_circle_fill</i>
+					<span class="tabbar-label">Profil</span>
+				</a>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	import { getToken } from "./../../js/auth.js";
+
+	export default (props, { $, $on, $f7 }) => {
+		const API_BASE = "http://localhost:8000/api";
+
+		$on("pageInit", () => {
+			// preview image
+			$("#image").on("change", function () {
+				const file = this.files?.[0];
+				if (!file) return;
+
+				const img = document.getElementById("preview");
+				img.src = URL.createObjectURL(file);
+				img.style.display = "block";
+			});
+
+			$("#btn-save-menu").on("click", async function () {
+				try {
+					const token = getToken();
+					if (!token) {
+						$f7.dialog.alert("Silakan login dulu.");
+						return;
+					}
+
+					// Ambil data text dari form
+					const data = $f7.form.convertToData("#menu-form");
+
+					// Buat FormData untuk file upload
+					const fd = new FormData();
+					fd.append("name", data.name || "");
+					fd.append("price", data.price || "");
+					fd.append("description", data.description || "");
+					fd.append("category", data.category || "");
+					// checkbox: kalau dicentang -> "1", kalau tidak -> "0"
+					fd.append("is_hot", data.is_hot ? "1" : "0");
+
+					const fileInput = document.getElementById("image");
+					if (fileInput.files && fileInput.files[0]) {
+						fd.append("image", fileInput.files[0]);
+					}
+
+					$f7.dialog.preloader("Menyimpan...");
+
+					const res = await fetch(`${API_BASE}/menus`, {
+						method: "POST",
+						headers: {
+							Accept: "application/json",
+							Authorization: `Bearer ${token}`,
+							// IMPORTANT: jangan set Content-Type saat pakai FormData
+						},
+						body: fd,
+					});
+
+					const result = await res.json().catch(() => ({}));
+
+					if (!res.ok) {
+						// Laravel validasi biasanya ngirim errors
+						const msg =
+							result?.message ||
+							(result?.errors
+								? JSON.stringify(result.errors)
+								: "Gagal menambah menu");
+						throw new Error(msg);
+					}
+
+					$f7.dialog.close();
+
+					$f7.dialog.alert("Menu berhasil ditambahkan!");
+					// navigasi / reload list
+					$f7.views.main.router.back();
+				} catch (err) {
+					$f7.dialog.close();
+					console.log(err);
+					$f7.dialog.alert(String(err.message || err), "Error");
+				}
+			});
+		});
+
+		return $render;
+	};
+</script>
