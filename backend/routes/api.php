@@ -21,6 +21,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::post('/menus', [MenuController::class, 'store']);
+    // Public Menu all
+    Route::get('/menus', [MenuController::class, 'index']);
     Route::put('/menus/{menu}', [MenuController::class, 'update']);
     Route::delete('/menus/{menu}', [MenuController::class, 'destroy']);
     Route::middleware(['auth:sanctum', 'role:tenant'])->get(

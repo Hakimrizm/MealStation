@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class MenuController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-
-    // 🟢 Public (user & tenant)
     public function index()
     {
         return response()->json(
@@ -37,11 +37,18 @@ class MenuController extends Controller
         $request->validate([
             'name'  => 'required',
             'price' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('menus', 'public');
+        }
 
         $menu = $request->user()->menus()->create([
             'name'        => $request->name,
-            'image'       => $request->image,
+            'image'       => $imagePath,
             'description' => $request->description,
             'price'       => $request->price,
             'category'    => $request->category,
@@ -54,6 +61,7 @@ class MenuController extends Controller
             'menu'    => $menu
         ], 201);
     }
+
 
     /**
      * Display the specified resource.
@@ -80,13 +88,37 @@ class MenuController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        $menu->update($request->all());
+        $request->validate([
+            'name'  => 'sometimes|required',
+            'price' => 'sometimes|required|numeric',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = $request->only([
+            'name',
+            'description',
+            'price',
+            'category',
+            'rating',
+            'is_hot',
+        ]);
+
+        if ($request->hasFile('image')) {
+            if ($menu->image) {
+                Storage::disk('public')->delete($menu->image);
+            }
+
+            $data['image'] = $request->file('image')->store('menus', 'public');
+        }
+
+        $menu->update($data);
 
         return response()->json([
             'message' => 'Menu berhasil diupdate',
-            'menu'    => $menu
+            'menu'    => $menu->fresh()
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -97,6 +129,11 @@ class MenuController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
+        if ($menu->image) {
+            Storage::disk('public')->delete($menu->image);
+        }
+
+        // 🗑️ Hapus data menu
         $menu->delete();
 
         return response()->json([
