@@ -129,26 +129,23 @@
 			</div>
 		</div>
 
-		<div class="toolbar toolbar-bottom">
+		<div class="toolbar tabbar toolbar-bottom">
 			<div class="toolbar-inner">
-				<a href="#" class="toolbar-link active">
-					<i class="fas fa-home"></i>
-					<span>Pesanan Saya</span>
+				<a class="tab-link tab-link-active" data-index="0">
+					<i class="icon f7-icons">house_fill</i>
+					<span class="tabbar-label">Beranda</span>
 				</a>
-
-				<a href="/riwayat-pesanan.f7/" class="toolbar-link">
-					<i class="fas fa-receipt"></i>
-					<span>Riwayat Pesanan</span>
+				<a class="tab-link" data-index="1">
+					<i class="icon f7-icons">square_list_fill</i>
+					<span class="tabbar-label">Menu</span>
 				</a>
-
-				<a href="../pages/Riwayat-Transaki.f7" class="toolbar-link">
-					<i class="fas fa-wallet"></i>
-					<span>Riwayat Transaksi</span>
+				<a class="tab-link" data-index="2">
+					<i class="icon f7-icons">timer_fill</i>
+					<span class="tabbar-label">Riwayat</span>
 				</a>
-
-				<a href="/profile/" class="toolbar-link">
-					<i class="fas fa-user-circle"></i>
-					<span>Profile</span>
+				<a class="tab-link" href="/profile" data-index="3">
+					<i class="icon f7-icons">person_circle_fill</i>
+					<span class="tabbar-label">Profil</span>
 				</a>
 			</div>
 		</div>

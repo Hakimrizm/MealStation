@@ -1,56 +1,278 @@
 <template>
-	<div class="page" data-name="tenant">
-		<!-- Navbar -->
-		<div class="navbar">
-			<div class="navbar-bg"></div>
-			<div class="navbar-inner">
-				<div class="left">
-					<div style="padding-left: 16px">
-						<div style="font-size: 20px; font-weight: 800">MEALSTATION</div>
-						<div style="font-size: 12px; color: #86868b">Tenant Panel</div>
-					</div>
-				</div>
-				<div class="right">
-					<a class="link icon-only"><i class="icon f7-icons">bell_fill</i></a>
-				</div>
-			</div>
-		</div>
+  <div class="page" data-name="tenant" style="background-color: #f5f7fa;">
+    
+    <div class="navbar navbar-large navbar-transparent">
+      <div class="navbar-bg" style="background-color: #fff;"></div>
+      <div class="navbar-inner">
+        <div class="left">
+          <div style="padding-left: 16px; display: flex; align-items: center; gap: 8px;">
+            <div class="icon-container-small">
+              <i class="icon f7-icons text-color-blue" style="font-size: 20px;">building_2_fill</i>
+            </div>
+            <div>
+              <div style="font-size: 10px; color: #8e8e93; font-weight: 500;">Lokasi Saat Ini</div>
+              <div style="font-size: 14px; font-weight: 700; color: #1a1a1a;">Kantin LPKIA</div>
+            </div>
+          </div>
+        </div>
+        <div class="right">
+          <a class="link icon-only">
+            <i class="icon f7-icons text-color-black">bell</i>
+            <span class="badge color-red" style="position: absolute; top: 8px; right: 8px; transform: scale(0.7);">
+              ${orders.filter(o => o.status === 'new').length}
+            </span>
+          </a>
+          <a class="link icon-only" href="/profile">
+             <i class="icon f7-icons text-color-black">person_circle</i>
+          </a>
+        </div>
+      </div>
+    </div>
 
-		<!-- Toolbar Bottom -->
-		<div class="toolbar tabbar toolbar-bottom">
-			<div class="toolbar-inner">
-				<a class="tab-link tab-link-active" data-index="0">
-					<i class="icon f7-icons">house_fill</i>
-					<span class="tabbar-label">Beranda</span>
-				</a>
-				<a class="tab-link" data-index="1">
-					<i class="icon f7-icons">square_list_fill</i>
-					<span class="tabbar-label">Menu</span>
-				</a>
-				<a class="tab-link" data-index="2">
-					<i class="icon f7-icons">timer_fill</i>
-					<span class="tabbar-label">Riwayat</span>
-				</a>
-				<a class="tab-link" href="/profile" data-index="3">
-					<i class="icon f7-icons">person_circle_fill</i>
-					<span class="tabbar-label">Profil</span>
-				</a>
-			</div>
-		</div>
+    <div class="toolbar tabbar tabbar-labels toolbar-bottom" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.03);">
+      <div class="toolbar-inner">
+        <a class="tab-link tab-link-active">
+          <i class="icon f7-icons">house_fill</i>
+          <span class="tabbar-label">Home</span>
+        </a>
+        <a class="tab-link">
+          <i class="icon f7-icons">doc_text_fill</i>
+          <span class="tabbar-label">Pesanan</span>
+        </a>
+        <a class="tab-link">
+          <i class="icon f7-icons">chart_bar_fill</i>
+          <span class="tabbar-label">Laporan</span>
+        </a>
+        <a class="tab-link">
+          <i class="icon f7-icons">gear_alt_fill</i>
+          <span class="tabbar-label">Akun</span>
+        </a>
+      </div>
+    </div>
 
-		<!-- Page Content -->
-		<div class="page-content" style="padding-top: 56px; overflow: hidden">
-			<!-- FAB -->
-			<a class="fab fab-extended fab-right-bottom color-blue">
-				<i class="icon f7-icons">plus</i>
-				<div class="fab-text">Pesanan Baru</div>
-			</a>
-		</div>
-	</div>
+    <div class="page-content" style="padding-top: 70px; padding-bottom: 90px;">
+
+      <div class="block" style="margin: 16px 0;">
+        <form class="searchbar">
+          <div class="searchbar-inner">
+            <div class="searchbar-input-wrap">
+              <input type="search" placeholder="Cari pesanan..." />
+              <i class="searchbar-icon"></i>
+              <span class="input-clear-button"></span>
+            </div>
+            <span class="searchbar-disable-button"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="block" style="margin: 0 0 24px 0;">
+        <div class="display-flex justify-content-space-between text-align-center" style="padding: 0 8px;">
+          
+          <div class="category-item" @click="${() => setFilter('all')}">
+            <div class="category-icon ${activeFilter === 'all' ? 'active-blue' : 'bg-gray'}">
+              <i class="icon f7-icons ${activeFilter === 'all' ? 'text-color-white' : 'text-color-gray'}">square_list_fill</i>
+            </div>
+            <span class="category-label ${activeFilter === 'all' ? 'text-color-black font-weight-bold' : ''}">Semua</span>
+          </div>
+
+          <div class="category-item" @click="${() => setFilter('new')}">
+            <div class="category-icon ${activeFilter === 'new' ? 'active-blue' : 'bg-gray'}">
+              <i class="icon f7-icons ${activeFilter === 'new' ? 'text-color-white' : 'text-color-gray'}">bell_fill</i>
+            </div>
+            <span class="category-label ${activeFilter === 'new' ? 'text-color-black font-weight-bold' : ''}">
+              Baru
+            </span>
+          </div>
+
+          <div class="category-item" @click="${() => setFilter('process')}">
+            <div class="category-icon ${activeFilter === 'process' ? 'active-blue' : 'bg-gray'}">
+              <i class="icon f7-icons ${activeFilter === 'process' ? 'text-color-white' : 'text-color-gray'}">flame_fill</i>
+            </div>
+            <span class="category-label ${activeFilter === 'process' ? 'text-color-black font-weight-bold' : ''}">Proses</span>
+          </div>
+
+          <div class="category-item" @click="${() => setFilter('done')}">
+            <div class="category-icon ${activeFilter === 'done' ? 'active-blue' : 'bg-gray'}">
+              <i class="icon f7-icons ${activeFilter === 'done' ? 'text-color-white' : 'text-color-gray'}">checkmark_circle_fill</i>
+            </div>
+            <span class="category-label ${activeFilter === 'done' ? 'text-color-black font-weight-bold' : ''}">Selesai</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="block-title" style="margin-left: 20px; font-weight: 700; color: #333;">
+        ${activeFilter === 'all' ? 'Semua Pesanan' : 
+          activeFilter === 'new' ? 'Pesanan Baru Masuk' :
+          activeFilter === 'process' ? 'Sedang Diproses' : 'Riwayat Selesai'}
+      </div>
+      
+      <div class="list no-hairlines-md" style="margin-top: 0; padding: 0 16px;">
+        
+        ${getFilteredOrders().length === 0 ? $h`
+           <div class="block text-align-center" style="margin-top: 30px; opacity: 0.5;">
+            <i class="icon f7-icons" style="font-size: 48px; color: #ccc">square_list</i>
+            <p>Tidak ada pesanan</p>
+          </div>
+        ` : $h`
+          ${getFilteredOrders().map((order) => $h`
+            <div class="card-replica" @click="${() => openActionSheet(order)}">
+              <div class="card-top">
+                <div class="order-id">#${order.id}</div>
+                <div class="order-time">${order.time}</div>
+              </div>
+
+              <div class="card-body">
+                <div class="food-thumb">
+                  <i class="icon f7-icons text-color-white">bag_fill</i>
+                </div>
+                
+                <div class="food-details">
+                  <div class="food-title">${order.items} Item Pesanan</div>
+                  <div class="food-subtitle">${order.desc}</div>
+                  <div class="rating-pill">
+                    <i class="icon f7-icons size-12 text-color-white">person_fill</i>
+                    <span>${order.customer}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer-custom">
+                <div class="price">Rp ${order.price}</div>
+                
+                ${order.status === 'new' ? $h`
+                  <div class="status-mini bg-red">Perlu Konfirmasi</div>
+                ` : order.status === 'process' ? $h`
+                  <div class="status-mini bg-orange">Sedang Dimasak</div>
+                ` : $h`
+                  <div class="status-mini bg-green">Selesai</div>
+                `}
+
+              </div>
+            </div>
+          `)}
+        `}
+      </div>
+    </div>
+
+    <div class="sheet-modal my-sheet" style="border-radius: 16px 16px 0 0; height: auto;">
+      <div class="sheet-modal-inner">
+        <div class="block-title text-align-center" style="font-size: 18px; margin-top: 24px;">
+          Update Status Pesanan
+        </div>
+        <div class="block">
+          ${selectedOrder ? $h`
+            <div class="text-align-center" style="margin-bottom: 20px;">
+              <div style="font-size: 24px; font-weight: 800; color: #2196f3;">#${selectedOrder.id}</div>
+              <div style="color: #666;">${selectedOrder.desc}</div>
+            </div>
+            
+            <div class="grid grid-cols-2 grid-gap">
+              <button class="button button-large button-fill color-gray sheet-close">Tutup</button>
+              
+              ${selectedOrder.status === 'new' ? $h`
+                <button class="button button-large button-fill color-blue sheet-close" @click="${() => updateStatus('process')}">
+                  Terima & Masak
+                </button>
+              ` : selectedOrder.status === 'process' ? $h`
+                 <button class="button button-large button-fill color-green sheet-close" @click="${() => updateStatus('done')}">
+                  Pesanan Selesai
+                </button>
+              ` : $h`
+                 <button class="button button-large button-outline color-gray sheet-close" disabled>
+                  Sudah Selesai
+                </button>
+              `}
+            </div>
+          ` : $h`<div></div>`}
+        </div>
+      </div>
+    </div>
+
+  </div>
 </template>
 
+<style>
+  /* CSS Tambahan untuk Update Ini */
+  .status-mini {
+    font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; color: white;
+  }
+  .bg-red { background: #ff3b30; }
+  .bg-orange { background: #ff9500; }
+  .bg-green { background: #4cd964; }
+  
+  /* CSS Lama */
+  .icon-container-small { width: 32px; height: 32px; background: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .search-replica { background: #e6e9ef; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; }
+  .category-item { display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .category-icon { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; transition: all 0.2s; }
+  .category-icon:active { transform: scale(0.95); }
+  .active-blue { background-color: #2196f3; box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4); }
+  .bg-gray { background-color: #e0e0e0; color: #666; }
+  .category-label { font-size: 11px; color: #8e8e93; font-weight: 500; }
+  .text-color-black { color: #000 !important; }
+  .font-weight-bold { font-weight: 700; }
+  .card-replica { background: #fff; border-radius: 16px; padding: 12px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); position: relative; border: 1px solid rgba(0,0,0,0.02); transition: transform 0.2s; }
+  .card-replica:active { transform: scale(0.98); }
+  .card-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .order-id { font-weight: 800; color: #2196f3; font-size: 13px; }
+  .order-time { font-size: 11px; color: #8e8e93; }
+  .card-body { display: flex; gap: 12px; margin-bottom: 12px; }
+  .food-thumb { width: 50px; height: 50px; background: #ff9800; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+  .food-title { font-weight: 700; font-size: 15px; color: #1a1a1a; }
+  .food-subtitle { font-size: 12px; color: #8e8e93; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+  .rating-pill { display: inline-flex; align-items: center; gap: 4px; background: #4caf50; padding: 2px 8px; border-radius: 4px; font-size: 10px; color: white; font-weight: 600; }
+  .card-footer-custom { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #eee; padding-top: 10px; }
+  .price { font-weight: 800; font-size: 16px; color: #333; }
+</style>
+
 <script>
-	export default () => {
-		return $render;
-	};
+export default (props, { $h, $update, $f7 }) => {
+  let activeFilter = 'all';
+  let selectedOrder = null; // Menyimpan pesanan yang sedang diklik
+
+  // Data Pesanan (Mutable)
+  let orders = [
+    { id: 'ORD-8821', time: 'Baru Saja', items: 2, desc: 'Nasi Goreng Spesial, Es Teh', price: '45.000', customer: 'test', status: 'new' },
+    { id: 'ORD-8820', time: '5 mnt lalu', items: 1, desc: 'Mie Goreng Extra Cheese', price: '22.000', customer: 'tama', status: 'new' },
+    { id: 'ORD-8819', time: '12 mnt lalu', items: 3, desc: 'Ayam Bakar, Nasi Putih, Jeruk', price: '55.000', customer: 'jamal', status: 'process' },
+    { id: 'ORD-8815', time: '30 mnt lalu', items: 1, desc: 'Es Kopi Susu', price: '15.000', customer: 'usup', status: 'done' },
+    { id: 'ORD-8814', time: '45 mnt lalu', items: 2, desc: 'Soto Ayam, Nasi', price: '30.000', customer: 'asep', status: 'done' },
+  ];
+
+  const getFilteredOrders = () => {
+    if (activeFilter === 'all') return orders;
+    return orders.filter((order) => order.status === activeFilter);
+  };
+
+  const setFilter = (filterName) => {
+    activeFilter = filterName;
+    $update();
+  }
+
+  // Fungsi Baru: Membuka Sheet saat card diklik
+  const openActionSheet = (order) => {
+    selectedOrder = order;
+    $update(); // Update agar modal terisi data order yang benar
+    $f7.sheet.open('.my-sheet');
+  }
+
+  // Fungsi Baru: Mengubah Status
+  const updateStatus = (newStatus) => {
+    // Cari order di array asli dan update statusnya
+    const target = orders.find(o => o.id === selectedOrder.id);
+    if (target) {
+      target.status = newStatus;
+      
+      // Jika status berubah jadi 'process', otomatis pindah filter ke 'process' biar user lihat hasilnya
+      // Opsional: bisa dihapus jika tidak ingin filter berpindah otomatis
+      if (newStatus === 'process') activeFilter = 'process';
+      if (newStatus === 'done') activeFilter = 'done';
+    }
+    
+    $update(); // Refresh tampilan
+  }
+
+  return $render;
+};
 </script>
