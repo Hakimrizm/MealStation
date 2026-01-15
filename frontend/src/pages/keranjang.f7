@@ -348,6 +348,10 @@
 			}
 
 			const payload = {
+				notes: cart
+					.map((it) => it.notes)
+					.filter(Boolean)
+					.join(" | "),
 				items: cart.map((it) => ({
 					menu_id: it.menu_id,
 					qty: it.qty,

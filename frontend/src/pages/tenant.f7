@@ -229,6 +229,36 @@
 							#${selectedOrder.id}
 						</div>
 						<div style="color: #666">${selectedOrder.desc}</div>
+
+						${getItemsWithNotes().length ? $h`
+						<div style="margin-top: 14px">
+							<div
+								style="font-weight: 700; margin-bottom: 8px; font-size: 14px"
+							>
+								Catatan Pembeli
+							</div>
+
+							${getItemsWithNotes().length ? $h`
+							<div style="margin-top: 14px">
+								${getItemsWithNotes().map(it => $h`
+								<div
+									style="
+										background: #fffbe6;
+										padding: 10px 12px;
+										border-radius: 10px;
+										font-size: 13px;
+										border-left: 4px solid #ffc107;
+										margin-bottom: 8px;
+									"
+								>
+									<b>${it.menu_name}</b><br />
+									${it.notes}
+								</div>
+								`)}
+							</div>
+							` : ''}
+						</div>
+						` : ''}
 					</div>
 
 					<div class="popup popup-proof">
@@ -504,6 +534,11 @@
 		let searchQuery = "";
 		let selectedOrder = null;
 
+		function getItemsWithNotes() {
+			if (!selectedOrder?.raw?.items) return [];
+			return selectedOrder.raw.items.filter((it) => it.notes);
+		}
+
 		// data dari backend
 		let orders = [];
 		let loading = false;
@@ -546,6 +581,7 @@
 				payment_status: o.payment_status || "unpaid",
 				payment_method: o.payment_method || null,
 				payment_proof: o.payment_proof || null,
+				notes: o.notes || null,
 				raw: o,
 			};
 		}
@@ -751,6 +787,9 @@
 			}
 			const img = document.getElementById("proofImg");
 			if (img) img.src = proofUrl(selectedOrder.payment_proof);
+
+			// ⬇️ INI KUNCI NYA
+			$f7.sheet.close(".my-sheet");
 			$f7.popup.open(".popup-proof");
 		}
 
