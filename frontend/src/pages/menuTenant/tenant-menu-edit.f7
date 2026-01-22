@@ -94,7 +94,7 @@
 						</div>
 					</li>
 
-					<li class="item-content item-input">
+					<!-- <li class="item-content item-input">
 						<div class="item-inner">
 							<div class="item-title">Hot?</div>
 							<div class="item-input-wrap">
@@ -104,7 +104,7 @@
 								</label>
 							</div>
 						</div>
-					</li>
+					</li> -->
 
 					<li class="item-content item-input">
 						<div class="item-inner">
@@ -201,7 +201,10 @@
 				setF7InputValue("#price", menu.price);
 				setF7InputValue("#description", menu.description);
 				setF7InputValue("#category", menu.category);
-				document.getElementById("is_hot").checked = !!menu.is_hot;
+				const isHotEl = document.getElementById("is_hot");
+				if (isHotEl) {
+					isHotEl.checked = !!menu.is_hot;
+				}
 
 				// kalau API kamu punya image_url, tampilkan
 				const oldImg = imageUrl(menu.image);
@@ -265,7 +268,7 @@
 						}
 
 						$f7.dialog.close();
-						$f7.dialog.alert("Menu berhasil diupdate!");
+						$f7.dialog.alert("Menu berhasil diupdate!", "Berhasil");
 						$f7.views.main.router.back();
 					} catch (err) {
 						$f7.dialog.close();
@@ -303,7 +306,7 @@
 								console.log(err);
 								$f7.dialog.alert(String(err.message || err), "Error");
 							}
-						}
+						},
 					);
 				});
 			} catch (err) {

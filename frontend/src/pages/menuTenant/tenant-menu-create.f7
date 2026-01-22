@@ -206,7 +206,7 @@
 
 					$f7.dialog.close();
 
-					$f7.dialog.alert("Menu berhasil ditambahkan!");
+					$f7.dialog.alert("Menu berhasil ditambahkan!", "Berhasil");
 					// navigasi / reload list
 					$f7.views.main.router.back();
 				} catch (err) {
