@@ -18,8 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('role')->default('user');
             $table->string('password');
-            $table->string('qris_image')->nullable()->after('avatar'); // atau after kolom lain
-            $table->string('qris_name')->nullable()->after('qris_image'); // opsional: nama merchant
+            $table->string('avatar')->nullable(); // user profile picture
+            $table->string('qris_image')->nullable(); // merchant QRIS image
+            $table->string('qris_name')->nullable(); // merchant name
             $table->rememberToken();
             $table->timestamps();
         });

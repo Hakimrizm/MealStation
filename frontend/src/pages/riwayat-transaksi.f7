@@ -60,6 +60,14 @@
 			}
 		}
 
+		function formatTimeFromSeconds(totalSeconds) {
+			if (totalSeconds <= 0) return "Siap Disajikan!";
+			const hours = Math.floor(totalSeconds / 3600);
+			const mins = Math.floor((totalSeconds % 3600) / 60);
+			const secs = totalSeconds % 60;
+			return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+		}
+
 		function statusToUi(status) {
 			if (status === "done") return "completed";
 			if (status === "cancelled") return "cancelled";
@@ -153,6 +161,16 @@
 					const isUnpaid = o.status === "new"; // atau logika kamu sendiri
 					const payable = canPay(o);
 					const detailHref = detailLink(o);
+					
+					// Estimasi waktu
+					const estimationSeconds = o.estimation_time ? o.estimation_time * 60 : 0;
+					const estimationDisplay = estimationSeconds > 0 ? formatTimeFromSeconds(estimationSeconds) : "";
+					const estimationHtml = o.status === "process" && estimationDisplay 
+						? `<div style="margin-top:8px; font-size:13px; color:#5856d6; font-weight:600; display:flex; align-items:center; gap:4px;">
+							<span style="font-size:14px;">⏱️</span>
+							<span class="est-timer" data-order-id="${o.id}" data-seconds="${estimationSeconds}">${estimationDisplay}</span>
+						</div>`
+						: "";
 
 					return `
 						<div class="card">
@@ -167,6 +185,7 @@
 								</div>
 								<div>${items}</div>
 								<div class="text-bold margin-top">${total}</div>
+								${estimationHtml}
 							</div>
 
 							<div class="card-footer">
@@ -195,6 +214,64 @@
 			renderOrders(list);
 		}
 
+		function startPolling() {
+			// Track estimasi lokal per order untuk countdown smooth
+			const localTimers = {};
+
+			// Update display setiap detik (countdown smooth)
+			setInterval(() => {
+				let hasChanged = false;
+
+				$(".est-timer").each(function() {
+					const orderId = $(this).attr("data-order-id");
+					let totalSeconds = parseInt($(this).attr("data-seconds")) || 0;
+
+					if (!localTimers[orderId]) {
+						localTimers[orderId] = totalSeconds;
+					}
+
+					// Kurangi setiap detik
+					if (localTimers[orderId] > 0) {
+						localTimers[orderId]--;
+						$(this).attr("data-seconds", localTimers[orderId]);
+						$(this).text(formatTimeFromSeconds(localTimers[orderId]));
+						hasChanged = true;
+					} else if (localTimers[orderId] === 0) {
+						$(this).text("Siap Disajikan!");
+						$(this).parent().css("color", "#34c759");
+					}
+				});
+			}, 1000); // Update display setiap 1 detik
+
+			// Poll dari server setiap 10 detik untuk sync
+			setInterval(async () => {
+				try {
+					const updatedOrders = await fetchMyOrders();
+					orders = updatedOrders;
+
+					// Update local timers dengan data dari server
+					updatedOrders.forEach(o => {
+						if (o.status === 'process' && o.estimation_time) {
+							const orderId = o.id;
+							const newSeconds = o.estimation_time * 60;
+							localTimers[orderId] = newSeconds;
+
+							// Update DOM dengan nilai dari server
+							const $timer = $(`.est-timer[data-order-id="${orderId}"]`);
+							if ($timer.length) {
+								$timer.attr("data-seconds", newSeconds);
+								$timer.text(formatTimeFromSeconds(newSeconds));
+							}
+						}
+					});
+
+					applyFilter();
+				} catch (err) {
+					console.error("Polling error:", err);
+				}
+			}, 10000); // Poll server setiap 10 detik
+		}
+
 		$on("pageInit", async () => {
 			try {
 				// bind filter buttons
@@ -214,6 +291,9 @@
 				$f7.dialog.close();
 
 				applyFilter();
+				
+				// Start polling untuk sinkron dengan admin
+				startPolling();
 			} catch (err) {
 				$f7.dialog.close();
 				console.log(err);

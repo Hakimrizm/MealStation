@@ -14,28 +14,44 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'role' => 'required|in:user,tenant'
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|min:6',
+                'role' => 'required|in:user,tenant'
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => $request->role
-        ]);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'role' => $request->role
+            ]);
 
-        $token = $user->createToken('mobile')->plainTextToken;
+            $token = $user->createToken('mobile')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Register berhasil',
-            'token'   => $token,
-            'role'    => $user->role,
-            'user'    => $user
-        ]);
+            return response()->json([
+                'message' => 'Register berhasil',
+                'token'   => $token,
+                'role'    => $user->role,
+                'user'    => $user
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Database error',
+                'errors' => ['database' => ['Koneksi database gagal']]
+            ], 500);
+        } catch (\Exception $e) {
+            // Check if it's a database connection error
+            if (strpos($e->getMessage(), 'SQLSTATE') !== false || strpos($e->getMessage(), 'Connection') !== false) {
+                return response()->json([
+                    'message' => 'Database error',
+                    'errors' => ['database' => ['Koneksi database gagal. Pastikan database server berjalan.']]
+                ], 500);
+            }
+            throw $e;
+        }
     }
 
     public function login(Request $request)

@@ -1,347 +1,187 @@
 <template>
-	<div class="page" data-name="tenant" style="background-color: #f5f7fa">
-		<div class="navbar navbar-large navbar-transparent">
-			<div class="navbar-bg" style="background-color: #fff"></div>
-			<div class="navbar-inner">
-				<div class="left">
-					<div
-						style="
-							padding-left: 16px;
-							display: flex;
-							align-items: center;
-							gap: 8px;
-						"
-					>
-						<div class="icon-container-small">
-							<i class="icon f7-icons text-color-blue" style="font-size: 20px"
-								>building_2_fill</i
-							>
-						</div>
-						<div>
-							<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
-								Lokasi Saat Ini
-							</div>
-							<div style="font-size: 14px; font-weight: 700; color: #1a1a1a">
-								Kantin LPKIA
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="right">
-					<a class="link icon-only">
-						<i class="icon f7-icons text-color-black">bell</i>
-						<span
-							class="badge color-red"
-							style="
-								position: absolute;
-								top: 8px;
-								right: 8px;
-								transform: scale(0.7);
-							"
-						>
-							${newCount()}
-						</span>
-					</a>
-					<a class="link icon-only" href="/profile">
-						<i class="icon f7-icons text-color-black">person_circle</i>
-					</a>
-				</div>
-			</div>
-		</div>
+    <div class="page" data-name="tenant" style="background-color: #f5f7fa">
+        <div class="navbar navbar-large navbar-transparent">
+            <div class="navbar-bg" style="background-color: #fff"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <div style="padding-left: 16px; display: flex; align-items: center; gap: 8px;">
+                        <div class="icon-container-small">
+                            <i class="icon f7-icons text-color-blue" style="font-size: 20px">building_2_fill</i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #8e8e93; font-weight: 500">Lokasi Saat Ini</div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1a1a1a">Kantin LPKIA</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <a class="link icon-only">
+                        <i class="icon f7-icons text-color-black">bell</i>
+                        <span class="badge color-red" style="position: absolute; top: 8px; right: 8px; transform: scale(0.7);">
+                            ${newCount()}
+                        </span>
+                    </a>
+                    <a class="link icon-only" href="/profile">
+                        <i class="icon f7-icons text-color-black">person_circle</i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-		<div class="toolbar tabbar toolbar-bottom">
-			<div class="toolbar-inner">
-				<a class="tab-link tab-link-active" data-index="0">
-					<i class="icon f7-icons">house_fill</i>
-					<span class="tabbar-label">Beranda</span>
-				</a>
-				<a class="tab-link" data-index="1" href="/tenant/menus">
-					<i class="icon f7-icons">square_list_fill</i>
-					<span class="tabbar-label">Menu</span>
-				</a>
-				<a class="tab-link" data-index="2" href="/tenant/riwayat">
-					<i class="icon f7-icons">timer_fill</i>
-					<span class="tabbar-label">Riwayat</span>
-				</a>
-				<a class="tab-link" href="/profile" data-index="3">
-					<i class="icon f7-icons">person_circle_fill</i>
-					<span class="tabbar-label">Profil</span>
-				</a>
-			</div>
-		</div>
-		<div class="page-content" style="padding-top: 70px; padding-bottom: 90px">
-			<div class="block" style="margin: 16px 0">
-				<form class="searchbar">
-					<div class="searchbar-inner">
-						<div class="searchbar-input-wrap">
-							<input type="search" placeholder="Cari pesanan..." />
-							<i class="searchbar-icon"></i>
-							<span class="input-clear-button"></span>
-						</div>
-						<span class="searchbar-disable-button"></span>
-					</div>
-				</form>
-			</div>
+        <div class="toolbar tabbar toolbar-bottom">
+            <div class="toolbar-inner">
+                <a class="tab-link tab-link-active" data-index="0">
+                    <i class="icon f7-icons">house_fill</i>
+                    <span class="tabbar-label">Beranda</span>
+                </a>
+                <a class="tab-link" data-index="1" href="/tenant/menus">
+                    <i class="icon f7-icons">square_list_fill</i>
+                    <span class="tabbar-label">Menu</span>
+                </a>
+                <a class="tab-link" data-index="2" href="/tenant/riwayat">
+                    <i class="icon f7-icons">timer_fill</i>
+                    <span class="tabbar-label">Riwayat</span>
+                </a>
+                <a class="tab-link" href="/profile" data-index="3">
+                    <i class="icon f7-icons">person_circle_fill</i>
+                    <span class="tabbar-label">Profil</span>
+                </a>
+            </div>
+        </div>
 
-			<div class="block" style="margin: 0 0 24px 0">
-				<div
-					class="display-flex justify-content-space-between text-align-center"
-					style="padding: 0 8px"
-				>
-					<div class="category-item" @click="${() => setFilter('all')}">
-						<div
-							class="category-icon ${activeFilter === 'all' ? 'active-blue' : 'bg-gray'}"
-						>
-							<i
-								class="icon f7-icons ${activeFilter === 'all' ? 'text-color-white' : 'text-color-gray'}"
-								>square_list_fill</i
-							>
-						</div>
-						<span
-							class="category-label ${activeFilter === 'all' ? 'text-color-black font-weight-bold' : ''}"
-							>Semua</span
-						>
-					</div>
+        <div class="page-content" style="padding-top: 70px; padding-bottom: 90px">
+            <div class="block" style="margin: 16px 0">
+                <form class="searchbar">
+                    <div class="searchbar-inner">
+                        <div class="searchbar-input-wrap">
+                            <input type="search" placeholder="Cari pesanan..." />
+                            <i class="searchbar-icon"></i>
+                            <span class="input-clear-button"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-					<div class="category-item" @click="${() => setFilter('new')}">
-						<div
-							class="category-icon ${activeFilter === 'new' ? 'active-blue' : 'bg-gray'}"
-						>
-							<i
-								class="icon f7-icons ${activeFilter === 'new' ? 'text-color-white' : 'text-color-gray'}"
-								>bell_fill</i
-							>
-						</div>
-						<span
-							class="category-label ${activeFilter === 'new' ? 'text-color-black font-weight-bold' : ''}"
-						>
-							Baru
-						</span>
-					</div>
+            <div class="block" style="margin: 0 0 24px 0">
+                <div class="display-flex justify-content-space-between text-align-center" style="padding: 0 8px">
+                    <div class="category-item" @click="${() => setFilter('all')}">
+                        <div class="category-icon ${activeFilter === 'all' ? 'active-blue' : 'bg-gray'}">
+                            <i class="icon f7-icons ${activeFilter === 'all' ? 'text-color-white' : 'text-color-gray'}">square_list_fill</i>
+                        </div>
+                        <span class="category-label ${activeFilter === 'all' ? 'text-color-black font-weight-bold' : ''}">Semua</span>
+                    </div>
+                    <div class="category-item" @click="${() => setFilter('new')}">
+                        <div class="category-icon ${activeFilter === 'new' ? 'active-blue' : 'bg-gray'}">
+                            <i class="icon f7-icons ${activeFilter === 'new' ? 'text-color-white' : 'text-color-gray'}">bell_fill</i>
+                        </div>
+                        <span class="category-label ${activeFilter === 'new' ? 'text-color-black font-weight-bold' : ''}">Baru</span>
+                    </div>
+                    <div class="category-item" @click="${() => setFilter('process')}">
+                        <div class="category-icon ${activeFilter === 'process' ? 'active-blue' : 'bg-gray'}">
+                            <i class="icon f7-icons ${activeFilter === 'process' ? 'text-color-white' : 'text-color-gray'}">flame_fill</i>
+                        </div>
+                        <span class="category-label ${activeFilter === 'process' ? 'text-color-black font-weight-bold' : ''}">Proses</span>
+                    </div>
+                    <div class="category-item" @click="${() => setFilter('done')}">
+                        <div class="category-icon ${activeFilter === 'done' ? 'active-blue' : 'bg-gray'}">
+                            <i class="icon f7-icons ${activeFilter === 'done' ? 'text-color-white' : 'text-color-gray'}">checkmark_circle_fill</i>
+                        </div>
+                        <span class="category-label ${activeFilter === 'done' ? 'text-color-black font-weight-bold' : ''}">Selesai</span>
+                    </div>
+                </div>
+            </div>
 
-					<div class="category-item" @click="${() => setFilter('process')}">
-						<div
-							class="category-icon ${activeFilter === 'process' ? 'active-blue' : 'bg-gray'}"
-						>
-							<i
-								class="icon f7-icons ${activeFilter === 'process' ? 'text-color-white' : 'text-color-gray'}"
-								>flame_fill</i
-							>
-						</div>
-						<span
-							class="category-label ${activeFilter === 'process' ? 'text-color-black font-weight-bold' : ''}"
-							>Proses</span
-						>
-					</div>
+            <div class="block-title" style="margin-left: 20px; font-weight: 700; color: #333">
+                ${activeFilter === 'all' ? 'Semua Pesanan' : activeFilter === 'new' ? 'Pesanan Baru Masuk' : activeFilter === 'process' ? 'Sedang Diproses' : 'Riwayat Selesai'}
+            </div>
 
-					<div class="category-item" @click="${() => setFilter('done')}">
-						<div
-							class="category-icon ${activeFilter === 'done' ? 'active-blue' : 'bg-gray'}"
-						>
-							<i
-								class="icon f7-icons ${activeFilter === 'done' ? 'text-color-white' : 'text-color-gray'}"
-								>checkmark_circle_fill</i
-							>
-						</div>
-						<span
-							class="category-label ${activeFilter === 'done' ? 'text-color-black font-weight-bold' : ''}"
-							>Selesai</span
-						>
-					</div>
-				</div>
-			</div>
+            <div class="list no-hairlines-md" style="margin-top: 0; padding: 0 16px">
+                ${getFilteredOrders().length === 0 ? $h`
+                <div class="block text-align-center" style="margin-top: 30px; opacity: 0.5">
+                    <i class="icon f7-icons" style="font-size: 48px; color: #ccc">square_list</i>
+                    <p>Tidak ada pesanan</p>
+                </div>
+                ` : $h`
+                ${getFilteredOrders().map((order) => $h`
+                <div class="card-replica" @click="${() => openActionSheet(order)}">
+                    <div class="card-top">
+                        <div class="order-id">#${order.id}</div>
+                        <div class="order-time">${order.time}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="food-thumb">
+                            <i class="icon f7-icons text-color-white">bag_fill</i>
+                        </div>
+                        <div class="food-details">
+                            <div class="food-title">${order.items} Item Pesanan</div>
+                            <div class="food-subtitle">${order.desc}</div>
+                            <div class="display-flex" style="gap: 4px; margin-top: 8px; flex-wrap: wrap;">
+                                <div class="rating-pill">
+                                    <i class="icon f7-icons size-12" style="color:white">person_fill</i>
+                                    <span>${order.customer}</span>
+                                </div>
+                                <div class="status-mini est-time-label" style="background: #5856d6; color: white; display: flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 11px;">
+                                    <i class="icon f7-icons" style="font-size: 12px">timer</i>
+                                    <span>Est: ${order.estimation}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer-custom">
+                        <div class="price">${order.price}</div>
+                        ${order.status === 'new' ? $h`<div class="status-mini bg-red">Perlu Konfirmasi</div>` 
+                        : order.status === 'process' ? $h`<div class="status-mini bg-orange">Sedang Dimasak</div>` 
+                        : $h`<div class="status-mini bg-green">Selesai</div>`}
+                    </div>
+                </div>
+                `)}
+                `}
+            </div>
+        </div>
 
-			<div
-				class="block-title"
-				style="margin-left: 20px; font-weight: 700; color: #333"
-			>
-				${activeFilter === 'all' ? 'Semua Pesanan' : activeFilter === 'new' ?
-				'Pesanan Baru Masuk' : activeFilter === 'process' ? 'Sedang Diproses' :
-				'Riwayat Selesai'}
-			</div>
+        <div class="sheet-modal my-sheet" style="border-radius: 16px 16px 0 0; height: auto">
+            <div class="sheet-modal-inner">
+                <div class="block-title text-align-center" style="font-size: 18px; margin-top: 24px">Update Status Pesanan</div>
+                <div class="block">
+                    ${selectedOrder ? $h`
+                    <div class="text-align-center" style="margin-bottom: 20px">
+                        <div style="font-size: 24px; font-weight: 800; color: #2196f3">#${selectedOrder.id}</div>
+                        <div style="color: #666">${selectedOrder.desc}</div>
+                        
+                        ${getItemsWithNotes().length ? $h`
+                        <div style="margin-top: 14px">
+                            <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px">Catatan Pembeli</div>
+                            ${getItemsWithNotes().map(it => $h`
+                            <div style="background: #fffbe6; padding: 10px 12px; border-radius: 10px; font-size: 13px; border-left: 4px solid #ffc107; margin-bottom: 8px; text-align: left;">
+                                <b>${it.menu_name}</b>: ${it.notes}
+                            </div>
+                            `)}
+                        </div>
+                        ` : ''}
+                    </div>
 
-			<div class="list no-hairlines-md" style="margin-top: 0; padding: 0 16px">
-				${getFilteredOrders().length === 0 ? $h`
-				<div
-					class="block text-align-center"
-					style="margin-top: 30px; opacity: 0.5"
-				>
-					<i class="icon f7-icons" style="font-size: 48px; color: #ccc"
-						>square_list</i
-					>
-					<p>Tidak ada pesanan</p>
-				</div>
-				` : $h` ${getFilteredOrders().map((order) => $h`
-				<div class="card-replica" @click="${() => openActionSheet(order)}">
-					<div class="card-top">
-						<div class="order-id">#${order.id}</div>
-						<div class="order-time">${order.time}</div>
-					</div>
+                    <div class="sheet-actions display-flex flex-direction-column" style="gap: 10px; padding: 0 16px 16px 16px;">
+    
+                        ${selectedOrder.status === 'new' ? $h`
+                            <button @click="${approveAndProcess}" class="button button-large button-fill color-green">
+                                <i class="icon f7-icons size-18" style="margin-right: 8px">checkmark_circle_fill</i>
+                                Approve & Proses
+                            </button>
+                        ` : ''}
 
-					<div class="card-body">
-						<div class="food-thumb">
-							<i class="icon f7-icons text-color-white">bag_fill</i>
-						</div>
-
-						<div class="food-details">
-							<div class="food-title">${order.items} Item Pesanan</div>
-							<div class="food-subtitle">${order.desc}</div>
-							<div class="rating-pill">
-								<i class="icon f7-icons size-12 text-color-white"
-									>person_fill</i
-								>
-								<span>${order.customer}</span>
-							</div>
-						</div>
-					</div>
-
-					<div class="card-footer-custom">
-						<div class="price">Rp ${order.price}</div>
-
-						${order.status === 'new' ? $h`
-						<div class="status-mini bg-red">Perlu Konfirmasi</div>
-						` : order.status === 'process' ? $h`
-						<div class="status-mini bg-orange">Sedang Dimasak</div>
-						` : $h`
-						<div class="status-mini bg-green">Selesai</div>
-						`}
-					</div>
-				</div>
-				`)} `}
-			</div>
-		</div>
-
-		<div
-			class="sheet-modal my-sheet"
-			style="border-radius: 16px 16px 0 0; height: auto"
-		>
-			<div class="sheet-modal-inner">
-				<div
-					class="block-title text-align-center"
-					style="font-size: 18px; margin-top: 24px"
-				>
-					Update Status Pesanan
-				</div>
-				<div class="block">
-					${selectedOrder ? $h`
-					<div class="text-align-center" style="margin-bottom: 20px">
-						<div style="font-size: 24px; font-weight: 800; color: #2196f3">
-							#${selectedOrder.id}
-						</div>
-						<div style="color: #666">${selectedOrder.desc}</div>
-
-						${getItemsWithNotes().length ? $h`
-						<div style="margin-top: 14px">
-							<div
-								style="font-weight: 700; margin-bottom: 8px; font-size: 14px"
-							>
-								Catatan Pembeli
-							</div>
-
-							${getItemsWithNotes().length ? $h`
-							<div style="margin-top: 14px">
-								${getItemsWithNotes().map(it => $h`
-								<div
-									style="
-										background: #fffbe6;
-										padding: 10px 12px;
-										border-radius: 10px;
-										font-size: 13px;
-										border-left: 4px solid #ffc107;
-										margin-bottom: 8px;
-									"
-								>
-									<b>${it.menu_name}</b><br />
-									${it.notes}
-								</div>
-								`)}
-							</div>
-							` : ''}
-						</div>
-						` : ''}
-					</div>
-
-					<div class="popup popup-proof">
-						<div class="page">
-							<div class="navbar">
-								<div class="navbar-inner">
-									<div class="left"><a class="link popup-close">Tutup</a></div>
-									<div class="title">Bukti Pembayaran</div>
-								</div>
-							</div>
-
-							<div class="page-content" style="padding: 16px; background: #fff">
-								<img
-									id="proofImg"
-									style="width: 100%; border-radius: 18px; display: block"
-								/>
-								<div style="height: 14px"></div>
-								<div
-									class="text-align-center"
-									style="color: #8e8e93; font-size: 12px"
-								>
-									Pastikan nama & nominal sesuai sebelum approve.
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="sheet-actions">
-						<a class="button button-large button-fill color-gray sheet-close">
-							Tutup
-						</a>
-
-						${selectedOrder.payment_status === 'waiting_confirmation' ? $h`
-						<div class="sheet-actions-right">
-							${selectedOrder.payment_method === 'qris' &&
-							selectedOrder.payment_proof ? $h`
-							<a
-								class="button button-large button-outline btn-proof"
-								@click="${openProof}"
-							>
-								Lihat Bukti
-							</a>
-							` : $h``}
-
-							<a
-								class="button button-large button-fill color-blue sheet-close"
-								@click="${approveAndProcess}"
-							>
-								Approve
-							</a>
-
-							<a
-								class="button button-large button-outline color-red"
-								@click="${rejectPayment}"
-							>
-								Tolak
-							</a>
-						</div>
-						` : selectedOrder.status === 'process' ? $h`
-						<a
-							class="button button-large button-fill color-green sheet-close"
-							@click="${() => updateStatus('done')}"
-						>
-							Tandai Selesai
-						</a>
-						` : selectedOrder.status === 'done' ? $h`
-						<a class="button button-large button-outline color-gray" disabled>
-							Sudah Selesai
-						</a>
-						` : $h`
-						<a class="button button-large button-outline color-gray" disabled>
-							Menunggu Pembayaran
-						</a>
-						`}
-					</div>
-
-					` : $h`
-					<div></div>
-					`}
-				</div>
-			</div>
-		</div>
-	</div>
+                        ${selectedOrder.status === 'process' ? $h`
+                            <button @click="${() => updateStatus('done')}" class="button button-large button-fill color-blue">
+                                Tandai Selesai
+                            </button>
+                        ` : ''}
+                        
+                        <button class="button button-large color-red sheet-close">Tutup / Batal</button>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
@@ -524,342 +364,209 @@
 </style>
 
 <script>
-	import { getToken } from "./../js/auth.js";
+    import { getToken } from "./../js/auth.js";
 
-	export default (props, { $h, $on, $update, $f7 }) => {
-		const API_BASE = "http://localhost:8000/api";
-		const STORAGE_BASE = "http://localhost:8000/storage/";
+    export default (props, { $h, $on, $update, $f7 }) => {
+        const API_BASE = "http://localhost:8000/api";
+        
+        let activeFilter = "all";
+        let searchQuery = "";
+        let selectedOrder = null;
+        let orders = [];
+        let loading = false;
 
-		let activeFilter = "all";
-		let searchQuery = "";
-		let selectedOrder = null;
+        const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
 
-		function getItemsWithNotes() {
-			if (!selectedOrder?.raw?.items) return [];
-			return selectedOrder.raw.items.filter((it) => it.notes);
-		}
+        function shortTime(dt) {
+            try {
+                const d = new Date(dt);
+                return d.toLocaleString("id-ID", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+            } catch { return "-"; }
+        }
 
-		// data dari backend
-		let orders = [];
-		let loading = false;
+        function buildDesc(items) {
+            if (!Array.isArray(items) || !items.length) return "-";
+            return items.map((it) => `${it.menu_name} (${it.qty})`).join(", ");
+        }
 
-		const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+        function itemsCount(items) {
+            if (!Array.isArray(items)) return 0;
+            return items.reduce((sum, it) => sum + Number(it.qty || 0), 0);
+        }
 
-		function shortTime(dt) {
-			try {
-				const d = new Date(dt);
-				return d.toLocaleString("id-ID", {
-					day: "2-digit",
-					month: "short",
-					hour: "2-digit",
-					minute: "2-digit",
-				});
-			} catch {
-				return "-";
-			}
-		}
+        function formatTimeFromSeconds(totalSeconds) {
+            if (totalSeconds <= 0) return "Siap Disajikan!";
+            const hours = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
 
-		function buildDesc(items) {
-			if (!Array.isArray(items) || !items.length) return "-";
-			return items.map((it) => `${it.menu_name} (${it.qty})`).join(", ");
-		}
-
-		function itemsCount(items) {
-			if (!Array.isArray(items)) return 0;
-			return items.reduce((sum, it) => sum + Number(it.qty || 0), 0);
-		}
-
-		function normalizeOrder(o) {
+        function normalizeOrder(o) {
 			return {
 				id: o.id,
 				time: shortTime(o.created_at),
+				estimationSeconds: o.estimation_time ? o.estimation_time * 60 : 0,
+				estimation: o.estimation_time !== null ? formatTimeFromSeconds(o.estimation_time * 60) : "Belum diatur",
 				items: itemsCount(o.items),
 				desc: buildDesc(o.items),
 				price: rupiah(o.grand_total),
 				customer: o.user?.name || "User",
-				status: o.status, // new / process / done / cancelled
-				payment_status: o.payment_status || "unpaid",
-				payment_method: o.payment_method || null,
-				payment_proof: o.payment_proof || null,
-				notes: o.notes || null,
-				raw: o,
+				status: o.status,
+				payment_status: o.payment_status,
+				raw: o
 			};
 		}
 
-		async function fetchTenantOrders() {
-			const token = getToken();
-			if (!token) throw new Error("Silakan login dulu");
+        async function loadOrders() {
+            try {
+                loading = true; $update();
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/tenant/orders`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await res.json();
+                orders = data.map(normalizeOrder);
+            } catch (err) { console.error(err); }
+            finally { loading = false; $update(); }
+        }
 
-			const res = await fetch(`${API_BASE}/tenant/orders`, {
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
+        function getFilteredOrders() {
+            let filtered = orders;
+            if (activeFilter !== "all") filtered = orders.filter(o => o.status === activeFilter);
+            if (searchQuery) {
+                filtered = filtered.filter(o => o.customer.toLowerCase().includes(searchQuery.toLowerCase()) || o.id.toString().includes(searchQuery));
+            }
+            return filtered;
+        }
 
-			const data = await res.json().catch(() => []);
-			if (!res.ok)
-				throw new Error(data?.message || "Gagal mengambil pesanan tenant");
-			return Array.isArray(data) ? data : [];
-		}
+        function replaceOrder(newRaw) {
+            const idx = orders.findIndex(o => o.id === newRaw.id);
+            if (idx !== -1) {
+                orders[idx] = normalizeOrder(newRaw);
+                $update();
+            }
+        }
 
-		async function loadOrders() {
-			try {
-				loading = true;
-				$update();
+        async function approveAndProcess() {
+            $f7.dialog.prompt("Berapa menit estimasi penyajian?", "Estimasi Waktu", async (minutes) => {
+                if (!minutes || isNaN(minutes)) {
+                    $f7.dialog.alert("Harap masukkan angka menit yang valid.");
+                    return;
+                }
+                try {
+                    $f7.dialog.preloader("Memproses...");
+                    const token = getToken();
 
-				const data = await fetchTenantOrders();
-				orders = data.map(normalizeOrder);
-			} finally {
-				loading = false;
-				$update();
-			}
-		}
+                    // 1. Approve Payment
+                    await fetch(`${API_BASE}/tenant/payments/${selectedOrder.id}/approve`, {
+                        method: "PATCH",
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
 
-		// filter + search
-		function getFilteredOrders() {
-			let list = orders;
+                    // 2. Update Status & Estimasi
+                    const res = await fetch(`${API_BASE}/tenant/orders/${selectedOrder.id}/status`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                        body: JSON.stringify({ status: "process", estimation_time: minutes })
+                    });
 
-			if (activeFilter !== "all") {
-				list = list.filter((o) => o.status === activeFilter);
-			}
+                    const stRes = await res.json();
+                    replaceOrder(stRes.order || stRes);
 
-			if (searchQuery.trim()) {
-				const q = searchQuery.toLowerCase();
-				list = list.filter((o) => {
-					const hay = `${o.id} ${o.customer} ${o.desc}`.toLowerCase();
-					return hay.includes(q);
-				});
-			}
+                    $f7.dialog.close();
+                    $f7.toast.create({ text: "Pesanan diproses!", closeTimeout: 2000 }).open();
+                } catch (err) {
+                    $f7.dialog.close();
+                    $f7.dialog.alert("Gagal: " + err.message);
+                }
+            });
+        }
 
-			return list;
-		}
+        async function updateStatus(newStatus) {
+            try {
+                $f7.dialog.preloader("Updating...");
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/tenant/orders/${selectedOrder.id}/status`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                replaceOrder(data.order || data);
+                $f7.dialog.close();
+            } catch (err) {
+                $f7.dialog.close();
+                $f7.dialog.alert("Gagal update status");
+            }
+        }
 
-		const setFilter = (filterName) => {
-			activeFilter = filterName;
-			$update();
-		};
+        const openActionSheet = (order) => {
+            selectedOrder = order;
+            $update();
+            $f7.sheet.open(".my-sheet");
+        };
 
-		const openActionSheet = (order) => {
-			selectedOrder = order;
-			$update();
-			$f7.sheet.open(".my-sheet");
-		};
+        const setFilter = (f) => { activeFilter = f; $update(); };
+        const getItemsWithNotes = () => selectedOrder?.raw?.items?.filter(it => it.notes) || [];
+        const newCount = () => orders.filter(o => o.status === 'new').length;
 
-		// ===== ACTIONS TO BACKEND =====
-		async function patchTenantPayment(orderId, action) {
-			const token = getToken();
-			const res = await fetch(`${API_BASE}/tenant/orders/${orderId}/payment`, {
-				method: "PATCH",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify({ action }), // approve / reject
-			});
+        // Fungsi untuk update estimation ke backend
+        async function saveEstimationToBackend(orderId, newEstimationMinutes) {
+            try {
+                const token = getToken();
+                await fetch(`${API_BASE}/tenant/orders/${orderId}/status`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ status: "process", estimation_time: newEstimationMinutes })
+                });
+            } catch (err) {
+                console.error("Gagal simpan estimation:", err);
+            }
+        }
 
-			const data = await res.json().catch(() => ({}));
-			if (!res.ok)
-				throw new Error(data?.message || "Gagal verifikasi pembayaran");
-			return data;
-		}
+        $on("pageInit", () => {
+            loadOrders();
 
-		async function patchTenantStatus(orderId, status) {
-			const token = getToken();
-			const res = await fetch(`${API_BASE}/tenant/orders/${orderId}/status`, {
-				method: "PATCH",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify({ status }), // process / done / cancelled
-			});
+            // Logika Countdown setiap detik
+            let lastSaveTime = {}; // Track waktu terakhir save per order
+            
+            setInterval(() => {
+                let hasChanged = false;
 
-			const data = await res.json().catch(() => ({}));
-			if (!res.ok) throw new Error(data?.message || "Gagal update status");
-			return data;
-		}
+                orders = orders.map(o => {
+                    // Cek kalau statusnya sedang proses dan ada estimasi dalam detik
+                    if (o.status === 'process' && o.estimationSeconds !== undefined && o.estimationSeconds > 0) {
+                        o.estimationSeconds--;
+                        o.estimation = formatTimeFromSeconds(o.estimationSeconds);
+                        
+                        // Update backend minutes (bulatkan ke atas)
+                        const newMinutes = Math.ceil(o.estimationSeconds / 60);
+                        o.raw.estimation_time = newMinutes;
+                        hasChanged = true;
+                        
+                        // Save ke backend hanya setiap 60 detik (setiap kali menit detik berubah)
+                        const now = Date.now();
+                        if (!lastSaveTime[o.id] || now - lastSaveTime[o.id] >= 60000) {
+                            saveEstimationToBackend(o.id, newMinutes);
+                            lastSaveTime[o.id] = now;
+                        }
+                    } else if (o.status === 'process' && o.estimationSeconds <= 0) {
+                        o.estimation = "Siap Disajikan!";
+                        o.estimationSeconds = 0;
+                        o.raw.estimation_time = 0;
+                        hasChanged = true;
+                    }
+                    return o;
+                });
 
-		function replaceOrder(updatedRaw) {
-			const updated = normalizeOrder(updatedRaw);
-			const idx = orders.findIndex((x) => x.id === updated.id);
-			if (idx >= 0) orders[idx] = updated;
-			else orders.unshift(updated);
+                // Kalau ada perubahan, paksa UI update
+                if (hasChanged) {
+                    $update();
+                }
+            }, 1000); // 1 Detik
+        });
 
-			// sync selected
-			if (selectedOrder && selectedOrder.id === updated.id) {
-				selectedOrder = updated;
-			}
-			$update();
-		}
-
-		async function approvePayment() {
-			try {
-				$f7.dialog.preloader("Memproses...");
-				const res = await patchTenantPayment(selectedOrder.id, "approve");
-				$f7.dialog.close();
-
-				// backend balikin { order: ... } atau { order: fresh }
-				const updatedRaw = res.order || res;
-				replaceOrder(updatedRaw);
-
-				$f7.toast
-					.create({ text: "Pembayaran disetujui ✅", closeTimeout: 1600 })
-					.open();
-			} catch (err) {
-				$f7.dialog.close();
-				$f7.dialog.alert(String(err.message || err), "Error");
-			}
-		}
-
-		async function rejectPayment() {
-			try {
-				$f7.dialog.confirm(
-					"Yakin tolak pembayaran ini?",
-					"Konfirmasi",
-					async () => {
-						try {
-							$f7.dialog.preloader("Memproses...");
-							const res = await patchTenantPayment(selectedOrder.id, "reject");
-							$f7.dialog.close();
-
-							const updatedRaw = res.order || res;
-							replaceOrder(updatedRaw);
-
-							$f7.toast
-								.create({ text: "Pembayaran ditolak ❌", closeTimeout: 1600 })
-								.open();
-						} catch (err) {
-							$f7.dialog.close();
-							$f7.dialog.alert(String(err.message || err), "Error");
-						}
-					}
-				);
-			} catch {}
-		}
-
-		async function updateStatus(newStatus) {
-			try {
-				// guard: jangan bisa process kalau belum paid
-				if (
-					newStatus === "process" &&
-					selectedOrder.payment_status !== "paid"
-				) {
-					$f7.dialog.alert(
-						"Pembayaran belum disetujui (paid).",
-						"Tidak bisa diproses"
-					);
-					return;
-				}
-
-				$f7.dialog.preloader("Memproses...");
-				const res = await patchTenantStatus(selectedOrder.id, newStatus);
-				$f7.dialog.close();
-
-				const updatedRaw = res.order || res;
-				replaceOrder(updatedRaw);
-
-				if (newStatus === "process") activeFilter = "process";
-				if (newStatus === "done") activeFilter = "done";
-
-				$f7.toast
-					.create({ text: "Status diupdate ✅", closeTimeout: 1400 })
-					.open();
-			} catch (err) {
-				$f7.dialog.close();
-				$f7.dialog.alert(String(err.message || err), "Error");
-			}
-		}
-
-		function proofUrl(path) {
-			if (!path) return "";
-			if (String(path).startsWith("http")) return path;
-			return STORAGE_BASE + path;
-		}
-
-		function openProof() {
-			// hanya untuk QRIS + ada proof
-			if (!selectedOrder?.payment_proof) {
-				$f7.dialog.alert("Bukti pembayaran tidak ditemukan.");
-				return;
-			}
-			const img = document.getElementById("proofImg");
-			if (img) img.src = proofUrl(selectedOrder.payment_proof);
-
-			// ⬇️ INI KUNCI NYA
-			$f7.sheet.close(".my-sheet");
-			$f7.popup.open(".popup-proof");
-		}
-
-		// approve = set paid + status process (sedang diproses)
-		async function approveAndProcess() {
-			try {
-				$f7.dialog.confirm(
-					"Approve pembayaran dan mulai proses pesanan?",
-					"Konfirmasi",
-					async () => {
-						try {
-							$f7.dialog.preloader("Memproses...");
-
-							// 1) approve payment -> paid
-							const payRes = await patchTenantPayment(
-								selectedOrder.id,
-								"approve"
-							);
-							const payOrder = payRes.order || payRes;
-
-							// sync lokal dulu
-							replaceOrder(payOrder);
-
-							// 2) langsung ubah status jadi process
-							const stRes = await patchTenantStatus(
-								selectedOrder.id,
-								"process"
-							);
-							const stOrder = stRes.order || stRes;
-
-							replaceOrder(stOrder);
-
-							$f7.dialog.close();
-							$f7.toast
-								.create({
-									text: "Approved! Pesanan masuk proses ✅",
-									closeTimeout: 1800,
-								})
-								.open();
-						} catch (err) {
-							$f7.dialog.close();
-							$f7.dialog.alert(String(err.message || err), "Error");
-						}
-					}
-				);
-			} catch (err) {
-				$f7.dialog.alert(String(err.message || err), "Error");
-			}
-		}
-
-		// badge count order status new
-		function newCount() {
-			return orders.filter((o) => o.status === "new").length;
-		}
-
-		// ===== lifecycle =====
-		$on("pageInit", async () => {
-			// bind search input (pakai DOM biasa karena form kamu plain)
-			const input = document.querySelector('input[type="search"]');
-			if (input) {
-				input.addEventListener("input", (e) => {
-					searchQuery = e.target.value || "";
-					$update();
-				});
-			}
-
-			await loadOrders();
-		});
-
-		// expose functions
-		return $render;
-	};
+        return $render;
+    };
 </script>

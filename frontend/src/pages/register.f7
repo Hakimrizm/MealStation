@@ -107,9 +107,15 @@
 					let message = "Register gagal";
 
 					if (err.errors) {
-						message = Object.values(err.errors)
-							.map((e) => e[0])
-							.join("<br>");
+						if (err.errors.database) {
+							message = err.errors.database[0];
+						} else {
+							message = Object.values(err.errors)
+								.map((e) => e[0])
+								.join("<br>");
+						}
+					} else if (err.message) {
+						message = err.message;
 					}
 
 					$f7.dialog.alert(message, "Register Gagal");

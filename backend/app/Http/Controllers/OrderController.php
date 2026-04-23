@@ -128,9 +128,9 @@ class OrderController extends Controller
 
         $request->validate([
             'status' => 'required|in:new,process,done,cancelled',
+            'estimation_time' => 'nullable|integer', // Tambahkan validasi ini
         ]);
 
-        // Optional: aturan transisi biar rapi
         $from = $order->status;
         $to = $request->status;
 
@@ -147,11 +147,33 @@ class OrderController extends Controller
             ], 422);
         }
 
-        $order->update(['status' => $to]);
+        // Siapkan data yang akan diupdate
+        $updateData = ['status' => $to];
 
+        // Jika ada input estimasi waktu, masukkan ke array update
+        if ($request->has('estimation_time')) {
+            $updateData['estimation_time'] = $request->estimation_time;
+        }
+
+        $order->update($updateData);
+
+        // Load data terbaru
+        $order = $order->fresh()->load(['items', 'user:id,name']);
+
+        // Return format sesuai permintaanmu agar Frontend mudah membaca
         return response()->json([
+            'status' => 'success',
             'message' => 'Status order diupdate',
-            'order' => $order->fresh()->load(['items', 'user:id,name'])
+            'order' => [
+                'id' => $order->id,
+                'status' => $order->status,
+                'estimation_time' => $order->estimation_time, // Pastikan kolom ini ada di database/model
+                'items' => $order->items,
+                'user' => $order->user,
+                'grand_total' => $order->grand_total,
+                'payment_status' => $order->payment_status,
+                'created_at' => $order->created_at,
+            ]
         ]);
     }
 

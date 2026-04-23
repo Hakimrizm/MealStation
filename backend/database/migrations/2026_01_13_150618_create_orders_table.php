@@ -18,11 +18,11 @@ return new class extends Migration
             $table->enum('status', ['new', 'process', 'done', 'cancelled'])->default('new');
             $table->unsignedBigInteger('grand_total')->default(0);
             $table->text('notes')->nullable();
-            $table->enum('payment_method', ['cash','qris'])->nullable()->after('notes');
+            $table->enum('payment_method', ['cash','qris'])->nullable();
             $table->enum('payment_status', ['unpaid','waiting_confirmation','paid','rejected'])
-                ->default('unpaid')->after('payment_method');
-            $table->string('payment_proof')->nullable()->after('payment_status');
-            $table->timestamp('paid_at')->nullable()->after('payment_proof');
+                ->default('unpaid');
+            $table->string('payment_proof')->nullable();
+            $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
     }
