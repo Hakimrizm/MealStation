@@ -69,11 +69,21 @@
 					Menu Saya
 				</div>
 
-				<!-- tombol tambah -->
-				<a class="button button-fill" href="/tenant/menu/create">
-					<i class="icon f7-icons" style="font-size: 18px">plus</i>
-					Tambah
-				</a>
+				<div style="display: flex; gap: 8px">
+					<a
+						class="button button-outline"
+						id="btn-open-qr-toko"
+						style="font-weight: 700"
+					>
+						<i class="icon f7-icons" style="font-size: 16px">qrcode</i>
+						QR Toko
+					</a>
+
+					<a class="button button-fill" href="/tenant/menu/create">
+						<i class="icon f7-icons" style="font-size: 18px">plus</i>
+						Tambah
+					</a>
+				</div>
 			</div>
 
 			<!-- Search (opsional) -->
@@ -106,6 +116,85 @@
 			</div>
 		</div>
 
+		<div class="popup popup-qr-toko" style="background: transparent">
+			<div class="page" style="background: transparent">
+				<div
+					class="page-content display-flex align-items-center justify-content-center"
+				>
+					<div
+						style="
+							width: 86%;
+							max-width: 320px;
+							background: #f2f2fb;
+							border-radius: 20px;
+							padding: 18px;
+							box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+						"
+					>
+						<div style="font-size: 32px; font-weight: 500; color: #4d4d5d">
+							QR Menu Toko
+						</div>
+						<div
+							style="
+								margin-top: 10px;
+								font-size: 14px;
+								line-height: 1.45;
+								color: #6b7280;
+							"
+						>
+							Scan QR ini agar pembeli langsung melihat menu toko Anda.
+						</div>
+
+						<div
+							style="
+								margin-top: 14px;
+								background: #fff;
+								padding: 10px;
+								border-radius: 10px;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+							"
+						>
+							<img
+								id="qr-toko-image"
+								alt="QR Menu Toko"
+								style="width: 190px; height: 190px; object-fit: contain"
+							/>
+						</div>
+
+						<div
+							id="qr-toko-link-preview"
+							style="
+								margin-top: 12px;
+								font-size: 10px;
+								text-align: center;
+								color: #9ca3af;
+								word-break: break-all;
+							"
+						></div>
+
+						<div
+							style="
+								margin-top: 14px;
+								display: flex;
+								justify-content: space-between;
+								gap: 12px;
+							"
+						>
+							<a class="link" id="btn-copy-qr-link" style="font-weight: 700"
+								>Salin Link</a
+							>
+							<a class="link" id="btn-download-qr" style="font-weight: 700"
+								>Download QR</a
+							>
+							<a class="link popup-close" style="font-weight: 700">Tutup</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Tabbar -->
 		<div class="toolbar tabbar toolbar-bottom">
 			<div class="toolbar-inner">
@@ -135,6 +224,8 @@
 
 	export default (props, { $, $on, $f7 }) => {
 		const API_BASE = "http://localhost:8000/api";
+		let tenantUser = null;
+		let tenantMenuLink = "";
 
 		const rupiah = (n) => {
 			const num = Number(n || 0);
@@ -168,6 +259,110 @@
 				throw new Error(msg);
 			}
 			return result; // array menus
+		}
+
+		async function fetchCurrentUser() {
+			const token = getToken();
+			const res = await fetch(`${API_BASE}/user`, {
+				headers: {
+					Accept: "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
+			const result = await res.json().catch(() => ({}));
+			if (!res.ok) {
+				throw new Error(result?.message || "Gagal mengambil data user");
+			}
+
+			return result?.user || null;
+		}
+
+		function buildTenantMenuLink() {
+			if (!tenantUser?.id) return "";
+
+			const base = window?.location?.origin || "http://localhost:5173";
+			const url = new URL("/", base);
+			url.searchParams.set("tenant", String(tenantUser.id));
+			return url.toString();
+		}
+
+		function buildQrImageUrl(value) {
+			return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
+				value
+			)}`;
+		}
+
+		async function copyText(text) {
+			if (navigator?.clipboard?.writeText) {
+				await navigator.clipboard.writeText(text);
+				return;
+			}
+
+			const temp = document.createElement("textarea");
+			temp.value = text;
+			document.body.appendChild(temp);
+			temp.select();
+			document.execCommand("copy");
+			document.body.removeChild(temp);
+		}
+
+		function openQrPopup() {
+			if (!tenantMenuLink) {
+				$f7.dialog.alert("Link menu toko belum tersedia.");
+				return;
+			}
+
+			$("#qr-toko-image").attr("src", buildQrImageUrl(tenantMenuLink));
+			$("#qr-toko-link-preview").text(tenantMenuLink);
+			$f7.popup.open(".popup-qr-toko");
+
+			setTimeout(() => {
+				const backdrop = document.querySelector(".popup-backdrop");
+				if (backdrop) backdrop.style.background = "transparent";
+			}, 0);
+		}
+
+		function resetPopupBackdrop() {
+			const backdrop = document.querySelector(".popup-backdrop");
+			if (backdrop) backdrop.style.background = "";
+		}
+
+		function triggerDownload(url, filename) {
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = filename;
+			a.target = "_blank";
+			a.rel = "noopener noreferrer";
+			a.className = "external";
+			a.setAttribute("data-no-router", "true");
+			a.style.display = "none";
+			document.body.appendChild(a);
+			a.click();
+			setTimeout(() => {
+				document.body.removeChild(a);
+			}, 0);
+		}
+
+		async function downloadQrImage() {
+			if (!tenantMenuLink) return;
+
+			const qrUrl = buildQrImageUrl(tenantMenuLink);
+			const filename = `qr-menu-toko-${tenantUser?.id || "tenant"}.png`;
+
+			try {
+				const res = await fetch(qrUrl, { mode: "cors" });
+				if (!res.ok) throw new Error("Gagal mengambil gambar QR");
+
+				const blob = await res.blob();
+				const objectUrl = URL.createObjectURL(blob);
+				triggerDownload(objectUrl, filename);
+				setTimeout(() => {
+					URL.revokeObjectURL(objectUrl);
+				}, 1500);
+			} catch {
+				triggerDownload(qrUrl, filename);
+			}
 		}
 
 		async function deleteMenu(menuId) {
@@ -303,9 +498,42 @@
 				}
 
 				$f7.dialog.preloader("Memuat menu...");
+				tenantUser = await fetchCurrentUser();
+				tenantMenuLink = buildTenantMenuLink();
 				const menus = await fetchMyMenus();
 				$f7.dialog.close();
 				renderMenus(menus);
+
+				$("#btn-open-qr-toko").on("click", function () {
+					openQrPopup();
+				});
+
+				$("#btn-copy-qr-link").on("click", async function () {
+					if (!tenantMenuLink) return;
+					try {
+						await copyText(tenantMenuLink);
+						$f7.toast
+							.create({ text: "Link berhasil disalin", closeTimeout: 1800 })
+							.open();
+					} catch {
+						$f7.dialog.alert("Gagal menyalin link.");
+					}
+				});
+
+				$("#btn-download-qr").on("click", async function () {
+					try {
+						await downloadQrImage();
+						$f7.toast
+							.create({ text: "QR berhasil didownload", closeTimeout: 1800 })
+							.open();
+					} catch {
+						$f7.dialog.alert("Gagal mendownload QR.");
+					}
+				});
+
+				$(".popup-qr-toko").on("popup:closed", function () {
+					resetPopupBackdrop();
+				});
 			} catch (err) {
 				$f7.dialog.close();
 				console.log(err);

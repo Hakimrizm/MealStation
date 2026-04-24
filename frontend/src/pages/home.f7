@@ -29,6 +29,28 @@
 				<div class="ptr-arrow"></div>
 			</div>
 
+			<div
+				id="tenant-filter-banner"
+				style="display: none; padding: 8px 15px 0 15px"
+			>
+				<div
+					style="
+						display: inline-flex;
+						align-items: center;
+						gap: 8px;
+						padding: 7px 12px;
+						border-radius: 999px;
+						background: #eef2ff;
+						color: #3730a3;
+						font-size: 12px;
+						font-weight: 700;
+					"
+				>
+					<i class="icon f7-icons" style="font-size: 14px">building_2_fill</i>
+					<span id="tenant-filter-text">Menu Toko</span>
+				</div>
+			</div>
+
 			<!-- SEARCH BAR -->
 			<div
 				class="searchbar searchbar-inline padding-horizontal padding-vertical-half"
@@ -122,6 +144,10 @@
 		const API_BASE = "http://localhost:8000/api";
 		const STORAGE_BASE = "http://localhost:8000/storage/";
 		const token = getToken();
+		const tenantQueryId =
+			props?.f7route?.query?.tenant ||
+			new URLSearchParams(window.location.search).get("tenant") ||
+			null;
 
 		let allMenus = [];
 		let activeCategory = "semua";
@@ -215,6 +241,9 @@
 				document.querySelector(".searchbar input")?.value?.toLowerCase() || "";
 
 			const filtered = allMenus.filter((m) => {
+				const menuTenantId = m?.tenant?.id || m?.tenant_id || m?.user_id || null;
+				const matchTenant = !tenantQueryId || String(menuTenantId) === String(tenantQueryId);
+
 				const cat = normalizeCategory(m.category);
 				const matchCategory =
 					activeCategory === "semua" || cat === activeCategory;
@@ -224,10 +253,27 @@
 				}`.toLowerCase();
 				const matchSearch = text.includes(query);
 
-				return matchCategory && matchSearch;
+				return matchTenant && matchCategory && matchSearch;
 			});
 
 			renderMenus(filtered);
+		}
+
+		function initTenantBanner() {
+			if (!tenantQueryId) return;
+
+			const banner = document.getElementById("tenant-filter-banner");
+			if (!banner) return;
+			banner.style.display = "block";
+
+			const tenantMenu = allMenus.find((m) => {
+				const menuTenantId = m?.tenant?.id || m?.tenant_id || m?.user_id || null;
+				return String(menuTenantId) === String(tenantQueryId);
+			});
+
+			const tenantName = tenantMenu?.tenant?.name || `Tenant #${tenantQueryId}`;
+			const text = document.getElementById("tenant-filter-text");
+			if (text) text.textContent = `Menu ${tenantName}`;
 		}
 
 		function initCategoryButtons() {
@@ -277,6 +323,7 @@
 				allMenus = await fetchMenus();
 				$f7.preloader.hide();
 
+				initTenantBanner();
 				applyFilters();
 			} catch (err) {
 				$f7.preloader.hide();
