@@ -85,12 +85,21 @@ class OrderController extends Controller
     // USER: list order milik user (riwayat transaksi)
     public function myOrders(Request $request)
     {
-        return response()->json(
-            Order::with(['items', 'tenant:id,name'])
-                ->where('user_id', $request->user()->id)
-                ->latest()
-                ->get()
-        );
+        $orders = Order::with(['items', 'tenant:id,name'])
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                // ================== UPDATE DI SINI ==================
+                // Mengonversi waktu ke format ISO8601 agar terbaca JS
+                if ($order->estimation_time) {
+                    $order->estimation_time = \Carbon\Carbon::parse($order->estimation_time)->toIso8601String();
+                }
+                // ====================================================
+                return $order;
+            });
+
+        return response()->json($orders);
     }
 
     // USER: detail order
@@ -104,6 +113,12 @@ class OrderController extends Controller
         $order->load([
             'tenant:id,name,qris_image,qris_name'
         ]);
+
+        // ================== UPDATE DI SINI ==================
+        if ($order->estimation_time) {
+            $order->estimation_time = \Carbon\Carbon::parse($order->estimation_time)->toIso8601String();
+        }
+        // ====================================================
 
         return response()->json($order);
     }
@@ -128,7 +143,7 @@ class OrderController extends Controller
 
         $request->validate([
             'status' => 'required|in:new,process,done,cancelled',
-            'estimation_time' => 'nullable|integer', // Tambahkan validasi ini
+            'estimation_time' => 'nullable|integer', 
         ]);
 
         $from = $order->status;
@@ -147,12 +162,14 @@ class OrderController extends Controller
             ], 422);
         }
 
-        // Siapkan data yang akan diupdate
         $updateData = ['status' => $to];
 
-        // Jika ada input estimasi waktu, masukkan ke array update
-        if ($request->has('estimation_time')) {
-            $updateData['estimation_time'] = $request->estimation_time;
+        // LOGIKA PERBAIKAN: Simpan sebagai string waktu yang bersih
+        if ($request->has('estimation_time') && $to === 'process') {
+            $minutes = (int) $request->estimation_time;
+            
+            // Kita format ke 'Y-m-d H:i:s' agar JavaScript bisa membacanya dengan pasti
+            $updateData['estimation_time'] = now()->addMinutes($minutes)->format('Y-m-d H:i:s');
         }
 
         $order->update($updateData);
@@ -160,20 +177,10 @@ class OrderController extends Controller
         // Load data terbaru
         $order = $order->fresh()->load(['items', 'user:id,name']);
 
-        // Return format sesuai permintaanmu agar Frontend mudah membaca
         return response()->json([
             'status' => 'success',
             'message' => 'Status order diupdate',
-            'order' => [
-                'id' => $order->id,
-                'status' => $order->status,
-                'estimation_time' => $order->estimation_time, // Pastikan kolom ini ada di database/model
-                'items' => $order->items,
-                'user' => $order->user,
-                'grand_total' => $order->grand_total,
-                'payment_status' => $order->payment_status,
-                'created_at' => $order->created_at,
-            ]
+            'order' => $order // Kembalikan object order penuh agar frontend dapat semua field
         ]);
     }
 

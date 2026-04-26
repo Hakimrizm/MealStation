@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->integer('estimation_time')->nullable()->after('status');
+            $table->timestamp('estimation_time')->nullable()->after('status');
         });
     }
 

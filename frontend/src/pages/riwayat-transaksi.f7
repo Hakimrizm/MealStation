@@ -1,306 +1,251 @@
 <template>
-	<div class="page" data-name="riwayat-transaksi">
-		<!-- NAVBAR -->
-		<div class="navbar">
-			<div class="navbar-inner">
-				<div class="left">
-					<a href="#" class="link back">Kembali</a>
-				</div>
-				<div class="title">Riwayat Transaksi</div>
-			</div>
-		</div>
+    <div class="page" data-name="riwayat-transaksi">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="left">
+                    <a href="#" class="link back">Kembali</a>
+                </div>
+                <div class="title">Riwayat Transaksi</div>
+            </div>
+        </div>
 
-		<div class="page-content">
-			<!-- FILTER -->
-			<div class="block">
-				<div class="segmented segmented-raised">
-					<a href="#" class="button button-active" data-filter="all">Semua</a>
-					<a href="#" class="button" data-filter="pending">Berjalan</a>
-					<a href="#" class="button" data-filter="completed">Selesai</a>
-					<a href="#" class="button" data-filter="cancelled">Batal</a>
-				</div>
-			</div>
+        <div class="page-content">
+            <div class="block">
+                <div class="segmented segmented-raised">
+                    <a href="#" class="button button-active" data-filter="all">Semua</a>
+                    <a href="#" class="button" data-filter="pending">Berjalan</a>
+                    <a href="#" class="button" data-filter="completed">Selesai</a>
+                    <a href="#" class="button" data-filter="cancelled">Batal</a>
+                </div>
+            </div>
 
-			<!-- LIST -->
-			<div id="order-list-container"></div>
+            <div id="order-list-container"></div>
 
-			<!-- EMPTY -->
-			<div
-				id="empty-state"
-				class="block text-align-center"
-				style="display: none; color: #8e8e93; margin-top: 30px"
-			>
-				Belum ada transaksi.
-			</div>
-		</div>
-	</div>
+            <div
+                id="empty-state"
+                class="block text-align-center"
+                style="display: none; color: #8e8e93; margin-top: 30px"
+            >
+                Belum ada transaksi.
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-	import { getToken } from "./../js/auth.js"; // sesuaikan path seperti login kamu
+    import { getToken } from "./../js/auth.js";
 
-	export default (props, { $, $on, $f7 }) => {
-		const API_BASE = "http://localhost:8000/api";
+    export default (props, { $, $on, $f7 }) => {
+        const API_BASE = "http://localhost:8000/api";
 
-		let orders = [];
-		let activeFilter = "all";
+        let orders = [];
+        let activeFilter = "all";
 
-		const formatRupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+        const formatRupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
 
-		function formatDate(dt) {
-			try {
-				const d = new Date(dt);
-				return d.toLocaleDateString("id-ID", {
-					day: "2-digit",
-					month: "short",
-					year: "numeric",
-				});
-			} catch {
-				return "-";
-			}
-		}
+        function formatDate(dt) {
+            try {
+                const d = new Date(dt);
+                return d.toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                });
+            } catch { return "-"; }
+        }
 
-		function formatTimeFromSeconds(totalSeconds) {
-			if (totalSeconds <= 0) return "Siap Disajikan!";
-			const hours = Math.floor(totalSeconds / 3600);
-			const mins = Math.floor((totalSeconds % 3600) / 60);
-			const secs = totalSeconds % 60;
-			return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-		}
+        // FUNGSI FINAL: Menghitung selisih waktu dengan parsing objek Date yang aman
+        function getTimeRemaining(targetDate) {
+            if (!targetDate) return "";
+            
+            // Mengubah string dari backend menjadi objek Date JS
+            const end = new Date(targetDate).getTime();
+            const now = new Date().getTime();
+            
+            const total = end - now;
 
-		function statusToUi(status) {
-			if (status === "done") return "completed";
-			if (status === "cancelled") return "cancelled";
-			return "pending"; // new / process
-		}
+            // Jika waktu masih ada di masa depan (selisih > 0)
+            if (total > 0) {
+                const seconds = Math.floor((total / 1000) % 60);
+                const minutes = Math.floor((total / 1000 / 60) % 60);
+                const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
 
-		function labelStatus(o) {
-			// PRIORITAS: status pembayaran dulu
-			if (o.payment_status === "paid") {
-				// kalau sudah paid, tampilkan status pesanan
-				if (o.status === "done") return "Selesai";
-				if (o.status === "process") return "Diproses";
-				if (o.status === "cancelled") return "Dibatalkan";
-				return "Menunggu Diproses"; // status new tapi sudah paid
-			}
+                return [
+                    hours.toString().padStart(2, '0'),
+                    minutes.toString().padStart(2, '0'),
+                    seconds.toString().padStart(2, '0')
+                ].join(':');
+            }
 
-			if (o.payment_status === "waiting_confirmation")
-				return "Menunggu Konfirmasi";
-			if (o.payment_status === "rejected") return "Bukti Ditolak";
-			return "Belum Bayar"; // unpaid
-		}
+            return "Siap Disajikan!";
+        }
 
-		function badgeColor(o) {
-			if (o.payment_status === "paid") {
-				if (o.status === "done") return "green";
-				if (o.status === "process") return "orange";
-				if (o.status === "cancelled") return "red";
-				return "blue";
-			}
+        function statusToUi(status) {
+            if (status === "done") return "completed";
+            if (status === "cancelled") return "cancelled";
+            return "pending"; 
+        }
 
-			if (o.payment_status === "waiting_confirmation") return "orange";
-			if (o.payment_status === "rejected") return "red";
-			return "blue";
-		}
+        function labelStatus(o) {
+            if (o.payment_status === "paid") {
+                if (o.status === "done") return "Selesai";
+                if (o.status === "process") return "Diproses";
+                if (o.status === "cancelled") return "Dibatalkan";
+                return "Menunggu Diproses";
+            }
+            if (o.payment_status === "waiting_confirmation") return "Menunggu Konfirmasi";
+            if (o.payment_status === "rejected") return "Bukti Ditolak";
+            return "Belum Bayar";
+        }
 
-		function canPay(o) {
-			// hanya bisa bayar kalau unpaid atau rejected (biar bisa upload ulang)
-			if (o.status === "cancelled" || o.status === "done") return false;
-			return o.payment_status === "unpaid" || o.payment_status === "rejected";
-		}
+        function badgeColor(o) {
+            if (o.payment_status === "paid") {
+                if (o.status === "done") return "green";
+                if (o.status === "process") return "orange";
+                if (o.status === "cancelled") return "red";
+                return "blue";
+            }
+            if (o.payment_status === "waiting_confirmation") return "orange";
+            if (o.payment_status === "rejected") return "red";
+            return "blue";
+        }
 
-		function detailLink(o) {
-			// kalau masih bisa bayar -> ke payment
-			if (canPay(o)) return `/payment/${o.id}`;
-			// selain itu -> detail order biasa
-			return `/riwayat-transaksi/${o.id}`;
-		}
+        function canPay(o) {
+            if (o.status === "cancelled" || o.status === "done") return false;
+            return o.payment_status === "unpaid" || o.payment_status === "rejected";
+        }
 
-		function itemsSummary(items) {
-			if (!Array.isArray(items) || items.length === 0) return "—";
-			return items
-				.map((it) => `${it.menu_name || "Menu"} (${it.qty || 0})`)
-				.join(", ");
-		}
+        function detailLink(o) {
+            if (canPay(o)) return `/payment/${o.id}`;
+            return `/riwayat-transaksi/${o.id}`;
+        }
 
-		async function fetchMyOrders() {
-			const token = getToken();
-			if (!token) throw new Error("Silakan login dulu");
+        function itemsSummary(items) {
+            if (!Array.isArray(items) || items.length === 0) return "—";
+            return items.map((it) => `${it.menu_name || "Menu"} (${it.qty || 0})`).join(", ");
+        }
 
-			const res = await fetch(`${API_BASE}/my/orders`, {
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
+        async function fetchMyOrders() {
+            const token = getToken();
+            if (!token) throw new Error("Silakan login dulu");
+            const res = await fetch(`${API_BASE}/my/orders`, {
+                headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json().catch(() => []);
+            if (!res.ok) throw new Error(data?.message || "Gagal ambil riwayat");
+            return data;
+        }
 
-			const data = await res.json().catch(() => []);
-			if (!res.ok) throw new Error(data?.message || "Gagal ambil riwayat");
-			return data;
-		}
+        function renderOrders(list) {
+            const $container = $("#order-list-container");
+            const $empty = $("#empty-state");
 
-		function renderOrders(list) {
-			const $container = $("#order-list-container");
-			const $empty = $("#empty-state");
+            if (!list || list.length === 0) {
+                $container.html("");
+                $empty.show();
+                return;
+            }
 
-			if (!list || list.length === 0) {
-				$container.html("");
-				$empty.show();
-				return;
-			}
+            $empty.hide();
 
-			$empty.hide();
+            const html = list.map((o) => {
+                const title = `#ORD-${o.id}`;
+                const date = formatDate(o.created_at);
+                const total = formatRupiah(o.grand_total);
+                const items = itemsSummary(o.items);
+                const tenantName = o.tenant?.name || "Kantin";
+                const payable = canPay(o);
+                const detailHref = detailLink(o);
+                
+                const targetTime = o.estimation_time;
+                const displayEst = getTimeRemaining(targetTime);
 
-			const html = list
-				.map((o) => {
-					const title = `#ORD-${o.id}`;
-					const date = formatDate(o.created_at);
-					const total = formatRupiah(o.grand_total);
-					const items = itemsSummary(o.items);
-					const tenantName = o.tenant?.name || "Kantin";
-					const isUnpaid = o.status === "new"; // atau logika kamu sendiri
-					const payable = canPay(o);
-					const detailHref = detailLink(o);
-					
-					// Estimasi waktu
-					const estimationSeconds = o.estimation_time ? o.estimation_time * 60 : 0;
-					const estimationDisplay = estimationSeconds > 0 ? formatTimeFromSeconds(estimationSeconds) : "";
-					const estimationHtml = o.status === "process" && estimationDisplay 
-						? `<div style="margin-top:8px; font-size:13px; color:#5856d6; font-weight:600; display:flex; align-items:center; gap:4px;">
-							<span style="font-size:14px;">⏱️</span>
-							<span class="est-timer" data-order-id="${o.id}" data-seconds="${estimationSeconds}">${estimationDisplay}</span>
-						</div>`
-						: "";
+                const estimationHtml = (o.status === "process" && targetTime) 
+                    ? `<div style="margin-top:8px; font-size:13px; color:#5856d6; font-weight:600; display:flex; align-items:center; gap:4px;">
+                        <span style="font-size:14px;">⏱️</span>
+                        <span class="est-timer" data-target="${targetTime}">${displayEst}</span>
+                    </div>`
+                    : "";
 
-					return `
-						<div class="card">
-							<div class="card-header">
-								<b>${title}</b>
-								<span>${date}</span>
-							</div>
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <b>${title}</b>
+                            <span>${date}</span>
+                        </div>
+                        <div class="card-content card-content-padding">
+                            <div style="color:#8e8e93;font-size:12px;margin-bottom:6px;">${tenantName}</div>
+                            <div>${items}</div>
+                            <div class="text-bold margin-top">${total}</div>
+                            ${estimationHtml}
+                        </div>
+                        <div class="card-footer">
+                            <span class="badge color-${badgeColor(o)}">${labelStatus(o)}</span>
+                            <a class="link" href="${detailHref}">${payable ? "Bayar" : "Detail"}</a>
+                        </div>
+                    </div>
+                `;
+            }).join("");
 
-							<div class="card-content card-content-padding">
-								<div style="color:#8e8e93;font-size:12px;margin-bottom:6px;">
-									${tenantName}
-								</div>
-								<div>${items}</div>
-								<div class="text-bold margin-top">${total}</div>
-								${estimationHtml}
-							</div>
+            $container.html(html);
+        }
 
-							<div class="card-footer">
-								<span class="badge color-${badgeColor(o)}">
-									${labelStatus(o)}
-								</span>
+        function applyFilter() {
+            const list = activeFilter === "all"
+                ? orders
+                : orders.filter((o) => statusToUi(o.status) === activeFilter);
+            renderOrders(list);
+        }
 
-								<a class="link" href="${detailHref}">
-									${payable ? "Bayar" : "Detail"}
-								</a>
-							</div>
-						</div>
-					`;
-				})
-				.join("");
+        function startPolling() {
+            // Update Tampilan Timer setiap detik tanpa merefresh seluruh list
+            setInterval(() => {
+                $(".est-timer").each(function() {
+                    const target = $(this).attr("data-target");
+                    const currentText = $(this).text();
+                    const newText = getTimeRemaining(target);
+                    
+                    if (currentText !== newText) {
+                        $(this).text(newText);
+                        if (newText === "Siap Disajikan!") {
+                            $(this).parent().css("color", "#34c759");
+                        }
+                    }
+                });
+            }, 1000);
 
-			$container.html(html);
-		}
+            // Sync data dari database setiap 10 detik
+            setInterval(async () => {
+                try {
+                    const updatedOrders = await fetchMyOrders();
+                    orders = updatedOrders;
+                    applyFilter();
+                } catch (err) { console.error("Polling error:", err); }
+            }, 10000);
+        }
 
-		function applyFilter() {
-			const list =
-				activeFilter === "all"
-					? orders
-					: orders.filter((o) => statusToUi(o.status) === activeFilter);
+        $on("pageInit", async () => {
+            try {
+                $("[data-filter]").on("click", function (e) {
+                    e.preventDefault();
+                    $("[data-filter]").removeClass("button-active");
+                    $(this).addClass("button-active");
+                    activeFilter = $(this).attr("data-filter");
+                    applyFilter();
+                });
 
-			renderOrders(list);
-		}
+                $f7.dialog.preloader("Memuat riwayat...");
+                orders = await fetchMyOrders();
+                $f7.dialog.close();
 
-		function startPolling() {
-			// Track estimasi lokal per order untuk countdown smooth
-			const localTimers = {};
+                applyFilter();
+                startPolling();
+            } catch (err) {
+                $f7.dialog.close();
+                $f7.dialog.alert(String(err.message || err), "Error");
+            }
+        });
 
-			// Update display setiap detik (countdown smooth)
-			setInterval(() => {
-				let hasChanged = false;
-
-				$(".est-timer").each(function() {
-					const orderId = $(this).attr("data-order-id");
-					let totalSeconds = parseInt($(this).attr("data-seconds")) || 0;
-
-					if (!localTimers[orderId]) {
-						localTimers[orderId] = totalSeconds;
-					}
-
-					// Kurangi setiap detik
-					if (localTimers[orderId] > 0) {
-						localTimers[orderId]--;
-						$(this).attr("data-seconds", localTimers[orderId]);
-						$(this).text(formatTimeFromSeconds(localTimers[orderId]));
-						hasChanged = true;
-					} else if (localTimers[orderId] === 0) {
-						$(this).text("Siap Disajikan!");
-						$(this).parent().css("color", "#34c759");
-					}
-				});
-			}, 1000); // Update display setiap 1 detik
-
-			// Poll dari server setiap 10 detik untuk sync
-			setInterval(async () => {
-				try {
-					const updatedOrders = await fetchMyOrders();
-					orders = updatedOrders;
-
-					// Update local timers dengan data dari server
-					updatedOrders.forEach(o => {
-						if (o.status === 'process' && o.estimation_time) {
-							const orderId = o.id;
-							const newSeconds = o.estimation_time * 60;
-							localTimers[orderId] = newSeconds;
-
-							// Update DOM dengan nilai dari server
-							const $timer = $(`.est-timer[data-order-id="${orderId}"]`);
-							if ($timer.length) {
-								$timer.attr("data-seconds", newSeconds);
-								$timer.text(formatTimeFromSeconds(newSeconds));
-							}
-						}
-					});
-
-					applyFilter();
-				} catch (err) {
-					console.error("Polling error:", err);
-				}
-			}, 10000); // Poll server setiap 10 detik
-		}
-
-		$on("pageInit", async () => {
-			try {
-				// bind filter buttons
-				$("[data-filter]").on("click", function (e) {
-					e.preventDefault();
-
-					// active class segmented
-					$("[data-filter]").removeClass("button-active");
-					$(this).addClass("button-active");
-
-					activeFilter = $(this).attr("data-filter");
-					applyFilter();
-				});
-
-				$f7.dialog.preloader("Memuat riwayat...");
-				orders = await fetchMyOrders();
-				$f7.dialog.close();
-
-				applyFilter();
-				
-				// Start polling untuk sinkron dengan admin
-				startPolling();
-			} catch (err) {
-				$f7.dialog.close();
-				console.log(err);
-				$f7.dialog.alert(String(err.message || err), "Error");
-			}
-		});
-
-		return $render;
-	};
+        return $render;
+    };
 </script>

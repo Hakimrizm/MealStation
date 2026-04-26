@@ -394,29 +394,40 @@
             return items.reduce((sum, it) => sum + Number(it.qty || 0), 0);
         }
 
-        function formatTimeFromSeconds(totalSeconds) {
-            if (totalSeconds <= 0) return "Siap Disajikan!";
-            const hours = Math.floor(totalSeconds / 3600);
-            const mins = Math.floor((totalSeconds % 3600) / 60);
-            const secs = totalSeconds % 60;
-            return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        // FUNGSI BARU: Hitung selisih waktu secara real-time
+        function getTimeRemaining(targetDate) {
+            if (!targetDate) return "Belum diatur";
+            
+            const total = Date.parse(targetDate) - Date.now();
+            if (total <= 0) return "Siap Disajikan!";
+
+            const seconds = Math.floor((total / 1000) % 60);
+            const minutes = Math.floor((total / 1000 / 60) % 60);
+            const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+
+            return [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
         }
 
         function normalizeOrder(o) {
-			return {
-				id: o.id,
-				time: shortTime(o.created_at),
-				estimationSeconds: o.estimation_time ? o.estimation_time * 60 : 0,
-				estimation: o.estimation_time !== null ? formatTimeFromSeconds(o.estimation_time * 60) : "Belum diatur",
-				items: itemsCount(o.items),
-				desc: buildDesc(o.items),
-				price: rupiah(o.grand_total),
-				customer: o.user?.name || "User",
-				status: o.status,
-				payment_status: o.payment_status,
-				raw: o
-			};
-		}
+            return {
+                id: o.id,
+                time: shortTime(o.created_at),
+                // Gunakan estimation_time langsung sebagai string tanggal target
+                targetTime: o.estimation_time, 
+                estimation: getTimeRemaining(o.estimation_time),
+                items: itemsCount(o.items),
+                desc: buildDesc(o.items),
+                price: rupiah(o.grand_total),
+                customer: o.user?.name || "User",
+                status: o.status,
+                payment_status: o.payment_status,
+                raw: o
+            };
+        }
 
         async function loadOrders() {
             try {
@@ -458,7 +469,7 @@
                     $f7.dialog.preloader("Memproses...");
                     const token = getToken();
 
-                    // 1. Approve Payment
+                    // 1. Approve Payment (Jika ada)
                     await fetch(`${API_BASE}/tenant/payments/${selectedOrder.id}/approve`, {
                         method: "PATCH",
                         headers: { Authorization: `Bearer ${token}` }
@@ -471,10 +482,13 @@
                         body: JSON.stringify({ status: "process", estimation_time: minutes })
                     });
 
-                    const stRes = await res.json();
-                    replaceOrder(stRes.order || stRes);
+                    const result = await res.json();
+                    
+                    // Gunakan data order yang dikembalikan backend
+                    replaceOrder(result.order || result);
 
                     $f7.dialog.close();
+                    $f7.sheet.close(".my-sheet");
                     $f7.toast.create({ text: "Pesanan diproses!", closeTimeout: 2000 }).open();
                 } catch (err) {
                     $f7.dialog.close();
@@ -495,6 +509,7 @@
                 const data = await res.json();
                 replaceOrder(data.order || data);
                 $f7.dialog.close();
+                $f7.sheet.close(".my-sheet");
             } catch (err) {
                 $f7.dialog.close();
                 $f7.dialog.alert("Gagal update status");
@@ -511,60 +526,25 @@
         const getItemsWithNotes = () => selectedOrder?.raw?.items?.filter(it => it.notes) || [];
         const newCount = () => orders.filter(o => o.status === 'new').length;
 
-        // Fungsi untuk update estimation ke backend
-        async function saveEstimationToBackend(orderId, newEstimationMinutes) {
-            try {
-                const token = getToken();
-                await fetch(`${API_BASE}/tenant/orders/${orderId}/status`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ status: "process", estimation_time: newEstimationMinutes })
-                });
-            } catch (err) {
-                console.error("Gagal simpan estimation:", err);
-            }
-        }
-
         $on("pageInit", () => {
             loadOrders();
 
-            // Logika Countdown setiap detik
-            let lastSaveTime = {}; // Track waktu terakhir save per order
-            
+            // LOGIKA COUNTDOWN REAL-TIME (Sinkron dengan Waktu HP)
             setInterval(() => {
-                let hasChanged = false;
-
+                let needUpdate = false;
                 orders = orders.map(o => {
-                    // Cek kalau statusnya sedang proses dan ada estimasi dalam detik
-                    if (o.status === 'process' && o.estimationSeconds !== undefined && o.estimationSeconds > 0) {
-                        o.estimationSeconds--;
-                        o.estimation = formatTimeFromSeconds(o.estimationSeconds);
-                        
-                        // Update backend minutes (bulatkan ke atas)
-                        const newMinutes = Math.ceil(o.estimationSeconds / 60);
-                        o.raw.estimation_time = newMinutes;
-                        hasChanged = true;
-                        
-                        // Save ke backend hanya setiap 60 detik (setiap kali menit detik berubah)
-                        const now = Date.now();
-                        if (!lastSaveTime[o.id] || now - lastSaveTime[o.id] >= 60000) {
-                            saveEstimationToBackend(o.id, newMinutes);
-                            lastSaveTime[o.id] = now;
+                    if (o.status === 'process' && o.targetTime) {
+                        const newEst = getTimeRemaining(o.targetTime);
+                        if (o.estimation !== newEst) {
+                            o.estimation = newEst;
+                            needUpdate = true;
                         }
-                    } else if (o.status === 'process' && o.estimationSeconds <= 0) {
-                        o.estimation = "Siap Disajikan!";
-                        o.estimationSeconds = 0;
-                        o.raw.estimation_time = 0;
-                        hasChanged = true;
                     }
                     return o;
                 });
 
-                // Kalau ada perubahan, paksa UI update
-                if (hasChanged) {
-                    $update();
-                }
-            }, 1000); // 1 Detik
+                if (needUpdate) $update();
+            }, 1000); 
         });
 
         return $render;

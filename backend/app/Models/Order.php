@@ -8,6 +8,10 @@ class Order extends Model
 {
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'estimation_time' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
