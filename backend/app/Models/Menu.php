@@ -12,4 +12,9 @@ class Menu extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function optionGroups()
+    {
+        return $this->hasMany(MenuOptionGroup::class)->orderBy('sort_order');
+    }
 }

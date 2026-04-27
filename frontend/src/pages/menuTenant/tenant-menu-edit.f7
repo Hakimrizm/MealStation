@@ -2,11 +2,13 @@
 	<div
 		class="page"
 		data-name="tenant-menu-edit"
-		style="padding-bottom: calc(var(--f7-toolbar-height) + 20px)"
+		style="
+			padding-bottom: calc(var(--f7-toolbar-height) + 24px);
+			background: #f5f5f7;
+		"
 	>
-		<!-- Navbar -->
 		<div class="navbar navbar-transparent">
-			<div class="navbar-bg" style="background-color: #fff"></div>
+			<div class="navbar-bg" style="background-color: #f5f5f7"></div>
 			<div class="navbar-inner">
 				<div class="left">
 					<div
@@ -18,9 +20,9 @@
 						"
 					>
 						<div class="icon-container-small">
-							<i class="icon f7-icons text-color-blue" style="font-size: 20px"
-								>building_2_fill</i
-							>
+							<i class="icon f7-icons text-color-blue" style="font-size: 20px">
+								building_2_fill
+							</i>
 						</div>
 						<div>
 							<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
@@ -55,87 +57,347 @@
 			</div>
 		</div>
 
+		<style>
+			.tenant-wrap {
+				padding: 16px;
+			}
+
+			.section-title {
+				font-size: 14px;
+				font-weight: 700;
+				color: #2f2f2f;
+				margin: 20px 0 10px;
+			}
+
+			.field-card {
+				background: #e9e9ef;
+				border-radius: 14px;
+				padding: 16px;
+				margin-bottom: 14px;
+				box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+			}
+
+			.field-label {
+				font-size: 12px;
+				color: #6a6a73;
+				margin-bottom: 6px;
+			}
+
+			.field-input,
+			.field-textarea,
+			.field-select {
+				width: 100%;
+				border: none;
+				background: transparent;
+				font-size: 17px;
+				color: #222;
+				outline: none;
+			}
+
+			.field-textarea {
+				min-height: 110px;
+				resize: none;
+			}
+
+			.upload-row {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.upload-box {
+				width: 58px;
+				height: 58px;
+				border-radius: 12px;
+				border: 2px dashed #b7b7c2;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: #f7f7fb;
+				flex-shrink: 0;
+			}
+
+			.preview-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 12px;
+				margin-bottom: 8px;
+			}
+
+			.preview-thumb {
+				width: 100%;
+				height: 160px;
+				object-fit: cover;
+				border-radius: 14px;
+				background: #ddd;
+			}
+
+			.generic-header {
+				font-size: 14px;
+				font-weight: 700;
+				color: #2f2f2f;
+				margin: 18px 0 12px;
+			}
+
+			.btn-add-option {
+				height: 44px;
+				border: 1.5px solid #e58a12;
+				border-radius: 10px;
+				color: #e58a12;
+				background: transparent;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				font-weight: 600;
+				margin-bottom: 14px;
+			}
+
+			.group-card {
+				background: #f2f2f6;
+				border: 1px solid #d7d7df;
+				border-radius: 14px;
+				padding: 14px;
+				margin-bottom: 12px;
+			}
+
+			.group-top {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				gap: 10px;
+				margin-bottom: 12px;
+			}
+
+			.group-title {
+				font-size: 15px;
+				font-weight: 700;
+				color: #2c2c2c;
+			}
+
+			.group-actions {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				flex-wrap: wrap;
+				justify-content: flex-end;
+			}
+
+			.type-badge {
+				background: #e1e1ea;
+				color: #3c3c46;
+				border-radius: 999px;
+				padding: 6px 12px;
+				font-size: 12px;
+				font-weight: 600;
+			}
+
+			.mini-action {
+				border: 1px solid #d3d3da;
+				background: #fff;
+				color: #444;
+				border-radius: 8px;
+				padding: 6px 10px;
+				font-size: 12px;
+			}
+
+			.radio-pill-row {
+				display: flex;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.radio-pill {
+				min-width: 112px;
+				height: 44px;
+				border: 1.5px solid #bfbfc9;
+				border-radius: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				background: #fff;
+				font-size: 14px;
+				color: #2e2e2e;
+			}
+
+			.radio-dot {
+				width: 18px;
+				height: 18px;
+				border-radius: 50%;
+				border: 2px solid #7f7f87;
+				background: #fff;
+			}
+
+			.check-list {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+			}
+
+			.check-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+			}
+
+			.check-left {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.check-box {
+				width: 18px;
+				height: 18px;
+				border: 2px solid #8d8d96;
+				border-radius: 4px;
+				background: #fff;
+			}
+
+			.text-preview,
+			.textarea-preview,
+			.select-preview,
+			.number-preview {
+				width: 100%;
+				border: 1.5px solid #cdced7;
+				background: #fff;
+				border-radius: 12px;
+				padding: 14px;
+				color: #7a7a84;
+				font-size: 14px;
+			}
+
+			.textarea-preview {
+				min-height: 68px;
+			}
+
+			.switch-preview {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 8px 2px;
+			}
+
+			.fake-switch {
+				width: 48px;
+				height: 28px;
+				border-radius: 999px;
+				background: #d5d5dd;
+				position: relative;
+			}
+
+			.fake-switch::after {
+				content: "";
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				background: #fff;
+				position: absolute;
+				top: 3px;
+				left: 3px;
+			}
+
+			.group-footer {
+				display: flex;
+				gap: 8px;
+				margin-top: 12px;
+				flex-wrap: wrap;
+			}
+
+			.btn-orange {
+				width: 100%;
+				height: 48px;
+				border-radius: 10px;
+				border: none;
+				background: #df7f10;
+				color: #fff;
+				font-size: 17px;
+				font-weight: 700;
+				margin-top: 18px;
+			}
+
+			.btn-delete {
+				width: 100%;
+				height: 48px;
+				border-radius: 10px;
+				border: none;
+				background: #9d5a4f;
+				color: #fff;
+				font-size: 17px;
+				font-weight: 700;
+				margin-top: 12px;
+			}
+		</style>
+
 		<div class="page-content">
-			<form id="menu-edit-form" class="list no-hairlines-md">
-				<ul>
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Nama Menu</div>
-							<div class="item-input-wrap">
-								<input type="text" name="name" id="name" required />
+			<div class="tenant-wrap">
+				<form id="menu-edit-form">
+					<div class="field-card">
+						<div class="field-label">Nama Menu</div>
+						<input class="field-input" type="text" name="name" id="name" />
+					</div>
+
+					<div class="field-card">
+						<div class="field-label">Harga</div>
+						<input class="field-input" type="number" name="price" id="price" />
+					</div>
+
+					<div class="field-card">
+						<div class="field-label">Deskripsi</div>
+						<textarea
+							class="field-textarea"
+							name="description"
+							id="description"
+						></textarea>
+					</div>
+
+					<div class="field-card">
+						<div class="field-label">Kategori</div>
+						<input
+							class="field-input"
+							type="text"
+							name="category"
+							id="category"
+						/>
+					</div>
+
+					<div class="field-card">
+						<div class="field-label">Ganti Gambar (opsional)</div>
+						<div class="upload-row">
+							<div class="upload-box">
+								<i class="icon f7-icons" style="font-size: 24px; color: #6e6e78"
+									>cloud_upload</i
+								>
 							</div>
+							<input type="file" id="image" name="image" accept="image/*" />
 						</div>
-					</li>
+					</div>
+				</form>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Harga</div>
-							<div class="item-input-wrap">
-								<input type="number" name="price" id="price" required />
-							</div>
-						</div>
-					</li>
+				<div class="section-title">Preview</div>
+				<div class="preview-grid" id="preview-grid">
+					<img id="preview-1" class="preview-thumb" style="display: none" />
+					<img id="preview-2" class="preview-thumb" style="display: none" />
+				</div>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Deskripsi</div>
-							<div class="item-input-wrap">
-								<textarea name="description" id="description"></textarea>
-							</div>
-						</div>
-					</li>
+				<div class="generic-header">Kustomisasi Menu (Generic Form)</div>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title item-floating-label">Kategori</div>
-							<div class="item-input-wrap">
-								<input type="text" name="category" id="category" />
-							</div>
-						</div>
-					</li>
+				<a href="#" class="btn-add-option" id="btn-add-group">
+					<i class="icon f7-icons" style="font-size: 18px">plus</i>
+					<span>Tambah Opsi</span>
+				</a>
 
-					<!-- <li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title">Hot?</div>
-							<div class="item-input-wrap">
-								<label class="toggle toggle-init">
-									<input type="checkbox" name="is_hot" id="is_hot" />
-									<span class="toggle-icon"></span>
-								</label>
-							</div>
-						</div>
-					</li> -->
+				<div id="option-groups-container"></div>
 
-					<li class="item-content item-input">
-						<div class="item-inner">
-							<div class="item-title">Ganti Gambar (opsional)</div>
-							<div class="item-input-wrap">
-								<input type="file" id="image" name="image" accept="image/*" />
-							</div>
-						</div>
-					</li>
-
-					<li class="item-content">
-						<div class="item-inner">
-							<div class="item-title">Preview</div>
-						</div>
-					</li>
-					<li class="item-content">
-						<div class="item-inner">
-							<img
-								id="preview"
-								style="max-width: 100%; border-radius: 12px; display: none"
-							/>
-						</div>
-					</li>
-				</ul>
-			</form>
-
-			<div class="block">
-				<a class="button button-fill" id="btn-update-menu">Update</a>
-				<a class="button button-fill color-red margin-top" id="btn-delete-menu"
-					>Hapus</a
-				>
+				<button type="button" class="btn-orange" id="btn-update-menu">
+					Update
+				</button>
+				<button type="button" class="btn-delete" id="btn-delete-menu">
+					Hapus
+				</button>
 			</div>
 		</div>
 	</div>
@@ -143,25 +405,6 @@
 
 <script>
 	import { getToken } from "./../../js/auth.js";
-
-	function setF7InputValue(selector, value) {
-		const el = document.querySelector(selector);
-		if (!el) return;
-
-		el.value = value ?? "";
-		el.dispatchEvent(new Event("input", { bubbles: true }));
-		el.dispatchEvent(new Event("change", { bubbles: true }));
-
-		// Biar floating label naik (Framework7 style)
-		const itemInput = el.closest(".item-input");
-		if (itemInput) {
-			if (el.value && String(el.value).length > 0) {
-				itemInput.classList.add("item-input-with-value");
-			} else {
-				itemInput.classList.remove("item-input-with-value");
-			}
-		}
-	}
 
 	const imageUrl = (imgPath) => {
 		if (!imgPath) return "";
@@ -171,7 +414,357 @@
 
 	export default (props, { $, $on, $f7 }) => {
 		const API_BASE = "http://localhost:8000/api";
-		const menuId = props?.id || $f7?.route?.params?.id; // sesuaikan dengan router kamu
+		const menuId = props?.id || $f7?.route?.params?.id;
+		let optionGroups = [];
+
+		function typeLabel(type) {
+			const map = {
+				radio: "Radio",
+				checkbox: "Checkbox",
+				select: "Select",
+				switch: "Switch",
+				number: "Number",
+				text: "Text",
+				textarea: "Textarea",
+			};
+			return map[type] || type;
+		}
+
+		function setPreviewImages(src) {
+			const img1 = document.getElementById("preview-1");
+			const img2 = document.getElementById("preview-2");
+
+			if (!src) {
+				img1.style.display = "none";
+				img2.style.display = "none";
+				return;
+			}
+
+			img1.src = src;
+			img2.src = src;
+			img1.style.display = "block";
+			img2.style.display = "block";
+		}
+
+		function previewHtml(group, groupIndex) {
+			const items = group.items || [];
+
+			if (group.input_type === "radio") {
+				return `
+          <div class="radio-pill-row">
+            ${items
+							.map(
+								(item) => `
+              <div class="radio-pill">
+                <div class="radio-dot"></div>
+                <div>${item.label || "-"}</div>
+              </div>
+            `,
+							)
+							.join("")}
+          </div>
+        `;
+			}
+
+			if (group.input_type === "checkbox") {
+				return `
+          <div class="check-list">
+            ${items
+							.map(
+								(item, itemIndex) => `
+              <div class="check-row">
+                <div class="check-left">
+                  <div class="check-box"></div>
+                  <div>${item.label || "-"} ${Number(item.price_adjustment || 0) > 0 ? `( +${item.price_adjustment} )` : ""}</div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button type="button" class="mini-action btn-edit-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">Edit</button>
+                  <button type="button" class="mini-action btn-delete-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">Hapus</button>
+                </div>
+              </div>
+            `,
+							)
+							.join("")}
+          </div>
+        `;
+			}
+
+			if (group.input_type === "textarea") {
+				return `<div class="textarea-preview">${group.placeholder || "Tulis catatan untuk tenant"}</div>`;
+			}
+
+			if (group.input_type === "text") {
+				return `<div class="text-preview">${group.placeholder || "Input text"}</div>`;
+			}
+
+			if (group.input_type === "select") {
+				return `<div class="select-preview">${items.length ? items.map((i) => i.label).join(", ") : "Belum ada pilihan"}</div>`;
+			}
+
+			if (group.input_type === "number") {
+				return `<div class="number-preview">${group.min_value ?? 0} - ${group.max_value ?? 10}</div>`;
+			}
+
+			if (group.input_type === "switch") {
+				return `
+          <div class="switch-preview">
+            <div>${group.label || "Switch option"}</div>
+            <div class="fake-switch"></div>
+          </div>
+        `;
+			}
+
+			return `<div class="text-preview">Belum ada preview</div>`;
+		}
+
+		function renderOptionGroups() {
+			let html = "";
+
+			optionGroups.forEach((group, groupIndex) => {
+				html += `
+          <div class="group-card">
+            <div class="group-top">
+              <div class="group-title">${groupIndex + 1}. ${group.label || "Nama Group"}</div>
+
+              <div class="group-actions">
+                <div class="type-badge">${typeLabel(group.input_type)}</div>
+                <button type="button" class="mini-action btn-edit-group" data-group-index="${groupIndex}">Edit</button>
+                <button type="button" class="mini-action btn-delete-group" data-group-index="${groupIndex}">Hapus</button>
+              </div>
+            </div>
+
+            ${previewHtml(group, groupIndex)}
+
+            <div class="group-footer">
+              ${
+								group.input_type === "radio" ||
+								group.input_type === "checkbox" ||
+								group.input_type === "select"
+									? `<button type="button" class="mini-action btn-add-item" data-group-index="${groupIndex}">Tambah Pilihan</button>`
+									: ""
+							}
+            </div>
+          </div>
+        `;
+			});
+
+			$("#option-groups-container").html(html);
+		}
+
+		function openGroupDialog(groupIndex = null) {
+			const isEdit = groupIndex !== null;
+			const group = isEdit
+				? optionGroups[groupIndex]
+				: {
+						label: "",
+						input_type: "radio",
+						is_required: false,
+						placeholder: "",
+						min_value: 0,
+						max_value: 10,
+						items: [],
+					};
+
+			const dialog = $f7.dialog.create({
+				title: isEdit ? "Edit Opsi" : "Tambah Opsi",
+				content: `
+          <div class="list no-hairlines-md" style="margin:0;">
+            <ul>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Nama Group</div>
+                  <div class="item-input-wrap">
+                    <input type="text" id="dlg-group-label" value="${group.label || ""}">
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Tipe Input</div>
+                  <div class="item-input-wrap">
+                    <select id="dlg-group-type">
+                      <option value="radio" ${group.input_type === "radio" ? "selected" : ""}>Radio</option>
+                      <option value="checkbox" ${group.input_type === "checkbox" ? "selected" : ""}>Checkbox</option>
+                      <option value="select" ${group.input_type === "select" ? "selected" : ""}>Select</option>
+                      <option value="switch" ${group.input_type === "switch" ? "selected" : ""}>Switch</option>
+                      <option value="number" ${group.input_type === "number" ? "selected" : ""}>Number</option>
+                      <option value="text" ${group.input_type === "text" ? "selected" : ""}>Text</option>
+                      <option value="textarea" ${group.input_type === "textarea" ? "selected" : ""}>Textarea</option>
+                    </select>
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Placeholder (opsional)</div>
+                  <div class="item-input-wrap">
+                    <input type="text" id="dlg-group-placeholder" value="${group.placeholder || ""}">
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title">Wajib?</div>
+                  <div class="item-input-wrap">
+                    <label class="toggle">
+                      <input type="checkbox" id="dlg-group-required" ${group.is_required ? "checked" : ""}>
+                      <span class="toggle-icon"></span>
+                    </label>
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Min Value</div>
+                  <div class="item-input-wrap">
+                    <input type="number" id="dlg-group-min" value="${group.min_value ?? 0}">
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Max Value</div>
+                  <div class="item-input-wrap">
+                    <input type="number" id="dlg-group-max" value="${group.max_value ?? 10}">
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        `,
+				buttons: [
+					{
+						text: "Batal",
+					},
+					{
+						text: "Simpan",
+						bold: true,
+						onClick: () => {
+							const payload = {
+								label: document.getElementById("dlg-group-label")?.value || "",
+								input_type:
+									document.getElementById("dlg-group-type")?.value || "radio",
+								placeholder:
+									document.getElementById("dlg-group-placeholder")?.value || "",
+								is_required:
+									!!document.getElementById("dlg-group-required")?.checked,
+								min_value: Number(
+									document.getElementById("dlg-group-min")?.value || 0,
+								),
+								max_value: Number(
+									document.getElementById("dlg-group-max")?.value || 10,
+								),
+								items: isEdit ? optionGroups[groupIndex].items || [] : [],
+							};
+
+							if (!payload.label) {
+								$f7.dialog.alert("Nama group wajib diisi.");
+								return;
+							}
+
+							if (isEdit) {
+								optionGroups[groupIndex] = {
+									...optionGroups[groupIndex],
+									...payload,
+								};
+							} else {
+								optionGroups.push(payload);
+							}
+
+							renderOptionGroups();
+						},
+					},
+				],
+			});
+
+			dialog.open();
+		}
+
+		function openItemDialog(groupIndex, itemIndex = null) {
+			const isEdit = itemIndex !== null;
+			const item = isEdit
+				? optionGroups[groupIndex].items[itemIndex]
+				: {
+						label: "",
+						value: "",
+						price_adjustment: 0,
+					};
+
+			const dialog = $f7.dialog.create({
+				title: isEdit ? "Edit Pilihan" : "Tambah Pilihan",
+				content: `
+          <div class="list no-hairlines-md" style="margin:0;">
+            <ul>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Label</div>
+                  <div class="item-input-wrap">
+                    <input type="text" id="dlg-item-label" value="${item.label || ""}">
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Value</div>
+                  <div class="item-input-wrap">
+                    <input type="text" id="dlg-item-value" value="${item.value || ""}">
+                  </div>
+                </div>
+              </li>
+
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Harga Tambahan</div>
+                  <div class="item-input-wrap">
+                    <input type="number" id="dlg-item-price" value="${item.price_adjustment || 0}">
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        `,
+				buttons: [
+					{ text: "Batal" },
+					{
+						text: "Simpan",
+						bold: true,
+						onClick: () => {
+							const payload = {
+								label: document.getElementById("dlg-item-label")?.value || "",
+								value: document.getElementById("dlg-item-value")?.value || "",
+								price_adjustment: Number(
+									document.getElementById("dlg-item-price")?.value || 0,
+								),
+							};
+
+							if (!payload.label) {
+								$f7.dialog.alert("Label item wajib diisi.");
+								return;
+							}
+
+							optionGroups[groupIndex].items =
+								optionGroups[groupIndex].items || [];
+
+							if (isEdit) {
+								optionGroups[groupIndex].items[itemIndex] = payload;
+							} else {
+								optionGroups[groupIndex].items.push(payload);
+							}
+
+							renderOptionGroups();
+						},
+					},
+				],
+			});
+
+			dialog.open();
+		}
 
 		async function fetchMenuDetail() {
 			const token = getToken();
@@ -186,61 +779,86 @@
 			if (!res.ok)
 				throw new Error(result?.message || "Gagal ambil detail menu");
 
-			return result;
+			return result.menu || result;
 		}
 
 		$on("pageInit", async () => {
 			try {
-				// load data awal
 				$f7.dialog.preloader("Memuat...");
 				const menu = await fetchMenuDetail();
 				$f7.dialog.close();
 
-				// isi form
-				setF7InputValue("#name", menu.name);
-				setF7InputValue("#price", menu.price);
-				setF7InputValue("#description", menu.description);
-				setF7InputValue("#category", menu.category);
-				const isHotEl = document.getElementById("is_hot");
-				if (isHotEl) {
-					isHotEl.checked = !!menu.is_hot;
-				}
+				document.getElementById("name").value = menu.name || "";
+				document.getElementById("price").value = menu.price || "";
+				document.getElementById("description").value = menu.description || "";
+				document.getElementById("category").value = menu.category || "";
 
-				// kalau API kamu punya image_url, tampilkan
 				const oldImg = imageUrl(menu.image);
 				if (oldImg) {
-					const img = document.getElementById("preview");
-					img.src = oldImg;
-					img.style.display = "block";
+					setPreviewImages(oldImg);
 				}
 
-				// preview gambar baru
+				optionGroups = menu.option_groups || menu.optionGroups || [];
+				renderOptionGroups();
+
 				$("#image").on("change", function () {
 					const file = this.files?.[0];
 					if (!file) return;
-					const img = document.getElementById("preview");
-					img.src = URL.createObjectURL(file);
-					img.style.display = "block";
+					const localUrl = URL.createObjectURL(file);
+					setPreviewImages(localUrl);
 				});
 
-				// update
+				$("#btn-add-group").on("click", function () {
+					openGroupDialog();
+				});
+
+				$(document).on("click", ".btn-edit-group", function () {
+					const groupIndex = Number($(this).data("group-index"));
+					openGroupDialog(groupIndex);
+				});
+
+				$(document).on("click", ".btn-delete-group", function () {
+					const groupIndex = Number($(this).data("group-index"));
+					optionGroups.splice(groupIndex, 1);
+					renderOptionGroups();
+				});
+
+				$(document).on("click", ".btn-add-item", function () {
+					const groupIndex = Number($(this).data("group-index"));
+					openItemDialog(groupIndex);
+				});
+
+				$(document).on("click", ".btn-edit-item", function () {
+					const groupIndex = Number($(this).data("group-index"));
+					const itemIndex = Number($(this).data("item-index"));
+					openItemDialog(groupIndex, itemIndex);
+				});
+
+				$(document).on("click", ".btn-delete-item", function () {
+					const groupIndex = Number($(this).data("group-index"));
+					const itemIndex = Number($(this).data("item-index"));
+					optionGroups[groupIndex].items.splice(itemIndex, 1);
+					renderOptionGroups();
+				});
+
 				$("#btn-update-menu").on("click", async function () {
 					try {
 						const token = getToken();
 						if (!token) return $f7.dialog.alert("Silakan login dulu.");
 
-						const data = $f7.form.convertToData("#menu-edit-form");
-
 						const fd = new FormData();
-						// method spoofing biar aman untuk multipart
 						fd.append("_method", "PUT");
-
-						// kirim hanya field yang kamu mau update (di controller kamu pakai sometimes|required)
-						fd.append("name", data.name || "");
-						fd.append("price", data.price || "");
-						fd.append("description", data.description || "");
-						fd.append("category", data.category || "");
-						fd.append("is_hot", data.is_hot ? "1" : "0");
+						fd.append("name", document.getElementById("name").value || "");
+						fd.append("price", document.getElementById("price").value || "");
+						fd.append(
+							"description",
+							document.getElementById("description").value || "",
+						);
+						fd.append(
+							"category",
+							document.getElementById("category").value || "",
+						);
+						fd.append("option_groups", JSON.stringify(optionGroups));
 
 						const fileInput = document.getElementById("image");
 						if (fileInput.files && fileInput.files[0]) {
@@ -249,7 +867,7 @@
 
 						$f7.dialog.preloader("Mengupdate...");
 						const res = await fetch(`${API_BASE}/menus/${menuId}`, {
-							method: "POST", // POST + _method=PUT
+							method: "POST",
 							headers: {
 								Accept: "application/json",
 								Authorization: `Bearer ${token}`,
@@ -272,12 +890,10 @@
 						$f7.views.main.router.back();
 					} catch (err) {
 						$f7.dialog.close();
-						console.log(err);
 						$f7.dialog.alert(String(err.message || err), "Error");
 					}
 				});
 
-				// delete (button di bawah)
 				$("#btn-delete-menu").on("click", function () {
 					$f7.dialog.confirm(
 						"Yakin mau hapus menu ini?",
@@ -303,7 +919,6 @@
 								$f7.views.main.router.back();
 							} catch (err) {
 								$f7.dialog.close();
-								console.log(err);
 								$f7.dialog.alert(String(err.message || err), "Error");
 							}
 						},
@@ -311,7 +926,6 @@
 				});
 			} catch (err) {
 				$f7.dialog.close();
-				console.log(err);
 				$f7.dialog.alert(String(err.message || err), "Error");
 			}
 		});
