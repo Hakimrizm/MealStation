@@ -1,546 +1,342 @@
 <template>
-	<div class="page" data-name="tenant-menus" style="background-color: #f5f7fa">
-		<!-- Navbar -->
-		<div class="navbar navbar-transparent">
-			<div class="navbar-bg" style="background-color: #fff"></div>
-			<div class="navbar-inner">
-				<div class="left">
-					<div
-						style="
-							padding-left: 16px;
-							display: flex;
-							align-items: center;
-							gap: 8px;
-						"
-					>
-						<div class="icon-container-small">
-							<i class="icon f7-icons text-color-blue" style="font-size: 20px"
-								>building_2_fill</i
-							>
-						</div>
-						<div>
-							<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
-								Lokasi Saat Ini
-							</div>
-							<div style="font-size: 14px; font-weight: 700; color: #1a1a1a">
-								Kantin LPKIA
-							</div>
-						</div>
-					</div>
-				</div>
+    <div class="page" data-name="tenant-menus" style="background-color: #f5f7fa">
+        <div class="navbar navbar-transparent">
+            <div class="navbar-bg" style="background-color: #fff"></div>
+            <div class="navbar-inner">
+                <div class="left">
+                    <div style="padding-left: 16px; display: flex; align-items: center; gap: 8px;">
+                        <div class="icon-container-small">
+                            <i class="icon f7-icons text-color-blue" style="font-size: 20px">building_2_fill</i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #8e8e93; font-weight: 500">Lokasi Saat Ini</div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1a1a1a">Kantin LPKIA</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <a class="link icon-only">
+                        <i class="icon f7-icons text-color-black">bell</i>
+                        <span class="badge color-red" style="position: absolute; top: 8px; right: 8px; transform: scale(0.7);">0</span>
+                    </a>
+                    <a class="link icon-only" href="/profile">
+                        <i class="icon f7-icons text-color-black">person_circle</i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-				<div class="right">
-					<a class="link icon-only">
-						<i class="icon f7-icons text-color-black">bell</i>
-						<span
-							class="badge color-red"
-							style="
-								position: absolute;
-								top: 8px;
-								right: 8px;
-								transform: scale(0.7);
-							"
-						>
-							0
-						</span>
-					</a>
-					<a class="link icon-only" href="/profile">
-						<i class="icon f7-icons text-color-black">person_circle</i>
-					</a>
-				</div>
-			</div>
-		</div>
+        <div class="page-content">
+            <div class="block" style="margin-top: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 10px; align-items: center;">
+                <div style="font-size: 16px; font-weight: 800; color: #1a1a1a">Menu Saya</div>
+                <div style="display: flex; gap: 8px">
+                    <a class="button button-outline" id="btn-open-qr-toko" style="font-weight: 700">
+                        <i class="icon f7-icons" style="font-size: 16px">qrcode</i> QR Toko
+                    </a>
+                    <a class="button button-fill" href="/tenant/menu/create">
+                        <i class="icon f7-icons" style="font-size: 18px">plus</i> Tambah
+                    </a>
+                </div>
+            </div>
 
-		<!-- Content -->
-		<div class="page-content">
-			<!-- Header actions -->
-			<div
-				class="block"
-				style="
-					margin-top: 12px;
-					margin-bottom: 8px;
-					display: flex;
-					justify-content: space-between;
-					gap: 10px;
-					align-items: center;
-				"
-			>
-				<div style="font-size: 16px; font-weight: 800; color: #1a1a1a">
-					Menu Saya
-				</div>
+            <div class="block" style="margin-top: 0">
+                <div class="searchbar searchbar-init" data-search-container=".menu-list">
+                    <div class="searchbar-inner">
+                        <div class="searchbar-input-wrap">
+                            <input type="search" placeholder="Cari menu..." />
+                            <i class="searchbar-icon"></i>
+                            <span class="input-clear-button"></span>
+                        </div>
+                        <span class="searchbar-disable-button">Cancel</span>
+                    </div>
+                </div>
+            </div>
 
-				<div style="display: flex; gap: 8px">
-					<a
-						class="button button-outline"
-						id="btn-open-qr-toko"
-						style="font-weight: 700"
-					>
-						<i class="icon f7-icons" style="font-size: 16px">qrcode</i>
-						QR Toko
-					</a>
+            <div class="list media-list no-hairlines-md menu-list" style="margin-top: 8px">
+                <ul id="menu-items"></ul>
+            </div>
 
-					<a class="button button-fill" href="/tenant/menu/create">
-						<i class="icon f7-icons" style="font-size: 18px">plus</i>
-						Tambah
-					</a>
-				</div>
-			</div>
+            <div class="block" id="empty-state" style="display: none; color: #8e8e93">
+                Belum ada menu. Klik <b>Tambah</b> untuk membuat menu baru.
+            </div>
+        </div>
 
-			<!-- Search (opsional) -->
-			<div class="block" style="margin-top: 0">
-				<div
-					class="searchbar searchbar-init"
-					data-search-container=".menu-list"
-				>
-					<div class="searchbar-inner">
-						<div class="searchbar-input-wrap">
-							<input type="search" placeholder="Cari menu..." />
-							<i class="searchbar-icon"></i>
-							<span class="input-clear-button"></span>
-						</div>
-						<span class="searchbar-disable-button">Cancel</span>
-					</div>
-				</div>
-			</div>
+        <div class="popup popup-qr-toko" style="background: transparent">
+            <div class="page" style="background: transparent">
+                <div class="page-content display-flex align-items-center justify-content-center">
+                    <div style="width: 86%; max-width: 320px; background: #f2f2fb; border-radius: 20px; padding: 18px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);">
+                        <div style="font-size: 32px; font-weight: 500; color: #4d4d5d">QR Menu Toko</div>
+                        <div style="margin-top: 10px; font-size: 14px; line-height: 1.45; color: #6b7280;">Scan QR ini agar pembeli langsung melihat menu toko Anda.</div>
+                        <div style="margin-top: 14px; background: #fff; padding: 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <img id="qr-toko-image" alt="QR Menu Toko" style="width: 190px; height: 190px; object-fit: contain" />
+                        </div>
+                        <div id="qr-toko-link-preview" style="margin-top: 12px; font-size: 10px; text-align: center; color: #9ca3af; word-break: break-all;"></div>
+                        <div style="margin-top: 14px; display: flex; justify-content: space-between; gap: 12px;">
+                            <a class="link" id="btn-copy-qr-link" style="font-weight: 700">Salin Link</a>
+                            <a class="link" id="btn-download-qr" style="font-weight: 700">Download QR</a>
+                            <a class="link popup-close" style="font-weight: 700">Tutup</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-			<!-- List -->
-			<div
-				class="list media-list no-hairlines-md menu-list"
-				style="margin-top: 8px"
-			>
-				<ul id="menu-items"></ul>
-			</div>
-
-			<div class="block" id="empty-state" style="display: none; color: #8e8e93">
-				Belum ada menu. Klik <b>Tambah</b> untuk membuat menu baru.
-			</div>
-		</div>
-
-		<div class="popup popup-qr-toko" style="background: transparent">
-			<div class="page" style="background: transparent">
-				<div
-					class="page-content display-flex align-items-center justify-content-center"
-				>
-					<div
-						style="
-							width: 86%;
-							max-width: 320px;
-							background: #f2f2fb;
-							border-radius: 20px;
-							padding: 18px;
-							box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
-						"
-					>
-						<div style="font-size: 32px; font-weight: 500; color: #4d4d5d">
-							QR Menu Toko
-						</div>
-						<div
-							style="
-								margin-top: 10px;
-								font-size: 14px;
-								line-height: 1.45;
-								color: #6b7280;
-							"
-						>
-							Scan QR ini agar pembeli langsung melihat menu toko Anda.
-						</div>
-
-						<div
-							style="
-								margin-top: 14px;
-								background: #fff;
-								padding: 10px;
-								border-radius: 10px;
-								display: flex;
-								align-items: center;
-								justify-content: center;
-							"
-						>
-							<img
-								id="qr-toko-image"
-								alt="QR Menu Toko"
-								style="width: 190px; height: 190px; object-fit: contain"
-							/>
-						</div>
-
-						<div
-							id="qr-toko-link-preview"
-							style="
-								margin-top: 12px;
-								font-size: 10px;
-								text-align: center;
-								color: #9ca3af;
-								word-break: break-all;
-							"
-						></div>
-
-						<div
-							style="
-								margin-top: 14px;
-								display: flex;
-								justify-content: space-between;
-								gap: 12px;
-							"
-						>
-							<a class="link" id="btn-copy-qr-link" style="font-weight: 700"
-								>Salin Link</a
-							>
-							<a class="link" id="btn-download-qr" style="font-weight: 700"
-								>Download QR</a
-							>
-							<a class="link popup-close" style="font-weight: 700">Tutup</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Tabbar -->
-		<div class="toolbar tabbar toolbar-bottom">
-			<div class="toolbar-inner">
-				<a class="tab-link" href="/tenant" data-index="0">
-					<i class="icon f7-icons">house_fill</i>
-					<span class="tabbar-label">Beranda</span>
-				</a>
-				<a class="tab-link tab-link-active" data-index="1">
-					<i class="icon f7-icons">square_list_fill</i>
-					<span class="tabbar-label">Menu</span>
-				</a>
-				<a class="tab-link" href="/tenant/riwayat" data-index="2">
-					<i class="icon f7-icons">timer_fill</i>
-					<span class="tabbar-label">Riwayat</span>
-				</a>
-				<a class="tab-link" href="/profile" data-index="3">
-					<i class="icon f7-icons">person_circle_fill</i>
-					<span class="tabbar-label">Profil</span>
-				</a>
-			</div>
-		</div>
-	</div>
+        <div class="toolbar tabbar toolbar-bottom">
+            <div class="toolbar-inner">
+                <a class="tab-link" href="/tenant" data-index="0">
+                    <i class="icon f7-icons">house_fill</i><span class="tabbar-label">Beranda</span>
+                </a>
+                <a class="tab-link tab-link-active" data-index="1">
+                    <i class="icon f7-icons">square_list_fill</i><span class="tabbar-label">Menu</span>
+                </a>
+                <a class="tab-link" href="/tenant/riwayat" data-index="2">
+                    <i class="icon f7-icons">timer_fill</i><span class="tabbar-label">Riwayat</span>
+                </a>
+                <a class="tab-link" href="/profile" data-index="3">
+                    <i class="icon f7-icons">person_circle_fill</i><span class="tabbar-label">Profil</span>
+                </a>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-	import { getToken } from "./../../js/auth.js";
+    import { getToken } from "./../../js/auth.js";
 
-	export default (props, { $, $on, $f7 }) => {
-		const API_BASE = "http://localhost:8000/api";
-		let tenantUser = null;
-		let tenantMenuLink = "";
+    export default (props, { $, $on, $f7 }) => {
+        const API_BASE = "http://localhost:8000/api";
+        let tenantUser = null;
+        let tenantMenuLink = "";
 
-		const rupiah = (n) => {
-			const num = Number(n || 0);
-			return new Intl.NumberFormat("id-ID", {
-				style: "currency",
-				currency: "IDR",
-				maximumFractionDigits: 0,
-			}).format(num);
-		};
+        const rupiah = (n) => {
+            const num = Number(n || 0);
+            return new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                maximumFractionDigits: 0,
+            }).format(num);
+        };
 
-		// buat URL gambar (karena backend kamu simpan path "menus/xxx.jpg")
-		// sesuaikan kalau backend kamu sudah return image_url
-		const imageUrl = (imgPath) => {
-			if (!imgPath) return "";
-			// kalau ternyata sudah full URL, langsung pakai
-			if (String(imgPath).startsWith("http")) return imgPath;
-			return `http://localhost:8000/storage/${imgPath}`;
-		};
+        const imageUrl = (imgPath) => {
+            if (!imgPath) return "";
+            if (String(imgPath).startsWith("http")) return imgPath;
+            return `http://localhost:8000/storage/${imgPath}`;
+        };
 
-		async function fetchMyMenus() {
-			const token = getToken();
-			const res = await fetch(`${API_BASE}/tenant/menus`, {
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
-			const result = await res.json().catch(() => []);
-			if (!res.ok) {
-				const msg = result?.message || "Gagal mengambil menu";
-				throw new Error(msg);
-			}
-			return result; // array menus
-		}
+        async function fetchMyMenus() {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}/tenant/menus`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const result = await res.json().catch(() => []);
+            if (!res.ok) throw new Error(result?.message || "Gagal mengambil menu");
+            return result;
+        }
 
-		async function fetchCurrentUser() {
-			const token = getToken();
-			const res = await fetch(`${API_BASE}/user`, {
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
+        async function fetchCurrentUser() {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}/user`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const result = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(result?.message || "Gagal mengambil data user");
+            return result?.user || null;
+        }
 
-			const result = await res.json().catch(() => ({}));
-			if (!res.ok) {
-				throw new Error(result?.message || "Gagal mengambil data user");
-			}
+        // FUNGSI BARU: TOGGLE STATUS
+        async function toggleStatus(menuId) {
+            try {
+                const token = getToken();
+                const res = await fetch(`${API_BASE}/menus/${menuId}/toggle`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const result = await res.json();
+                if (res.ok) {
+                    $f7.toast.create({ text: result.message, closeTimeout: 2000, color: 'blue' }).open();
+                    // Refresh data setelah toggle
+                    const menus = await fetchMyMenus();
+                    renderMenus(menus);
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (err) {
+                $f7.dialog.alert(String(err.message), "Error");
+            }
+        }
 
-			return result?.user || null;
-		}
+        function buildTenantMenuLink() {
+            if (!tenantUser?.id) return "";
+            const base = window?.location?.origin || "http://localhost:5173";
+            const url = new URL("/", base);
+            url.searchParams.set("tenant", String(tenantUser.id));
+            return url.toString();
+        }
 
-		function buildTenantMenuLink() {
-			if (!tenantUser?.id) return "";
+        function buildQrImageUrl(value) {
+            return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(value)}`;
+        }
 
-			const base = window?.location?.origin || "http://localhost:5173";
-			const url = new URL("/", base);
-			url.searchParams.set("tenant", String(tenantUser.id));
-			return url.toString();
-		}
+        async function copyText(text) {
+            if (navigator?.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+                return;
+            }
+            const temp = document.createElement("textarea");
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+        }
 
-		function buildQrImageUrl(value) {
-			return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
-				value
-			)}`;
-		}
+        function openQrPopup() {
+            if (!tenantMenuLink) {
+                $f7.dialog.alert("Link menu toko belum tersedia.");
+                return;
+            }
+            $("#qr-toko-image").attr("src", buildQrImageUrl(tenantMenuLink));
+            $("#qr-toko-link-preview").text(tenantMenuLink);
+            $f7.popup.open(".popup-qr-toko");
+        }
 
-		async function copyText(text) {
-			if (navigator?.clipboard?.writeText) {
-				await navigator.clipboard.writeText(text);
-				return;
-			}
+        async function deleteMenu(menuId) {
+            const token = getToken();
+            const res = await fetch(`${API_BASE}/menus/${menuId}`, {
+                method: "DELETE",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const result = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(result?.message || "Hapus menu gagal");
+            return result;
+        }
 
-			const temp = document.createElement("textarea");
-			temp.value = text;
-			document.body.appendChild(temp);
-			temp.select();
-			document.execCommand("copy");
-			document.body.removeChild(temp);
-		}
+        function renderMenus(menus) {
+            const $ul = $("#menu-items");
+            $ul.html("");
 
-		function openQrPopup() {
-			if (!tenantMenuLink) {
-				$f7.dialog.alert("Link menu toko belum tersedia.");
-				return;
-			}
+            if (!menus || menus.length === 0) {
+                $("#empty-state").show();
+                return;
+            }
+            $("#empty-state").hide();
 
-			$("#qr-toko-image").attr("src", buildQrImageUrl(tenantMenuLink));
-			$("#qr-toko-link-preview").text(tenantMenuLink);
-			$f7.popup.open(".popup-qr-toko");
+            menus.forEach((m) => {
+                const img = imageUrl(m.image);
+                const hasImg = !!img;
+                
+                // Cek status ketersediaan untuk warna tombol
+                const statusColor = m.is_available ? 'color-green' : 'color-red';
+                const statusText = m.is_available ? '● Tersedia' : '○ Habis';
 
-			setTimeout(() => {
-				const backdrop = document.querySelector(".popup-backdrop");
-				if (backdrop) backdrop.style.background = "transparent";
-			}, 0);
-		}
+                const li = `
+                    <li class="searchbar-found">
+                        <div class="item-content">
+                            <div class="item-media">
+                                ${hasImg 
+                                    ? `<img src="${img}" style="width: 58px; height: 58px; object-fit: cover; border-radius: 14px;" />`
+                                    : `<div style="width:58px;height:58px;border-radius:14px;background:#e9eef5;display:flex;align-items:center;justify-content:center;"><i class="icon f7-icons" style="font-size:22px;color:#8e8e93;">photo</i></div>`
+                                }
+                            </div>
 
-		function resetPopupBackdrop() {
-			const backdrop = document.querySelector(".popup-backdrop");
-			if (backdrop) backdrop.style.background = "";
-		}
+                            <div class="item-inner">
+                                <div class="item-title-row">
+                                    <div class="item-title" style="font-weight:800;color:#1a1a1a;">${m.name || "-"}</div>
+                                    <div class="item-after" style="font-weight:800;">${rupiah(m.price)}</div>
+                                </div>
 
-		function triggerDownload(url, filename) {
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = filename;
-			a.target = "_blank";
-			a.rel = "noopener noreferrer";
-			a.className = "external";
-			a.setAttribute("data-no-router", "true");
-			a.style.display = "none";
-			document.body.appendChild(a);
-			a.click();
-			setTimeout(() => {
-				document.body.removeChild(a);
-			}, 0);
-		}
+                                <div class="item-subtitle" style="color:#8e8e93;">
+                                    ${m.category || "Tanpa kategori"}
+                                    ${m.is_hot ? ` • <span class="text-color-red" style="font-weight:700;">HOT</span>` : ""}
+                                </div>
 
-		async function downloadQrImage() {
-			if (!tenantMenuLink) return;
+                                <div class="item-text" style="color:#555;">
+                                    ${(m.description || "").slice(0, 80)}${(m.description || "").length > 80 ? "..." : ""}
+                                </div>
 
-			const qrUrl = buildQrImageUrl(tenantMenuLink);
-			const filename = `qr-menu-toko-${tenantUser?.id || "tenant"}.png`;
+                                <div style="margin-top:10px; display:flex; gap:8px; flex-wrap: wrap;">
+                                    <a class="button button-small button-outline btn-toggle-status ${statusColor}" data-id="${m.id}" style="font-weight: 700;">
+                                        ${statusText}
+                                    </a>
 
-			try {
-				const res = await fetch(qrUrl, { mode: "cors" });
-				if (!res.ok) throw new Error("Gagal mengambil gambar QR");
+                                    <a class="button button-small" href="/tenant/menu/${m.id}/edit">
+                                        <i class="icon f7-icons" style="font-size:16px;">pencil</i> Edit
+                                    </a>
 
-				const blob = await res.blob();
-				const objectUrl = URL.createObjectURL(blob);
-				triggerDownload(objectUrl, filename);
-				setTimeout(() => {
-					URL.revokeObjectURL(objectUrl);
-				}, 1500);
-			} catch {
-				triggerDownload(qrUrl, filename);
-			}
-		}
+                                    <a class="button button-small color-red btn-delete" data-id="${m.id}">
+                                        <i class="icon f7-icons" style="font-size:16px;">trash</i> Hapus
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                `;
+                $ul.append(li);
+            });
 
-		async function deleteMenu(menuId) {
-			const token = getToken();
-			const res = await fetch(`${API_BASE}/menus/${menuId}`, {
-				method: "DELETE",
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			});
+            // Bind Toggle Button
+            $(".btn-toggle-status").on("click", function() {
+                const id = $(this).data("id");
+                toggleStatus(id);
+            });
 
-			const result = await res.json().catch(() => ({}));
-			if (!res.ok) {
-				throw new Error(result?.message || "Hapus menu gagal");
-			}
-			return result;
-		}
+            // Bind delete buttons
+            $(".btn-delete").on("click", function () {
+                const id = $(this).data("id");
+                $f7.dialog.confirm("Yakin mau hapus menu ini?", "Konfirmasi", async () => {
+                    try {
+                        $f7.dialog.preloader("Menghapus...");
+                        await deleteMenu(id);
+                        $f7.dialog.close();
+                        $f7.toast.create({ text: "Menu berhasil dihapus", closeTimeout: 2000 }).open();
+                        const menus = await fetchMyMenus();
+                        renderMenus(menus);
+                    } catch (err) {
+                        $f7.dialog.close();
+                        $f7.dialog.alert(String(err.message), "Error");
+                    }
+                });
+            });
+        }
 
-		function renderMenus(menus) {
-			const $ul = $("#menu-items");
-			$ul.html("");
+        $on("pageInit", async () => {
+            try {
+                const token = getToken();
+                if (!token) return;
 
-			if (!menus || menus.length === 0) {
-				$("#empty-state").show();
-				return;
-			}
-			$("#empty-state").hide();
+                $f7.dialog.preloader("Memuat menu...");
+                tenantUser = await fetchCurrentUser();
+                tenantMenuLink = buildTenantMenuLink();
+                const menus = await fetchMyMenus();
+                $f7.dialog.close();
+                renderMenus(menus);
 
-			menus.forEach((m) => {
-				const img = imageUrl(m.image);
-				const hasImg = !!img;
+                $("#btn-open-qr-toko").on("click", () => openQrPopup());
+                $("#btn-copy-qr-link").on("click", async () => {
+                    if (!tenantMenuLink) return;
+                    await copyText(tenantMenuLink);
+                    $f7.toast.create({ text: "Link berhasil disalin", closeTimeout: 1800 }).open();
+                });
+                $("#btn-download-qr").on("click", () => downloadQrImage());
+            } catch (err) {
+                $f7.dialog.close();
+                console.log(err);
+            }
+        });
 
-				const li = `
-          <li class="searchbar-found">
-            <div class="item-content">
-              ${
-								hasImg
-									? `<div class="item-media">
-                      <img src="${img}" style="width: 58px; height: 58px; object-fit: cover; border-radius: 14px;" />
-                    </div>`
-									: `<div class="item-media">
-                      <div style="width:58px;height:58px;border-radius:14px;background:#e9eef5;display:flex;align-items:center;justify-content:center;">
-                        <i class="icon f7-icons" style="font-size:22px;color:#8e8e93;">photo</i>
-                      </div>
-                    </div>`
-							}
-
-              <div class="item-inner">
-                <div class="item-title-row">
-                  <div class="item-title" style="font-weight:800;color:#1a1a1a;">
-                    ${m.name || "-"}
-                  </div>
-                  <div class="item-after" style="font-weight:800;">
-                    ${rupiah(m.price)}
-                  </div>
-                </div>
-
-                <div class="item-subtitle" style="color:#8e8e93;">
-                  ${m.category || "Tanpa kategori"}
-                  ${
-										m.is_hot
-											? ` • <span class="text-color-red" style="font-weight:700;">HOT</span>`
-											: ""
-									}
-                </div>
-
-                <div class="item-text" style="color:#555;">
-                  ${(m.description || "").slice(0, 80)}${
-					(m.description || "").length > 80 ? "..." : ""
-				}
-                </div>
-
-                <div style="margin-top:10px; display:flex; gap:8px;">
-                  <a class="button button-small" href="/tenant/menu/${
-										m.id
-									}/edit">
-                    <i class="icon f7-icons" style="font-size:16px;">pencil</i>
-                    Edit
-                  </a>
-
-                  <a class="button button-small color-red btn-delete" data-id="${
-										m.id
-									}">
-                    <i class="icon f7-icons" style="font-size:16px;">trash</i>
-                    Hapus
-                  </a>
-                </div>
-              </div>
-            </div>
-          </li>
-        `;
-
-				$ul.append(li);
-			});
-
-			// bind delete buttons
-			$(".btn-delete").on("click", function () {
-				const id = $(this).data("id");
-
-				$f7.dialog.confirm(
-					"Yakin mau hapus menu ini?",
-					"Konfirmasi",
-					async () => {
-						try {
-							$f7.dialog.preloader("Menghapus...");
-							await deleteMenu(id);
-							$f7.dialog.close();
-							$f7.toast
-								.create({ text: "Menu berhasil dihapus", closeTimeout: 2000 })
-								.open();
-
-							// refresh list setelah delete
-							$f7.dialog.preloader("Memuat...");
-							const menus = await fetchMyMenus();
-							$f7.dialog.close();
-							renderMenus(menus);
-						} catch (err) {
-							$f7.dialog.close();
-							$f7.dialog.alert(String(err.message || err), "Error");
-						}
-					}
-				);
-			});
-		}
-
-		$on("pageInit", async () => {
-			try {
-				const token = getToken();
-				if (!token) {
-					$f7.dialog.alert("Silakan login dulu.");
-					return;
-				}
-
-				$f7.dialog.preloader("Memuat menu...");
-				tenantUser = await fetchCurrentUser();
-				tenantMenuLink = buildTenantMenuLink();
-				const menus = await fetchMyMenus();
-				$f7.dialog.close();
-				renderMenus(menus);
-
-				$("#btn-open-qr-toko").on("click", function () {
-					openQrPopup();
-				});
-
-				$("#btn-copy-qr-link").on("click", async function () {
-					if (!tenantMenuLink) return;
-					try {
-						await copyText(tenantMenuLink);
-						$f7.toast
-							.create({ text: "Link berhasil disalin", closeTimeout: 1800 })
-							.open();
-					} catch {
-						$f7.dialog.alert("Gagal menyalin link.");
-					}
-				});
-
-				$("#btn-download-qr").on("click", async function () {
-					try {
-						await downloadQrImage();
-						$f7.toast
-							.create({ text: "QR berhasil didownload", closeTimeout: 1800 })
-							.open();
-					} catch {
-						$f7.dialog.alert("Gagal mendownload QR.");
-					}
-				});
-
-				$(".popup-qr-toko").on("popup:closed", function () {
-					resetPopupBackdrop();
-				});
-			} catch (err) {
-				$f7.dialog.close();
-				console.log(err);
-				$f7.dialog.alert(String(err.message || err), "Error");
-			}
-		});
-
-		return $render;
-	};
+        return $render;
+    };
 </script>

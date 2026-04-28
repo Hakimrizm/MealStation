@@ -31,6 +31,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         '/tenant/menus',
         [MenuController::class, 'myMenus']
     );
+    Route::post('/menus/{id}/toggle', [MenuController::class, 'toggleAvailability']);
     Route::get('/menus/{menu}', [MenuController::class, 'show']);
 
     // USER

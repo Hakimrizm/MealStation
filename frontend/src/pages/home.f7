@@ -207,31 +207,45 @@
 				const cat = normalizeCategory(m.category);
 				const hot = m.is_hot ? `<i class="fas fa-fire fire-icon"></i>` : "";
 				const rating = m.rating ? Number(m.rating).toFixed(1) : "0.0";
+				const isAvailable = parseInt(m.is_available) === 1;
 
-				const card = document.createElement("a");
-				card.className = "food-card-link";
-				// arahkan ke detail per id
-				card.href = `/order-detail/${m.id}/`;
+				const card = document.createElement(isAvailable ? "a" : "div");
+				card.className = `food-card-link ${!isAvailable ? 'menu-habis' : ''}`;
+				if (isAvailable) card.href = `/order-detail/${m.id}/`;
 
 				card.innerHTML = `
-          <div class="food-card" data-category="${cat}">
-            <img src="${imageUrl(m.image)}" alt="${m.name || "Menu"}" />
-            <div class="food-card-content">
-              <div class="food-card-title">
-                ${m.name || "-"} ${hot}
-              </div>
-              <div class="food-card-subtitle">${m.category || "Lainnya"}</div>
-              <div class="food-card-rating">
-                <i class="fas fa-star"></i> ${rating}
-              </div>
-              <div class="food-card-price">
-                ${rupiah(m.price)}
-                <i class="fas fa-plus star-icon"></i>
-              </div>
-            </div>
-          </div>
-        `;
+					<div class="food-card">
+						<div class="image-container">
+							<img src="${imageUrl(m.image)}" alt="${m.name}" />
+							
+							<div class="status-badge-floating ${isAvailable ? 'bg-available' : 'bg-unavailable'}">
+								${isAvailable ? 'Tersedia' : 'Habis'}
+							</div>
 
+							${!isAvailable ? `
+								<div class="overlay-habis">
+									<span class="label-sold-out">SOLD OUT</span>
+								</div>
+							` : ''}
+						</div>
+
+						<div class="food-card-content">
+							<div class="food-card-title">
+								${m.name || "-"} ${hot}
+							</div>
+							<div class="food-card-subtitle">${m.category || "Lainnya"}</div>
+							
+							<div class="display-flex justify-content-between align-items-center" style="margin-top: 10px;">
+								<div class="food-card-price">${rupiah(m.price)}</div>
+								
+								<div class="display-flex align-items-center" style="gap: 8px;">
+									<div class="rating-mini"><i class="fas fa-star"></i> ${rating}</div>
+									${isAvailable ? '<i class="fas fa-plus-circle btn-add-icon"></i>' : ''}
+								</div>
+							</div>
+						</div>
+					</div>
+				`;
 				grid.appendChild(card);
 			});
 		}
@@ -582,4 +596,77 @@
 
 		padding-top: 70px !important;
 	}
+
+	/* ==================== OVERLAY HABIS STYLES ==================== */
+	/* Pastikan container gambar punya tinggi dan posisi relative */
+	/* Container Gambar */
+    .image-container {
+        position: relative;
+        width: 100%;
+        height: 130px;
+        overflow: hidden;
+    }
+
+    /* Floating Badge di Atas Gambar */
+    .status-badge-floating {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        z-index: 5;
+        text-transform: uppercase;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .bg-available {
+        background: rgba(76, 175, 80, 0.9); /* Hijau transparan */
+        color: white;
+    }
+
+    .bg-unavailable {
+        background: rgba(244, 67, 54, 0.9); /* Merah transparan */
+        color: white;
+    }
+
+    /* Label Tengah saat Habis */
+    .label-sold-out {
+        border: 2px solid white;
+        padding: 5px 15px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        border-radius: 2px;
+        color: white;
+    }
+
+    /* Rating Kecil */
+    .rating-mini {
+        font-size: 11px;
+        color: #ffb400;
+        font-weight: 600;
+    }
+
+    /* Tombol Plus Custom */
+    .btn-add-icon {
+        color: var(--f7-theme-color);
+        font-size: 22px;
+        transition: transform 0.2s;
+    }
+
+    .btn-add-icon:active {
+        transform: scale(1.2);
+    }
+
+    /* Perbaikan Card Content agar tidak terlalu mepet */
+    .food-card-content {
+        padding: 12px 10px;
+    }
+
+    .food-card-price {
+        font-size: 15px;
+        font-weight: 800 !important;
+        color: #222;
+    }
 </style>

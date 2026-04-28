@@ -54,6 +54,7 @@ class MenuController extends Controller
             'category'    => $request->category,
             'rating'      => $request->rating ?? 0,
             'is_hot'      => $request->is_hot ?? false,
+            'is_available' => true,
         ]);
 
         return response()->json([
@@ -149,5 +150,20 @@ class MenuController extends Controller
                 ->latest()
                 ->get()
         );
+    }
+
+    public function toggleAvailability($id)
+    {
+        $menu = Menu::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        
+        $menu->update([
+            'is_available' => !$menu->is_available
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'is_available' => $menu->is_available,
+            'message' => 'Status menu berhasil diubah!'
+        ]);
     }
 }
