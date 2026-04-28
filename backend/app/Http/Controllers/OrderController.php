@@ -90,12 +90,15 @@ class OrderController extends Controller
             ->latest()
             ->get()
             ->map(function ($order) {
-                // ================== UPDATE DI SINI ==================
-                // Mengonversi waktu ke format ISO8601 agar terbaca JS
-                if ($order->estimation_time) {
+                // LOGIKA PERBAIKAN: Hentikan estimasi jika sudah selesai atau batal
+                if (in_array($order->status, ['done', 'cancelled'], true)) {
+                    $order->estimation_time = null; 
+                } 
+                // Jika masih proses, baru dikonversi ke ISO8601
+                elseif ($order->estimation_time) {
                     $order->estimation_time = \Carbon\Carbon::parse($order->estimation_time)->toIso8601String();
                 }
-                // ====================================================
+                
                 return $order;
             });
 
@@ -105,20 +108,18 @@ class OrderController extends Controller
     // USER: detail order
     public function myOrderShow(Request $request, Order $order)
     {
-        // pastikan order milik user login
         if ($order->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        $order->load([
-            'tenant:id,name,qris_image,qris_name'
-        ]);
+        $order->load(['tenant:id,name,qris_image,qris_name']);
 
-        // ================== UPDATE DI SINI ==================
-        if ($order->estimation_time) {
+        // LOGIKA PERBAIKAN
+        if (in_array($order->status, ['done', 'cancelled'], true)) {
+            $order->estimation_time = null;
+        } elseif ($order->estimation_time) {
             $order->estimation_time = \Carbon\Carbon::parse($order->estimation_time)->toIso8601String();
         }
-        // ====================================================
 
         return response()->json($order);
     }
@@ -126,12 +127,19 @@ class OrderController extends Controller
     // TENANT: list order yang masuk ke tenant
     public function tenantOrders(Request $request)
     {
-        return response()->json(
-            Order::with(['items', 'user:id,name'])
-                ->where('tenant_id', $request->user()->id)
-                ->latest()
-                ->get()
-        );
+        $orders = Order::with(['items', 'user:id,name'])
+            ->where('tenant_id', $request->user()->id)
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                // LOGIKA PERBAIKAN: Paksa null jika status sudah done/cancelled
+                if (in_array($order->status, ['done', 'cancelled'], true)) {
+                    $order->estimation_time = null;
+                }
+                return $order;
+            });
+
+        return response()->json($orders);
     }
 
     // TENANT: update status (approve -> process, done, cancel)

@@ -26,11 +26,19 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        $menu = Menu::with(['tenant:id,name', 'optionGroups.items'])->findOrFail($id);
+        // Kita ambil data menu beserta tenant-nya
+        $menu = Menu::with(['tenant:id,name', 'optionGroups.items'])->find($id);
 
-        return response()->json([
-            'menu' => $menu
-        ]);
+        // Jika menu tidak ketemu (ID salah), beri response error yang jelas
+        if (!$menu) {
+            return response()->json([
+                'message' => 'Menu tidak ditemukan di database'
+            ], 404);
+        }
+
+        // PENTING: Langsung kembalikan $menu tanpa dibungkus array ['menu' => ...]
+        // Ini agar Frontend bisa langsung baca data.name, data.price, dll.
+        return response()->json($menu);
     }
 
     /**

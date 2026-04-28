@@ -395,10 +395,17 @@
         }
 
         // FUNGSI BARU: Hitung selisih waktu secara real-time
-        function getTimeRemaining(targetDate) {
+        function getTimeRemaining(targetDate, status) {
+            // JIKA status sudah selesai atau batal, jangan tampilkan timer
+            if (status === 'done' || status === 'cancelled') {
+                return "Selesai"; 
+            }
+
             if (!targetDate) return "Belum diatur";
             
             const total = Date.parse(targetDate) - Date.now();
+            
+            // JIKA waktu habis tapi status masih 'process'
             if (total <= 0) return "Siap Disajikan!";
 
             const seconds = Math.floor((total / 1000) % 60);
@@ -416,9 +423,9 @@
             return {
                 id: o.id,
                 time: shortTime(o.created_at),
-                // Gunakan estimation_time langsung sebagai string tanggal target
                 targetTime: o.estimation_time, 
-                estimation: getTimeRemaining(o.estimation_time),
+                // TAMBAHKAN o.status di dalam kurung ini
+                estimation: getTimeRemaining(o.estimation_time, o.status), 
                 items: itemsCount(o.items),
                 desc: buildDesc(o.items),
                 price: rupiah(o.grand_total),
