@@ -23,6 +23,7 @@
     "last 5 Firefox versions"
   ],
   "dependencies": {
+    "chart.js": "^4.5.1",
     "dom7": "^4.0.6",
     "framework7": "^9.0.0",
     "framework7-icons": "^5.0.5",

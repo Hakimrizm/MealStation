@@ -13,106 +13,58 @@
 			class="page-content"
 			style="padding: 16px; padding-bottom: 90px; padding-top: 90px"
 		>
-			<!-- SUMMARY CARDS -->
-			<div class="grid grid-cols-2 grid-gap" style="margin-bottom: 14px">
+			<!-- REKAP -->
+			<div class="grid grid-cols-2 grid-gap">
 				<div class="card-recap">
-					<div class="recap-label">Total Penjualan</div>
-					<div class="recap-value" id="sumRevenue">Rp 0</div>
-					<div class="recap-sub" id="sumPeriod">Semua waktu</div>
+					<div>Total Penjualan</div>
+					<div id="sumRevenue">Rp 0</div>
+					<small id="sumPeriod">Semua waktu</small>
 				</div>
 				<div class="card-recap">
-					<div class="recap-label">Order Selesai</div>
-					<div class="recap-value" id="sumDone">0</div>
-					<div class="recap-sub">Pesanan selesai</div>
+					<div>Order Selesai</div>
+					<div id="sumDone">0</div>
 				</div>
 				<div class="card-recap">
-					<div class="recap-label">Total Item</div>
-					<div class="recap-value" id="sumItems">0</div>
-					<div class="recap-sub">Item terjual</div>
+					<div>Total Item</div>
+					<div id="sumItems">0</div>
 				</div>
 				<div class="card-recap">
-					<div class="recap-label">Rata-rata Order</div>
-					<div class="recap-value" id="avgOrder">Rp 0</div>
-					<div class="recap-sub">Per pesanan</div>
+					<div>Rata-rata</div>
+					<div id="avgOrder">Rp 0</div>
 				</div>
 			</div>
 
 			<!-- FILTER -->
-			<div class="segmented segmented-raised" style="margin-bottom: 16px">
+			<div class="segmented segmented-raised" style="margin: 16px 0">
 				<button class="button button-active" id="filterAll">Semua</button>
 				<button class="button" id="filterMonth">Bulan Ini</button>
 			</div>
 
-			<div class="block-title" style="margin: 10px 0; font-weight: 800">
-				Pesanan Selesai
+			<!-- CHART -->
+			<div class="card">
+				<div class="card-header">Grafik Mingguan</div>
+				<div class="card-content">
+					<canvas id="chartPenjualan"></canvas>
+				</div>
 			</div>
 
+			<!-- TOP MENU -->
+			<div class="card">
+				<div class="card-header">Menu Terlaris</div>
+				<div class="card-content">
+					<div id="topMenuList"></div>
+				</div>
+			</div>
+
+			<!-- LIST -->
+			<div class="block-title">Pesanan Selesai</div>
 			<div id="doneList"></div>
 
 			<div
-				class="block text-align-center"
 				id="emptyDone"
-				style="display: none; opacity: 0.55; padding: 28px 0"
+				style="display: none; text-align: center; opacity: 0.5"
 			>
-				<i class="f7-icons" style="font-size: 46px; color: #cbd5e1"
-					>checkmark_seal</i
-				>
-				<div style="margin-top: 8px">Belum ada pesanan selesai</div>
-			</div>
-		</div>
-
-		<!-- SHEET DETAIL -->
-		<div
-			class="sheet-modal sheet-detail"
-			style="height: auto; border-radius: 16px 16px 0 0"
-		>
-			<div class="sheet-modal-inner" style="padding: 18px 16px 20px">
-				<div
-					style="
-						display: flex;
-						justify-content: space-between;
-						align-items: center;
-					"
-				>
-					<div style="font-weight: 900; font-size: 18px" id="shTitle">
-						Detail
-					</div>
-					<a class="link sheet-close">Tutup</a>
-				</div>
-				<div style="height: 10px"></div>
-				<div style="color: #64748b; font-size: 12px" id="shTime">-</div>
-				<div style="height: 12px"></div>
-
-				<div
-					style="
-						background: #f8fafc;
-						border: 1px solid #e2e8f0;
-						border-radius: 14px;
-						padding: 12px;
-					"
-				>
-					<div style="font-weight: 800; margin-bottom: 6px">Item</div>
-					<div
-						id="shItems"
-						style="color: #111827; font-size: 13px; line-height: 1.5"
-					></div>
-					<div style="height: 10px"></div>
-					<div
-						style="
-							display: flex;
-							justify-content: space-between;
-							font-weight: 900;
-						"
-					>
-						<span>Total</span>
-						<span id="shTotal">Rp 0</span>
-					</div>
-				</div>
-
-				<div style="height: 14px"></div>
-				<a class="button button-fill sheet-close" style="border-radius: 14px"
-					>OK</a
-				>
+				Belum ada pesanan
 			</div>
 		</div>
 	</div>
@@ -120,130 +72,45 @@
 
 <style>
 	.card-recap {
-		background: #ffffff;
-		border: 1px solid rgba(0, 0, 0, 0.05);
-		border-radius: 16px;
-		padding: 14px;
-		box-shadow: 0 10px 22px rgba(0, 0, 0, 0.04);
-	}
-	.recap-label {
-		font-size: 12px;
-		color: #64748b;
-		font-weight: 700;
-	}
-	.recap-value {
-		font-size: 18px;
-		color: #111827;
-		font-weight: 900;
-		margin-top: 6px;
-	}
-	.recap-sub {
-		font-size: 11px;
-		color: #94a3b8;
-		margin-top: 4px;
+		background: #fff;
+		padding: 12px;
+		border-radius: 12px;
 	}
 	.done-card {
 		background: #fff;
-		border-radius: 16px;
-		border: 1px solid rgba(0, 0, 0, 0.05);
-		padding: 12px;
-		margin-bottom: 12px;
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+		padding: 10px;
+		margin-bottom: 10px;
+		border-radius: 10px;
 	}
-	.done-top {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 8px;
-	}
-	.done-id {
-		font-weight: 900;
-		color: #0f172a;
-	}
-	.done-time {
-		font-size: 11px;
-		color: #94a3b8;
-	}
-	.done-desc {
-		font-size: 13px;
-		color: #334155;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-	.done-foot {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-top: 10px;
-	}
-	.pill {
-		font-size: 11px;
-		font-weight: 800;
-		padding: 4px 10px;
-		border-radius: 999px;
-		background: #dcfce7;
-		color: #166534;
+	.progress-bar {
+		height: 6px;
 	}
 </style>
 
 <script>
 	import { getToken } from "./../js/auth.js";
+	import Chart from "chart.js/auto";
 
 	export default (props, { $on, $f7 }) => {
-		const API_BASE = "http://localhost:8000/api";
+		const API = "http://localhost:8000/api";
 
 		let rawOrders = [];
 		let doneOrders = [];
-		let mode = "all"; // all | month
+		let mode = "all";
+		let chart = null;
 
 		const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
 
-		function parseDateSafe(v) {
-			if (!v) return null;
-			if (typeof v === "string" && v.includes(" "))
-				return new Date(v.replace(" ", "T"));
-			return new Date(v);
+		function parseDate(v) {
+			return new Date(v.replace(" ", "T"));
 		}
 
-		function shortTime(dt) {
-			try {
-				const d = new Date(dt);
-				return d.toLocaleString("id-ID", {
-					day: "2-digit",
-					month: "short",
-					year: "numeric",
-				});
-			} catch {
-				return "-";
-			}
-		}
-
-		function itemsCount(items) {
-			if (!Array.isArray(items)) return 0;
-			return items.reduce((s, it) => s + Number(it.qty || 0), 0);
-		}
-
-		function buildDesc(items) {
-			if (!Array.isArray(items) || !items.length) return "-";
-			return items.map((it) => `${it.menu_name} (${it.qty})`).join(", ");
-		}
-
-		async function fetchTenantOrders() {
+		async function fetchOrders() {
 			const token = getToken();
-			if (!token) throw new Error("Silakan login dulu");
-
-			const res = await fetch(`${API_BASE}/tenant/orders`, {
-				headers: {
-					Accept: "application/json",
-					Authorization: `Bearer ${token}`,
-				},
+			const res = await fetch(`${API}/tenant/orders`, {
+				headers: { Authorization: `Bearer ${token}` },
 			});
-
-			const data = await res.json().catch(() => []);
-			if (!res.ok)
-				throw new Error(data?.message || "Gagal mengambil pesanan tenant");
-			return Array.isArray(data) ? data : [];
+			return await res.json();
 		}
 
 		function applyFilter() {
@@ -252,123 +119,145 @@
 			if (mode === "month") {
 				const now = new Date();
 				doneOrders = base.filter((o) => {
-					const d = parseDateSafe(o.created_at);
-					if (!d) return false;
-					return (
-						d.getMonth() === now.getMonth() &&
-						d.getFullYear() === now.getFullYear()
-					);
+					const d = parseDate(o.created_at);
+					return d.getMonth() === now.getMonth();
 				});
-				document.getElementById("sumPeriod").textContent = "Bulan ini";
+				document.getElementById("sumPeriod").innerText = "Bulan ini";
 			} else {
 				doneOrders = base;
-				document.getElementById("sumPeriod").textContent = "Semua waktu";
+				document.getElementById("sumPeriod").innerText = "Semua waktu";
 			}
 
-			renderSummary(doneOrders);
-			renderList(doneOrders);
+			renderSummary();
+			renderList();
+			renderChart();
+			renderTopMenu();
 		}
 
-		function renderSummary(list) {
-			const revenue = list.reduce((s, o) => s + Number(o.grand_total || 0), 0);
-			const totalDone = list.length;
-			const totalItems = list.reduce((s, o) => s + itemsCount(o.items), 0);
-			const avg = totalDone ? Math.round(revenue / totalDone) : 0;
+		function renderSummary() {
+			const revenue = doneOrders.reduce((s, o) => s + Number(o.grand_total), 0);
+			const total = doneOrders.length;
+			const items = doneOrders.reduce(
+				(s, o) => s + (o.items || []).reduce((a, i) => a + i.qty, 0),
+				0,
+			);
+			const avg = total ? revenue / total : 0;
 
-			document.getElementById("sumRevenue").textContent = rupiah(revenue);
-			document.getElementById("sumDone").textContent = String(totalDone);
-			document.getElementById("sumItems").textContent = String(totalItems);
-			document.getElementById("avgOrder").textContent = rupiah(avg);
+			sumRevenue.innerText = rupiah(revenue);
+			sumDone.innerText = total;
+			sumItems.innerText = items;
+			avgOrder.innerText = rupiah(avg);
 		}
 
-		function renderList(list) {
-			const wrap = document.getElementById("doneList");
-			const empty = document.getElementById("emptyDone");
-			if (!wrap || !empty) return;
-
-			if (!list.length) {
-				wrap.innerHTML = "";
-				empty.style.display = "block";
+		function renderList() {
+			if (!doneOrders.length) {
+				doneList.innerHTML = "";
+				emptyDone.style.display = "block";
 				return;
 			}
-			empty.style.display = "none";
+			emptyDone.style.display = "none";
 
-			wrap.innerHTML = list
-				.map((o) => {
-					return `
-          <div class="done-card" data-id="${o.id}">
-            <div class="done-top">
-              <div class="done-id">#ORD-${o.id}</div>
-              <div class="done-time">${shortTime(o.created_at)}</div>
-            </div>
-            <div class="done-desc">${buildDesc(o.items)}</div>
-            <div class="done-foot">
-              <div style="font-weight:900;color:#0f172a">${rupiah(
-								o.grand_total
-							)}</div>
-              <div class="pill">Selesai</div>
-            </div>
-          </div>
-        `;
-				})
+			doneList.innerHTML = doneOrders
+				.map(
+					(o) => `
+      <div class="done-card">
+        <b>#${o.id}</b>
+        <div>${rupiah(o.grand_total)}</div>
+      </div>
+    `,
+				)
 				.join("");
+		}
 
-			wrap.querySelectorAll(".done-card").forEach((el) => {
-				el.addEventListener("click", () => {
-					const id = el.getAttribute("data-id");
-					const ord = list.find((x) => String(x.id) === String(id));
-					if (ord) openSheet(ord);
-				});
+		// ✅ CHART REAL DATA
+		function renderChart() {
+			const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+			const data = [0, 0, 0, 0, 0, 0, 0];
+
+			doneOrders.forEach((o) => {
+				const d = parseDate(o.created_at);
+				const day = d.getDay();
+				data[day] += Number(o.grand_total);
+			});
+
+			if (chart) chart.destroy();
+
+			const ctx = document.getElementById("chartPenjualan");
+
+			chart = new Chart(ctx, {
+				type: "line",
+				data: {
+					labels: days,
+					datasets: [
+						{
+							data: data,
+							fill: true,
+							tension: 0.4,
+						},
+					],
+				},
+				options: {
+					plugins: { legend: { display: false } },
+				},
 			});
 		}
 
-		function openSheet(o) {
-			document.getElementById("shTitle").textContent = `#ORD-${o.id}`;
-			document.getElementById("shTime").textContent = shortTime(o.created_at);
-			document.getElementById("shTotal").textContent = rupiah(o.grand_total);
+		// ✅ TOP MENU REAL
+		function renderTopMenu() {
+			const map = {};
 
-			const itemsHtml = (o.items || [])
-				.map((it) => `• ${it.menu_name} (${it.qty}x)`)
-				.join("<br>");
-			document.getElementById("shItems").innerHTML = itemsHtml || "-";
+			doneOrders.forEach((o) => {
+				(o.items || []).forEach((i) => {
+					if (!map[i.menu_name]) map[i.menu_name] = 0;
+					map[i.menu_name] += i.qty;
+				});
+			});
 
-			$f7.sheet.open(".sheet-detail");
+			const sorted = Object.entries(map)
+				.sort((a, b) => b[1] - a[1])
+				.slice(0, 3);
+
+			const max = sorted[0]?.[1] || 1;
+
+			topMenuList.innerHTML = sorted
+				.map(([name, qty]) => {
+					const percent = Math.round((qty / max) * 100);
+					return `
+        <div style="margin-bottom:10px">
+          <div>${name} (${qty})</div>
+          <div class="progress-bar" data-progress="${percent}"></div>
+        </div>
+      `;
+				})
+				.join("");
+
+			// FIX progress
+			document.querySelectorAll(".progress-bar").forEach((el) => {
+				const val = el.getAttribute("data-progress");
+				$f7.progressbar.set(el, val);
+			});
 		}
 
 		$on("pageInit", async () => {
-			try {
-				$f7.dialog.preloader("Memuat rekap...");
-				rawOrders = await fetchTenantOrders();
-				$f7.dialog.close();
+			$f7.dialog.preloader("Loading...");
+			rawOrders = await fetchOrders();
+			$f7.dialog.close();
 
-				// default all
+			applyFilter();
+
+			filterAll.onclick = () => {
+				mode = "all";
+				filterAll.classList.add("button-active");
+				filterMonth.classList.remove("button-active");
 				applyFilter();
+			};
 
-				document.getElementById("filterAll")?.addEventListener("click", () => {
-					mode = "all";
-					document.getElementById("filterAll").classList.add("button-active");
-					document
-						.getElementById("filterMonth")
-						.classList.remove("button-active");
-					applyFilter();
-				});
-
-				document
-					.getElementById("filterMonth")
-					?.addEventListener("click", () => {
-						mode = "month";
-						document
-							.getElementById("filterMonth")
-							.classList.add("button-active");
-						document
-							.getElementById("filterAll")
-							.classList.remove("button-active");
-						applyFilter();
-					});
-			} catch (err) {
-				$f7.dialog.close();
-				$f7.dialog.alert(String(err.message || err), "Error");
-			}
+			filterMonth.onclick = () => {
+				mode = "month";
+				filterMonth.classList.add("button-active");
+				filterAll.classList.remove("button-active");
+				applyFilter();
+			};
 		});
 
 		return $render;
