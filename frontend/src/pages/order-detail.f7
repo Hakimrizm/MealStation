@@ -335,6 +335,41 @@
 			container.innerHTML = html;
 		}
 
+		function getSelectedOptions() {
+			const options = [];
+
+			document.querySelectorAll(".option-group").forEach((groupEl) => {
+				const groupLabel =
+					groupEl.querySelector(".option-title")?.innerText || "";
+
+				// radio / checkbox
+				groupEl.querySelectorAll("input:checked").forEach((input) => {
+					options.push({
+						group: groupLabel,
+						label: input.parentElement.innerText.trim(),
+						price: Number(input.dataset.price || 0),
+					});
+				});
+
+				// text / textarea / number
+				groupEl
+					.querySelectorAll(
+						"input[type='text'], textarea, input[type='number']",
+					)
+					.forEach((input) => {
+						if (input.value) {
+							options.push({
+								group: groupLabel,
+								label: input.value,
+								price: 0,
+							});
+						}
+					});
+			});
+
+			return options;
+		}
+
 		function bindUi() {
 			const qtyValue = document.querySelector(".qty-value");
 
@@ -363,6 +398,8 @@
 
 				const notes = document.getElementById("notes")?.value || "";
 				const total = calculateTotal();
+				const selectedOptions = getSelectedOptions();
+				const optionTotal = selectedOptions.reduce((s, o) => s + o.price, 0);
 
 				const tenantId = getTenantIdFromMenu(menu);
 				if (!tenantId) {
@@ -384,12 +421,14 @@
 								{
 									cart_id: Date.now(),
 									menu_id: menu.id,
-									tenant_id: tenantId, // ✅ simpan tenant_id
+									tenant_id: tenantId,
 									name: menu.name,
 									price: basePrice,
 									qty,
 									notes,
-									total,
+									options: selectedOptions,
+									option_total: optionTotal,
+									total: total,
 									image: menu.image,
 									vendor: menu?.tenant?.name || "Kantin",
 								},

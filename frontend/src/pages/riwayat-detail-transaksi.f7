@@ -185,6 +185,26 @@
 			return STORAGE_BASE + p;
 		};
 
+		function renderOptions(options) {
+			if (!options || !options.length) return "";
+
+			return `
+		<div class="item-options">
+			${options
+				.map(
+					(opt) => `
+				<div class="opt-row">
+					<span class="opt-group">${opt.group}</span>:
+					<span class="opt-label">${opt.label}</span>
+					${opt.price > 0 ? `<span class="opt-price">(+${rupiah(opt.price)})</span>` : ""}
+				</div>
+			`,
+				)
+				.join("")}
+		</div>
+	`;
+		}
+
 		function badgeText(o) {
 			// payment first
 			if (o.payment_status === "paid") {
@@ -257,19 +277,24 @@
 					const qty = Number(it.qty || 0);
 					const unit = Number(it.unit_price || 0);
 					const sub = Number(it.subtotal || unit * qty);
+					const optionsHtml = renderOptions(it.options);
+
 					const note = it.notes
 						? `<div class="item-note">${it.notes}</div>`
 						: "";
 
 					return `
           <div class="item-row">
-            <div class="item-main">
-              <div class="item-name">${it.menu_name || "Menu"}</div>
-              <div class="item-sub">${qty} x ${rupiah(unit)}</div>
-              ${note}
-            </div>
-            <div class="item-price">${rupiah(sub)}</div>
-          </div>
+						<div class="item-main">
+							<div class="item-name">${it.menu_name || "Menu"}</div>
+							<div class="item-sub">${qty} x ${rupiah(unit)}</div>
+
+							${optionsHtml} <!-- 🔥 INI YANG NAMPILIN OPTIONS -->
+
+							${note}
+						</div>
+						<div class="item-price">${rupiah(sub)}</div>
+					</div>
         `;
 				})
 				.join("");
@@ -645,5 +670,30 @@
 		color: #94a3b8;
 		font-weight: 800;
 		padding: 10px 0;
+	}
+
+	.item-options {
+		margin-top: 6px;
+		font-size: 12px;
+		color: #475569;
+	}
+
+	.opt-row {
+		margin-bottom: 2px;
+	}
+
+	.opt-group {
+		font-weight: 700;
+		color: #64748b;
+	}
+
+	.opt-label {
+		font-weight: 600;
+	}
+
+	.opt-price {
+		color: #16a34a;
+		font-weight: 700;
+		margin-left: 4px;
 	}
 </style>

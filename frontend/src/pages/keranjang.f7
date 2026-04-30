@@ -324,7 +324,7 @@
 								</div>
 							</div>
 						</div>
-				`
+				`,
 				)
 				.join("");
 
@@ -343,7 +343,7 @@
 			}
 			if (tenantIds.length === 0) {
 				throw new Error(
-					"Tenant tidak ditemukan di cart. Silakan tambah menu lagi."
+					"Tenant tidak ditemukan di cart. Silakan tambah menu lagi.",
 				);
 			}
 
@@ -356,6 +356,7 @@
 					menu_id: it.menu_id,
 					qty: it.qty,
 					notes: it.notes || null,
+					options: it.options || [],
 				})),
 			};
 
@@ -458,7 +459,7 @@
 								$f7.dialog.close();
 								$f7.dialog.alert(String(err.message || err), "Error");
 							}
-						}
+						},
 					);
 				};
 			}

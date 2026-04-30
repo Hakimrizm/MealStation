@@ -57,16 +57,22 @@ class OrderController extends Controller
             foreach ($request->items as $it) {
                 $menu = $menus[$it['menu_id']];
                 $qty = (int)$it['qty'];
-                $unit = (int)$menu->price;
+                $options = $it['options'] ?? [];
+                $optionTotal = collect($options)->sum('price');
+
+                $unit = (int)$menu->price + $optionTotal;
+                $qty = (int)$it['qty'];
                 $sub = $unit * $qty;
 
                 OrderItem::create([
                     'order_id' => $order->id,
                     'menu_id' => $menu->id,
                     'menu_name' => $menu->name,
-                    'unit_price' => $unit,
+                    'unit_price' => $menu->price,
                     'qty' => $qty,
                     'notes' => $it['notes'] ?? null,
+                    'options' => $options, // ✅ sekarang aman karena cast array
+                    'option_total' => $optionTotal,
                     'subtotal' => $sub,
                 ]);
 
@@ -112,7 +118,10 @@ class OrderController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        $order->load(['tenant:id,name,qris_image,qris_name']);
+        $order->load([
+            'items',
+            'tenant:id,name,qris_image,qris_name'
+        ]);
 
         // LOGIKA PERBAIKAN
         if (in_array($order->status, ['done', 'cancelled'], true)) {

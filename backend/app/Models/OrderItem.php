@@ -8,6 +8,10 @@ class OrderItem extends Model
 {
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'options' => 'array',
+    ];
+
     public function order()
     {
         return $this->belongsTo(Order::class);
