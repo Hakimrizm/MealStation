@@ -45,6 +45,8 @@
 				></textarea>
 			</div>
 
+			<div id="menuOptions" class="order-options"></div>
+
 			<!-- QTY -->
 			<div class="order-footer">
 				<div class="qty">
@@ -174,6 +176,25 @@
 		align-items: center;
 		font-size: 14px;
 	}
+
+	.order-options {
+		background: #fff;
+		margin-top: 10px;
+		padding: 15px;
+	}
+
+	.option-group {
+		margin-bottom: 15px;
+	}
+
+	.option-title {
+		font-weight: 600;
+		margin-bottom: 8px;
+	}
+
+	.option-item {
+		margin-bottom: 6px;
+	}
 </style>
 
 <script>
@@ -235,10 +256,83 @@
 			basePrice = Number(m.price || 0);
 		}
 
+		function getOptionPrice() {
+			let extra = 0;
+
+			document.querySelectorAll("#menuOptions input:checked").forEach((el) => {
+				extra += Number(el.dataset.price || 0);
+			});
+
+			return extra;
+		}
+
 		function calculateTotal() {
-			const total = basePrice * qty;
+			const extra = getOptionPrice();
+			const total = (basePrice + extra) * qty;
+
 			document.getElementById("totalPrice").textContent = formatRupiah(total);
 			return total;
+		}
+
+		function renderOptions(groups = []) {
+			const container = document.getElementById("menuOptions");
+			if (!container) return;
+
+			let html = "";
+
+			groups.forEach((group, gIndex) => {
+				html += `<div class="option-group">`;
+				html += `<div class="option-title">${group.label} ${group.is_required ? "*" : ""}</div>`;
+
+				const name = `group_${gIndex}`;
+
+				if (group.input_type === "radio") {
+					group.items.forEach((item) => {
+						html += `
+												<label class="option-item">
+														<input type="radio" name="${name}" value="${item.value}" data-price="${item.price_adjustment || 0}">
+														${item.label} ${item.price_adjustment > 0 ? `( +${item.price_adjustment} )` : ""}
+												</label>
+										`;
+					});
+				}
+
+				if (group.input_type === "checkbox") {
+					group.items.forEach((item) => {
+						html += `
+												<label class="option-item">
+														<input type="checkbox" name="${name}" value="${item.value}" data-price="${item.price_adjustment || 0}">
+														${item.label} ${item.price_adjustment > 0 ? `( +${item.price_adjustment} )` : ""}
+												</label>
+										`;
+					});
+				}
+
+				if (group.input_type === "text") {
+					html += `<input type="text" class="text-input" placeholder="${group.placeholder || ""}" data-group="${name}">`;
+				}
+
+				if (group.input_type === "textarea") {
+					html += `<textarea placeholder="${group.placeholder || ""}" data-group="${name}"></textarea>`;
+				}
+
+				if (group.input_type === "number") {
+					html += `<input type="number" min="${group.min_value || 0}" max="${group.max_value || 10}" data-group="${name}">`;
+				}
+
+				if (group.input_type === "switch") {
+					html += `
+										<label>
+												<input type="checkbox" data-group="${name}">
+												${group.label}
+										</label>
+								`;
+				}
+
+				html += `</div>`;
+			});
+
+			container.innerHTML = html;
 		}
 
 		function bindUi() {
@@ -257,6 +351,12 @@
 					calculateTotal();
 				}
 			};
+
+			document.addEventListener("change", function (e) {
+				if (e.target.closest("#menuOptions")) {
+					calculateTotal();
+				}
+			});
 
 			document.getElementById("btnAddCart").onclick = () => {
 				if (!menu) return;
@@ -296,7 +396,7 @@
 							];
 							localStorage.setItem("cart", JSON.stringify(newCart));
 							$f7.views.main.router.navigate("/keranjang");
-						}
+						},
 					);
 					return;
 				}
@@ -327,6 +427,11 @@
 				$f7.preloader.show();
 				menu = await fetchMenuDetail();
 				renderMenu(menu);
+				renderOptions(
+					typeof menu.option_groups === "string"
+						? JSON.parse(menu.option_groups)
+						: menu.option_groups || [],
+				);
 				$f7.preloader.hide();
 
 				bindUi();
