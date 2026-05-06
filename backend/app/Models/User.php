@@ -24,7 +24,8 @@ class User extends Authenticatable
         'password',
         'role',
         'qris_image',
-        'qris_name'
+        'qris_name',
+        'is_temporary_closed'
     ];
 
     /**
@@ -53,5 +54,26 @@ class User extends Authenticatable
     public function menus()
     {
         return $this->hasMany(Menu::class);
+    }
+
+    public function operatingHours() { return $this->hasMany(OperatingHour::class); }
+
+    public function isOpenNow()
+    {
+        if ($this->is_temporary_closed) return false;
+
+        $today = now()->locale('id')->isoFormat('dddd'); 
+        // Senin, Selasa, dst
+
+        $schedule = $this->operatingHours()
+            ->where('day', $today)
+            ->first();
+
+        if (!$schedule || !$schedule->is_open) return false;
+
+        $now = now()->format('H:i:s');
+
+        return $now >= $schedule->open_time &&
+            $now <= $schedule->close_time;
     }
 }

@@ -28,6 +28,11 @@
 
 				<p class="vendor" id="menuVendor">Kantin LPKIA</p>
 
+				<p class="open-status" id="openStatus" style="display: none">
+					<span id="openDot">●</span>
+					<span id="openStatusText"></span>
+				</p>
+
 				<div class="rating">
 					<i class="fas fa-star"></i>
 					<span id="menuRating">0.0</span>
@@ -195,6 +200,44 @@
 	.option-item {
 		margin-bottom: 6px;
 	}
+
+	.open-badge {
+		font-size: 13px;
+		font-weight: 500;
+		color: #fff;
+		background: #4caf50;
+		padding: 2px 10px;
+		border-radius: 20px;
+		margin-left: 6px;
+		vertical-align: middle;
+	}
+
+	.closed-badge {
+		font-size: 13px;
+		font-weight: 500;
+		color: #fff;
+		background: #f44336;
+		padding: 2px 10px;
+		border-radius: 20px;
+		margin-left: 6px;
+		vertical-align: middle;
+	}
+
+	.open-status {
+		font-size: 13px;
+		margin: 4px 0 8px;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.open-status.is-open {
+		color: #4caf50;
+	}
+
+	.open-status.is-closed {
+		color: #f44336;
+	}
 </style>
 
 <script>
@@ -254,6 +297,36 @@
 			document.getElementById("menuVendor").textContent = vendor;
 
 			basePrice = Number(m.price || 0);
+
+			// // ====== Tambahan: status buka/tutup ======
+			// const isOpen = m?.tenant?.is_open_now;
+			// const todayOpen = m?.tenant?.today_open;
+			// const todayClose = m?.tenant?.today_close;
+			// const isTempClosed = m?.tenant?.is_temporary_closed;
+
+			// // Badge di samping nama
+			// document.getElementById("openBadge").style.display = isOpen
+			// 	? "inline"
+			// 	: "none";
+			// document.getElementById("closedBadge").style.display = !isOpen
+			// 	? "inline"
+			// 	: "none";
+
+			// // Status text "Sedang buka • 08:00 - 20:00"
+			// const statusEl = document.getElementById("openStatus");
+			// const statusText = document.getElementById("openStatusText");
+
+			// if (isTempClosed) {
+			// 	statusEl.style.display = "flex";
+			// 	statusEl.className = "open-status is-closed";
+			// 	statusText.textContent = "Tutup sementara";
+			// } else if (todayOpen && todayClose) {
+			// 	statusEl.style.display = "flex";
+			// 	statusEl.className = `open-status ${isOpen ? "is-open" : "is-closed"}`;
+			// 	statusText.textContent = `${isOpen ? "Sedang buka" : "Sedang tutup"} • ${todayOpen} - ${todayClose}`;
+			// } else {
+			// 	statusEl.style.display = "none";
+			// }
 		}
 
 		function getOptionPrice() {

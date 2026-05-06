@@ -25,32 +25,6 @@
 				></div>
 			</div>
 
-			<!-- <div class="stats-flex padding-horizontal padding-bottom">
-				<div class="stat-card active" data-type="proses">
-					<div class="stat-icon icon-purple">
-						<i class="f7-icons">hourglass</i>
-					</div>
-					<div class="stat-number">90</div>
-					<div class="stat-label">Dalam Proses</div>
-				</div>
-
-				<div class="stat-card" data-type="pending">
-					<div class="stat-icon icon-yellow">
-						<i class="f7-icons">clock</i>
-					</div>
-					<div class="stat-number">01</div>
-					<div class="stat-label">Pending</div>
-				</div>
-
-				<div class="stat-card" data-type="selesai">
-					<div class="stat-icon icon-green">
-						<i class="f7-icons">checkmark_seal</i>
-					</div>
-					<div class="stat-number">25</div>
-					<div class="stat-label">Selesai</div>
-				</div>
-			</div> -->
-
 			<div class="list strong inset dividers-ios">
 				<ul>
 					<li>
@@ -88,40 +62,6 @@
 							</div>
 						</div>
 					</li>
-					<!-- <li>
-						<div class="item-content item-input">
-							<div class="item-inner">
-								<div class="item-title item-floating-label">Alamat</div>
-								<div class="item-input-wrap">
-									<input id="alamat" type="text" />
-									<a
-										href="#"
-										class="item-link item-after icon-only link edit-btn"
-										data-field="alamat"
-									>
-										<i class="icon f7-icons text-color-gray">pencil</i>
-									</a>
-								</div>
-							</div>
-						</div>
-					</li> -->
-					<!-- <li>
-						<div class="item-content item-input">
-							<div class="item-inner">
-								<div class="item-title item-floating-label">No. Telepon</div>
-								<div class="item-input-wrap">
-									<input id="notelepon" type="text" />
-									<a
-										href="#"
-										class="item-link item-after icon-only link edit-btn"
-										data-field="notelepon"
-									>
-										<i class="icon f7-icons text-color-gray">pencil</i>
-									</a>
-								</div>
-							</div>
-						</div>
-					</li> -->
 				</ul>
 			</div>
 
@@ -187,6 +127,57 @@
 					accept="image/*"
 					style="display: none"
 				/>
+			</div>
+
+			<div class="block tenant-only-schedule" style="display: none">
+
+				<div class="card card-outline">
+					<div class="card-content card-content-padding">
+						<div class="display-flex justify-content-space-between align-items-center">
+							<div>
+								<div style="font-size: 14px; color: gray">Status saat ini</div>
+								<span class="badge ${getCurrentStatus() ? 'color-green' : 'color-red'}">
+									${getCurrentStatus() ? 'Buka' : 'Tutup'}
+								</span>
+							</div>
+							<div>
+								<div style="font-size: 14px">Tutup Sementara</div>
+								<label class="toggle toggle-init">
+									<input type="checkbox" id="temp-close-toggle" ${isTemporaryClosed ? 'checked' : ''} />
+									<span class="toggle-icon"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="block-title">Atur Jadwal Operasional</div>
+				<div class="list no-hairlines-md">
+					<ul>
+						${schedules.map((s, index) => $h`
+							<li class="item-content">
+								<div class="item-inner">
+									<div class="item-title" style="width: 80px">${s.day}</div>
+									<div class="item-input">
+										<label class="toggle toggle-init color-orange">
+											<input type="checkbox" class="day-toggle" data-day="${s.day}" ${s.is_open ? 'checked' : ''} />
+											<span class="toggle-icon"></span>
+										</label>
+									</div>
+									<div class="item-input-wrap display-flex align-items-center">
+										<input type="time" class="time-input" data-type="open" data-day="${s.day}" value="${s.open_time}" ${!s.is_open ? 'disabled' : ''} />
+										<span style="margin: 0 5px">-</span>
+										<input type="time" class="time-input" data-type="close" data-day="${s.day}" value="${s.close_time}" ${!s.is_open ? 'disabled' : ''} />
+									</div>
+								</div>
+							</li>
+						`)}
+					</ul>
+				</div>
+
+				<div class="block">
+					<button class="button button-fill button-large color-orange save-btn">Simpan</button>
+				</div>
 			</div>
 
 			<div class="block padding-horizontal">
@@ -310,8 +301,19 @@
 <script>
 	import { getUser } from "./../js/auth.js";
 
-	export default (props, { $, $on, $f7 }) => {
+	export default (props, { $, $on, $f7, $update }) => {
 		const API_BASE = "http://localhost:8000/api";
+
+		let isTemporaryClosed = false;
+    let schedules = [
+      { day: 'Senin', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Selasa', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Rabu', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Kamis', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Jumat', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Sabtu', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Minggu', is_open: true, open_time: '08:00', close_time: '20:00' },
+    ];
 
 		function getToken() {
 			return localStorage.getItem("token");
@@ -410,8 +412,10 @@
 			// Pastikan kamu punya container QRIS dengan class `.tenant-only-qris`
 			if (role === "tenant") {
 				$(".tenant-only-qris").show();
+				$(".tenant-only-schedule").show();
 			} else {
 				$(".tenant-only-qris").hide();
+				$(".tenant-only-schedule").hide();
 			}
 		}
 
@@ -440,6 +444,124 @@
 			}
 		}
 
+		const loadData = async () => {
+			try {
+				const res = await fetch(`${API_BASE}/tenant/operating-hours`, {
+					headers: { Authorization: "Bearer " + getToken() },
+				});
+
+				const data = await res.json();
+
+				if (data.schedule && data.schedule.length > 0) {
+					schedules = data.schedule.map((s) => ({
+						day: s.day,
+						is_open: Boolean(s.is_open), // <-- FIX penting
+						open_time: s.open_time?.slice(0, 5), // <-- ambil HH:mm
+						close_time: s.close_time?.slice(0, 5),
+					}));
+
+					isTemporaryClosed = Boolean(data.is_temporary_closed);
+
+					$update(() => {
+						// Set native checked property langsung, bukan lewat jQuery attr
+						schedules.forEach((s) => {
+							const checkbox = document.querySelector(`.day-toggle[data-day="${s.day}"]`);
+							if (checkbox) {
+								checkbox.checked = s.is_open;
+								// Trigger change event agar F7 toggle sync visual-nya
+								checkbox.dispatchEvent(new Event("change"));
+							}
+						});
+
+						const tempCheckbox = document.querySelector("#temp-close-toggle");
+						if (tempCheckbox) {
+							tempCheckbox.checked = isTemporaryClosed;
+							tempCheckbox.dispatchEvent(new Event("change"));
+						}
+					});
+				}
+			} catch (e) {
+				console.error("Gagal load jam operasional:", e);
+			}
+		};
+
+
+		const saveData = async () => {
+			$f7.preloader.show();
+
+			// Baca ulang semua nilai dari DOM sebelum kirim
+			const scheduleToSend = schedules.map((s) => {
+				const dayToggle = $(`.day-toggle[data-day="${s.day}"]`);
+				const openInput = $(`.time-input[data-day="${s.day}"][data-type="open"]`);
+				const closeInput = $(`.time-input[data-day="${s.day}"][data-type="close"]`);
+
+				return {
+					day: s.day,
+					is_open: dayToggle.prop("checked"), // baca dari DOM, bukan dari array
+					open_time: openInput.val() || s.open_time,
+					close_time: closeInput.val() || s.close_time,
+				};
+			});
+
+			const isClosed = $("#temp-close-toggle").prop("checked");
+
+			console.log("Sending schedule:", scheduleToSend); // debug
+
+			try {
+				const res = await fetch(`${API_BASE}/tenant/operating-hours`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: "Bearer " + getToken(),
+					},
+					body: JSON.stringify({
+						is_temporary_closed: isClosed,
+						schedule: scheduleToSend, // pakai yang dari DOM
+					}),
+				});
+
+				const contentType = res.headers.get("content-type") || "";
+				if (!contentType.includes("application/json")) {
+					throw new Error(`Server error (${res.status})`);
+				}
+
+				const data = await res.json();
+				if (!res.ok) throw new Error(data?.message || "Gagal simpan");
+
+				// Update schedules array dengan data yang baru disimpan
+				schedules = scheduleToSend;
+				isTemporaryClosed = isClosed;
+
+				$f7.dialog.alert("Jadwal berhasil disimpan!");
+			} catch (e) {
+				console.error(e);
+				$f7.dialog.alert("Gagal menyimpan jadwal: " + e.message);
+			} finally {
+				$f7.preloader.hide();
+			}
+		};
+
+
+		function getCurrentStatus() {
+			if (isTemporaryClosed) return false;
+
+			const now = new Date();
+			const dayIndex = now.getDay(); 
+			// 0 = Minggu, 1 = Senin ...
+
+			const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+			const today = days[dayIndex];
+
+			const todaySchedule = schedules.find(s => s.day === today);
+
+			if (!todaySchedule || !todaySchedule.is_open) return false;
+
+			const nowTime = now.toTimeString().slice(0,5);
+
+			return nowTime >= todaySchedule.open_time &&
+						nowTime <= todaySchedule.close_time;
+		}
+
 		$on("pageInit", async () => {
 			// ====== 0) init UI ======
 			let user = getLocalUserSafe();
@@ -454,6 +576,40 @@
 			setProfileUI(user);
 			ensureTenantSection(user.role);
 			setQrisUI(user);
+
+			if (user?.role === 'tenant') {
+				loadData();
+				$(document).on('click', '.save-btn', saveData);
+			}
+
+			// Event listener untuk toggle hari (pindahkan ke sini)
+
+      $(document).on('change', '.day-toggle', function() {
+				const day = $(this).data('day');
+				const item = schedules.find(s => s.day === day);
+
+				if (item) {
+					item.is_open = $(this).prop('checked');
+				}
+
+				$update();
+			});
+
+			// Event listener untuk perubahan jam
+      $(document).on('change', '.time-input', function() {
+				const day = $(this).data('day');
+				const type = $(this).data('type'); 
+
+				const item = schedules.find(s => s.day === day);
+
+				if (!item) return;
+
+				if (type === 'open') {
+					item.open_time = $(this).val();
+				} else {
+					item.close_time = $(this).val();
+				}
+			});
 
 			// ====== 1) optional: refresh dari backend ======
 			try {
@@ -612,6 +768,14 @@
 			});
 		});
 
+		$on("pageBeforeIn", () => {
+			const user = getLocalUserSafe();
+
+			if (user?.role === 'tenant') {
+				loadData();
+			}
+		});
+	
 		return $render;
 	};
 </script>

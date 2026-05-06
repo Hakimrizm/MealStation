@@ -152,4 +152,72 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'QRIS dihapus']);
     }
+
+    public function getOperatingHours(Request $request) {
+        $user = $request->user();
+
+        $days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+
+        $existing = $user->operatingHours->keyBy('day');
+
+        $schedule = collect($days)->map(function ($day) use ($existing, $user) {
+            $item = $existing->get($day);
+
+            if ($item) {
+                return [
+                    'day' => $day,
+                    'is_open' => (bool)$item->is_open,
+                    'open_time' => substr($item->open_time, 0, 5),
+                    'close_time' => substr($item->close_time, 0, 5),
+                ];
+            }
+
+            // kalau belum ada di DB → default
+            return [
+                'day' => $day,
+                'is_open' => true,
+                'open_time' => '08:00',
+                'close_time' => '20:00',
+            ];
+        });
+
+        return response()->json([
+            'is_temporary_closed' => (bool)$user->is_temporary_closed,
+            'is_open_now' => $user->isOpenNow(),
+            'schedule' => $schedule,
+        ]);
+    }
+
+    public function updateOperatingHours(Request $request) {
+    $user = $request->user();
+
+    $validated = $request->validate([
+        'is_temporary_closed' => 'required|boolean',
+        'schedule' => 'required|array',
+        'schedule.*.day' => 'required|string',
+        'schedule.*.is_open' => 'required|boolean',
+        'schedule.*.open_time' => 'required|string',
+        'schedule.*.close_time' => 'required|string',
+    ]);
+
+    $user->update([
+        'is_temporary_closed' => $validated['is_temporary_closed']
+    ]);
+
+    foreach ($validated['schedule'] as $item) {
+        $user->operatingHours()->updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'day' => $item['day']
+            ],
+            [
+                'is_open' => $item['is_open'],
+                'open_time' => $item['open_time'] . ':00', // FIX format
+                'close_time' => $item['close_time'] . ':00',
+            ]
+        );
+    }
+
+    return response()->json(['message' => 'Jadwal berhasil diperbarui']);
+}
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('avatar')->nullable(); // user profile picture
             $table->string('qris_image')->nullable(); // merchant QRIS image
             $table->string('qris_name')->nullable(); // merchant name
+            $table->boolean('is_temporary_closed')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

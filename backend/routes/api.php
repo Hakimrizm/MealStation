@@ -52,6 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // QRIS management
         Route::post('/tenant/qris', [AuthController::class, 'uploadQris']);
         Route::delete('/tenant/qris', [AuthController::class, 'removeQris']);
+
+        // Jadwal
+        Route::get('/tenant/operating-hours', [AuthController::class, 'getOperatingHours']);
+        Route::post('/tenant/operating-hours', [AuthController::class, 'updateOperatingHours']);
     });
 
     /* --- User Routes (Hanya Pembeli/Customer) --- */
@@ -65,5 +69,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my/orders/{order}', [OrderController::class, 'myOrderShow']);
         Route::post('/my/orders/{order}/pay', [OrderController::class, 'pay']);
     });
-
 });

@@ -26,19 +26,49 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        // Kita ambil data menu beserta tenant-nya
-        $menu = Menu::with(['tenant:id,name', 'optionGroups.items'])->find($id);
+        // Ambil menu + relasi
+        $menu = Menu::with(['tenant', 'optionGroups.items'])->find($id);
 
-        // Jika menu tidak ketemu (ID salah), beri response error yang jelas
         if (!$menu) {
             return response()->json([
                 'message' => 'Menu tidak ditemukan di database'
             ], 404);
         }
 
-        // PENTING: Langsung kembalikan $menu tanpa dibungkus array ['menu' => ...]
-        // Ini agar Frontend bisa langsung baca data.name, data.price, dll.
-        return response()->json($menu);
+        $tenant = $menu->tenant;
+
+        // Safety check (kalau relasi kosong)
+        if (!$tenant) {
+            return response()->json([
+                'message' => 'Tenant tidak ditemukan'
+            ], 404);
+        }
+
+        $isOpenNow = $tenant->isOpenNow();
+
+        // Hari ini
+        $today = now()->locale('id')->isoFormat('dddd');
+
+        $todaySchedule = $tenant->operatingHours()
+            ->where('day', $today)
+            ->first();
+
+        return response()->json([
+            ...$menu->toArray(),
+
+            'tenant' => [
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'is_open_now' => $isOpenNow,
+                'is_temporary_closed' => (bool) $tenant->is_temporary_closed,
+                'today_open' => $todaySchedule?->open_time
+                    ? substr($todaySchedule->open_time, 0, 5)
+                    : null,
+                'today_close' => $todaySchedule?->close_time
+                    ? substr($todaySchedule->close_time, 0, 5)
+                    : null,
+            ]
+        ]);
     }
 
     /**
