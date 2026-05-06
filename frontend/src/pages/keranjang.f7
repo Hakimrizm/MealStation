@@ -224,6 +224,21 @@
 		font-size: 15px;
 		font-weight: 800;
 	}
+
+	.selected-options-list {
+		margin: 4px 0;
+		font-size: 12px;
+		color: #666;
+	}
+	.cart-option-text {
+		line-height: 1.4;
+	}
+	.note {
+		font-style: italic;
+		font-size: 11px;
+		color: #999;
+		margin-top: 2px;
+	}
 </style>
 
 <script>
@@ -253,7 +268,12 @@
 		}
 
 		function recalculateItem(i) {
-			cart[i].total = Number(cart[i].price || 0) * Number(cart[i].qty || 1);
+			const item = cart[i];
+			const basePrice = Number(item.price || 0);
+			const optionPrice = Number(item.option_total || 0);
+
+			// ✅ Rumus: (Harga Dasar + Harga Opsi) * Qty
+			item.total = (basePrice + optionPrice) * Number(item.qty || 1);
 		}
 
 		function calculateGrandTotal() {
@@ -294,38 +314,42 @@
 			emptyCart.style.display = "none";
 
 			cartList.innerHTML = cart
-				.map(
-					(item, index) => `
-						<div class="cart-item" data-index="${index}">
-							<img src="${imgUrl(item.image)}" />
+				.map((item, index) => {
+					const optionsHtml = (item.options || [])
+						.map(
+							(opt) =>
+								`<div class="cart-option-text">• ${opt.group}: ${opt.label}</div>`,
+						)
+						.join("");
 
-							<div class="cart-info">
-								<button
-									type="button"
-									class="btn-remove-top"
-									data-action="remove"
-									data-index="${index}"
-									aria-label="Hapus"
-								>
-									<i class="fas fa-times"></i>
-								</button>
+					return `
+        <div class="cart-item" data-index="${index}">
+          <img src="${imgUrl(item.image)}" />
+          <div class="cart-info">
+            <button type="button" class="btn-remove-top" data-action="remove" data-index="${index}">
+              <i class="fas fa-times"></i>
+            </button>
 
-								<h3>${item.name || "-"}</h3>
-								<p class="note">${item.notes ? item.notes : "Tanpa catatan"}</p>
+            <h3>${item.name || "-"}</h3>
+            
+            <div class="selected-options-list">
+               ${optionsHtml}
+            </div>
 
-								<div class="cart-bottom">
-									<span class="price">${formatRupiah(item.total)}</span>
+            <p class="note">${item.notes ? item.notes : "Tanpa catatan"}</p>
 
-									<div class="qty">
-										<button type="button" data-action="minus" data-index="${index}">-</button>
-										<span class="qty-value">${item.qty}</span>
-										<button type="button" data-action="plus" data-index="${index}">+</button>
-									</div>
-								</div>
-							</div>
-						</div>
-				`,
-				)
+            <div class="cart-bottom">
+              <span class="price">${formatRupiah(item.total)}</span>
+              <div class="qty">
+                <button type="button" data-action="minus" data-index="${index}">-</button>
+                <span class="qty-value">${item.qty}</span>
+                <button type="button" data-action="plus" data-index="${index}">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+				})
 				.join("");
 
 			updateGrandTotal();
