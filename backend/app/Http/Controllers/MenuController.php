@@ -47,7 +47,17 @@ class MenuController extends Controller
         $isOpenNow = $tenant->isOpenNow();
 
         // Hari ini
-        $today = now()->locale('id')->isoFormat('dddd');
+        $days = [
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+        ];
+
+        $today = $days[now()->format('l')] ?? null;
 
         $todaySchedule = $tenant->operatingHours()
             ->where('day', $today)

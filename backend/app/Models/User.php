@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -60,20 +61,34 @@ class User extends Authenticatable
 
     public function isOpenNow()
     {
-        if ($this->is_temporary_closed) return false;
+        $days = [
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+        ];
 
-        $today = now()->locale('id')->isoFormat('dddd'); 
-        // Senin, Selasa, dst
+        $today = $days[now()->format('l')] ?? null;
 
         $schedule = $this->operatingHours()
-            ->where('day', $today)
+            ->whereRaw('LOWER(TRIM(day)) = ?', [strtolower(trim($today))])
+            ->where('is_open', 1)
             ->first();
 
-        if (!$schedule || !$schedule->is_open) return false;
+        if (!$schedule) {
+            return false;
+        }
 
-        $now = now()->format('H:i:s');
+        // timezone Indonesia
+        $now = Carbon::now('Asia/Jakarta');
 
-        return $now >= $schedule->open_time &&
-            $now <= $schedule->close_time;
+        $open = Carbon::today('Asia/Jakarta')->setTimeFromTimeString($schedule->open_time);
+
+        $close = Carbon::today('Asia/Jakarta')->setTimeFromTimeString($schedule->close_time);
+
+        return $now->between($open, $close);
     }
 }
