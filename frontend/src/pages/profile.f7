@@ -195,23 +195,62 @@
 			</div>
 		</div>
 
-		<div class="toolbar tabbar toolbar-bottom">
+		<!-- TOOLBAR TENANT -->
+		<div
+			class="toolbar tabbar toolbar-bottom tenant-toolbar"
+			style="display: none"
+		>
 			<div class="toolbar-inner">
 				<a class="tab-link" data-index="0" href="/tenant">
 					<i class="icon f7-icons">house_fill</i>
 					<span class="tabbar-label">Beranda</span>
 				</a>
+
 				<a class="tab-link" data-index="1" href="/tenant/menus">
 					<i class="icon f7-icons">square_list_fill</i>
 					<span class="tabbar-label">Menu</span>
 				</a>
+
 				<a class="tab-link" data-index="2">
 					<i class="icon f7-icons">timer_fill</i>
 					<span class="tabbar-label">Riwayat</span>
 				</a>
-				<a class="tab-link tab-link-active" href="/profile" data-index="3">
+
+				<a
+					class="tab-link tab-link-active"
+					href="/profile"
+					data-index="3"
+				>
 					<i class="icon f7-icons">person_circle_fill</i>
 					<span class="tabbar-label">Profil</span>
+				</a>
+			</div>
+		</div>
+
+		<!-- TOOLBAR USER -->
+		<div
+			class="toolbar toolbar-bottom user-toolbar"
+			style="display: none"
+		>
+			<div class="toolbar-inner">
+				<a href="/" class="toolbar-link">
+					<i class="fas fa-home"></i>
+					<span>Home</span>
+				</a>
+
+				<a href="/riwayat-pesanan" class="toolbar-link">
+					<i class="fas fa-receipt"></i>
+					<span>Riwayat Pesanan</span>
+				</a>
+
+				<a href="/riwayat-transaksi" class="toolbar-link">
+					<i class="fas fa-wallet"></i>
+					<span>Riwayat Transaksi</span>
+				</a>
+
+				<a href="/profile" class="toolbar-link active">
+					<i class="fas fa-user-circle"></i>
+					<span>Profile</span>
 				</a>
 			</div>
 		</div>
@@ -314,6 +353,19 @@
       { day: 'Sabtu', is_open: true, open_time: '08:00', close_time: '20:00' },
       { day: 'Minggu', is_open: true, open_time: '08:00', close_time: '20:00' },
     ];
+
+		function setupToolbar(role) {
+			const tenantToolbar = $(".tenant-toolbar");
+			const userToolbar = $(".user-toolbar");
+
+			if (role === "tenant") {
+				tenantToolbar.css("display", "block");
+				userToolbar.css("display", "none");	
+			} else {
+				tenantToolbar.css("display", "none");
+				userToolbar.css("display", "block");
+			}
+		}
 
 		function getToken() {
 			return localStorage.getItem("token");
@@ -577,6 +629,8 @@
 			ensureTenantSection(user.role);
 			setQrisUI(user);
 
+			setupToolbar(user.role);
+
 			if (user?.role === 'tenant') {
 				loadData();
 				$(document).on('click', '.save-btn', saveData);
@@ -619,6 +673,9 @@
 				setProfileUI(user);
 				ensureTenantSection(user.role);
 				setQrisUI(user);
+
+				// TAMBAHKAN INI
+				setupToolbar(user.role);
 			} catch (err) {
 				// kalau gagal refresh, pakai local saja
 				console.log("fetchMe failed:", err);

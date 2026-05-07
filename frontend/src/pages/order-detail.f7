@@ -24,6 +24,12 @@
 				<h2 id="menuName">
 					-
 					<span id="hotBadge" class="hot" style="display: none">🔥</span>
+					<span id="openBadge" class="open-badge" style="display: none"
+						>● Buka</span
+					>
+					<span id="closedBadge" class="closed-badge" style="display: none"
+						>● Tutup</span
+					>
 				</h2>
 
 				<p class="vendor" id="menuVendor">Kantin LPKIA</p>
@@ -298,35 +304,35 @@
 
 			basePrice = Number(m.price || 0);
 
-			// // ====== Tambahan: status buka/tutup ======
-			// const isOpen = m?.tenant?.is_open_now;
-			// const todayOpen = m?.tenant?.today_open;
-			// const todayClose = m?.tenant?.today_close;
-			// const isTempClosed = m?.tenant?.is_temporary_closed;
+			// ====== Tambahan: status buka/tutup ======
+			const isOpen = m?.tenant?.is_open_now;
+			const todayOpen = m?.tenant?.today_open;
+			const todayClose = m?.tenant?.today_close;
+			const isTempClosed = m?.tenant?.is_temporary_closed;
 
-			// // Badge di samping nama
-			// document.getElementById("openBadge").style.display = isOpen
-			// 	? "inline"
-			// 	: "none";
-			// document.getElementById("closedBadge").style.display = !isOpen
-			// 	? "inline"
-			// 	: "none";
+			// Badge di samping nama
+			document.getElementById("openBadge").style.display = isOpen
+				? "inline"
+				: "none";
+			document.getElementById("closedBadge").style.display = !isOpen
+				? "inline"
+				: "none";
 
-			// // Status text "Sedang buka • 08:00 - 20:00"
-			// const statusEl = document.getElementById("openStatus");
-			// const statusText = document.getElementById("openStatusText");
+			// Status text "Sedang buka • 08:00 - 20:00"
+			const statusEl = document.getElementById("openStatus");
+			const statusText = document.getElementById("openStatusText");
 
-			// if (isTempClosed) {
-			// 	statusEl.style.display = "flex";
-			// 	statusEl.className = "open-status is-closed";
-			// 	statusText.textContent = "Tutup sementara";
-			// } else if (todayOpen && todayClose) {
-			// 	statusEl.style.display = "flex";
-			// 	statusEl.className = `open-status ${isOpen ? "is-open" : "is-closed"}`;
-			// 	statusText.textContent = `${isOpen ? "Sedang buka" : "Sedang tutup"} • ${todayOpen} - ${todayClose}`;
-			// } else {
-			// 	statusEl.style.display = "none";
-			// }
+			if (isTempClosed) {
+				statusEl.style.display = "flex";
+				statusEl.className = "open-status is-closed";
+				statusText.textContent = "Tutup sementara";
+			} else if (todayOpen && todayClose) {
+				statusEl.style.display = "flex";
+				statusEl.className = `open-status ${isOpen ? "is-open" : "is-closed"}`;
+				statusText.textContent = `${isOpen ? "Sedang buka" : "Sedang tutup"} • ${todayOpen} - ${todayClose}`;
+			} else {
+				statusEl.style.display = "none";
+			}
 		}
 
 		function getOptionPrice() {
