@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ChatController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +19,13 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/menus', [MenuController::class, 'index']);
 Route::get('/menus/{menu}', [MenuController::class, 'show']);
 
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/chat/{receiverId}', [ChatController::class, 'chat']);
+    Route::post('/chat/send', [ChatController::class, 'send']);
+    Route::get('/chat-list', [ChatController::class, 'chatList']);
+
+});
 /*
 |--------------------------------------------------------------------------
 | Protected Routes (Wajib Login Sanctum)

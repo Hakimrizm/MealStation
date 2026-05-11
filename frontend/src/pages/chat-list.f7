@@ -1,0 +1,120 @@
+<template>
+  <div class="page">
+
+    <div class="navbar">
+      <div class="navbar-inner">
+
+        <div class="left">
+          <a class="link icon-only" @click=${goBack}>
+            <i class="icon icon-back"></i>
+          </a>
+        </div>
+
+        <div class="title">Pesan</div>
+
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <div class="list media-list no-chevron">
+        <ul>
+
+          ${Array.isArray(chats) && chats.length > 0 ? chats.map(chat => $h`
+            <li>
+              <a href="/chat/${chat.user_id}" class="item-link item-content">
+
+                <div class="item-media">
+                  <img src="${chat.photo || 'https://placehold.co/48'}"
+                       width="48"
+                       style="border-radius:50%" />
+                </div>
+
+                <div class="item-inner">
+
+                  <div class="item-title-row">
+                    <div class="item-title">${chat.name}</div>
+                    <div class="item-after">${chat.time || ''}</div>
+                  </div>
+
+                  <div class="item-subtitle">
+                    ${chat.last_message || ''}
+                  </div>
+
+                </div>
+
+                ${chat.unread > 0 ? $h`
+                  <span class="badge color-green">${chat.unread}</span>
+                ` : ''}
+
+              </a>
+            </li>
+          `) : ''}
+
+        </ul>
+
+        ${(!chats || chats.length === 0) ? $h`
+          <div class="block text-align-center">
+            Belum ada percakapan.
+          </div>
+        ` : ''}
+
+      </div>
+
+    </div>
+
+  </div>
+</template>
+<script>
+export default (props, { $f7, $on, $update }) => {
+
+  let chats = [];
+
+  const goBack = () => {
+    const role = localStorage.getItem('role');
+
+    if (role === "tenant") {
+      $f7.views.main.router.navigate("/tenant", {
+        clearPreviousHistory: true,
+      });
+    } else {
+      $f7.views.main.router.navigate("/", {
+        clearPreviousHistory: true,
+      });
+    }
+  };
+
+  const loadChatList = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/chat-list", {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      chats = Array.isArray(data) ? data : [];
+      $update();
+
+    } catch (err) {
+      console.error("Gagal load chat list", err);
+      chats = [];
+      $update();
+    }
+  };
+
+  let interval;
+
+  $on("pageInit", () => {
+    loadChatList();
+    interval = setInterval(loadChatList, 10000);
+  });
+
+  $on("pageBeforeRemove", () => {
+    clearInterval(interval);
+  });
+
+  return $render;
+}
+</script>

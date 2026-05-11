@@ -345,13 +345,13 @@
 
 		let isTemporaryClosed = false;
     let schedules = [
-      { day: 'Senin', is_open: true, open_time: '08:00', close_time: '20:00' },
-      { day: 'Selasa', is_open: true, open_time: '08:00', close_time: '20:00' },
-      { day: 'Rabu', is_open: true, open_time: '08:00', close_time: '20:00' },
-      { day: 'Kamis', is_open: true, open_time: '08:00', close_time: '20:00' },
-      { day: 'Jumat', is_open: true, open_time: '08:00', close_time: '20:00' },
-      { day: 'Sabtu', is_open: true, open_time: '08:00', close_time: '20:00' },
-      { day: 'Minggu', is_open: true, open_time: '08:00', close_time: '20:00' },
+      { day: 'Senin', is_open: true, open_time: '00:00', close_time: '23:59' },
+      { day: 'Selasa', is_open: true, open_time: '00:00', close_time: '23:59' },
+      { day: 'Rabu', is_open: true, open_time: '00:00', close_time: '23:59' },
+      { day: 'Kamis', is_open: true, open_time: '08:00', close_time: '15:00' },
+      { day: 'Jumat', is_open: true, open_time: '08:00', close_time: '15:00' },
+      { day: 'Sabtu', is_open: true, open_time: '08:00', close_time: '15:00' },
+      { day: 'Minggu', is_open: true, open_time: '08:00', close_time: '15:00' },
     ];
 
 		function setupToolbar(role) {

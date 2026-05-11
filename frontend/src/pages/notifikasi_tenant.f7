@@ -1,0 +1,98 @@
+<template>
+  <div class="page" data-name="notifikasi-tenant">
+    <div class="navbar navbar-blue">
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a class="link icon-only" @click=${goBack} style="color: white;">
+            <i class="icon icon-back"></i>
+          </a>
+        </div>
+        <div class="title">Pesanan Masuk</div>
+        <div class="right">
+          <a href="#" class="link icon-only" @click=${clearAll} style="color: white;">
+            <i class="icon f7-icons">trash</i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-content page-bg">
+      <div class="list media-list no-chevron no-hairlines" style="margin-top: 0;">
+        <ul id="list-notif-tenant">
+          <li class="swipeout">
+            <div class="swipeout-content">
+              <a href="/tenant/orders" class="item-link item-content notif-item unread">
+                <div class="item-media">
+                  <div class="notif-icon blue">
+                    <i class="f7-icons">cart_fill</i>
+                  </div>
+                </div>
+                <div class="item-inner">
+                  <div class="item-title-row">
+                    <div class="item-title title-unread">Pesanan Baru!</div>
+                    <div class="item-after time-text">09:41</div>
+                  </div>
+                  <div class="item-text">Ada 1 pesanan baru: Nasi Ayam Geprek.</div>
+                </div>
+              </a>
+            </div>
+            <div class="swipeout-actions-right">
+              <a href="#" class="swipeout-delete">Hapus</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default (props, { $, $f7, $f7router, $on }) => {
+  // POP-UP UNTUK TENANT DENGAN TOMBOL LIHAT
+  const showNewOrderNotif = () => {
+    $f7.notification.create({
+      icon: '<i class="f7-icons" style="color: #0061a8">bell_circle_fill</i>',
+      title: 'Pemberitahuan Sistem!',
+      subtitle: 'Terdapat 1 pesanan baru.',
+      text: "Cek tab 'Baru' sekarang.",
+      closeButton: true,
+      on: {
+        click: function () {
+          $f7router.navigate('/tenant/orders/');
+        },
+      },
+    }).open();
+  };
+
+  $on('pageInit', () => {
+    setTimeout(showNewOrderNotif, 2000);
+  });
+
+  const goBack = () => {
+    $f7router.navigate("/tenant/", { clearPreviousHistory: true });
+  };
+
+  const clearAll = () => {
+    $('#list-notif-tenant').empty();
+  };
+
+  return $render;
+}
+</script>
+
+
+<style>
+  .navbar-blue { background: #0061a8; color: white; }
+  .page-bg { background: #f0f4f7; }
+  .notif-item { padding: 12px 16px; border-bottom: 1px solid #eee; }
+  .notif-item.unread { background: #f0f8ff; }
+  .notif-item.read { background: #fff; }
+  .notif-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; }
+  .notif-icon.orange { background: #ff9500; }
+  .notif-icon.green { background: #34c759; }
+  .title-unread { font-weight: 800; color: #000; font-size: 15px; }
+  .title-read { font-weight: 600; color: #444; font-size: 15px; }
+  .time-text { font-size: 11px; color: #888; }
+  .empty-state { text-align: center; margin-top: 100px; color: #ccc; }
+  .empty-state i { font-size: 80px; opacity: 0.3; }
+</style>

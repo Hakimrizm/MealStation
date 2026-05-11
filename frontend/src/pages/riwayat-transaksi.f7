@@ -1,15 +1,18 @@
 <template>
     <div class="page" data-name="riwayat-transaksi">
-        <div class="navbar">
+        <div class="navbar" style="background: #0061a8; color: white;">
             <div class="navbar-inner">
                 <div class="left">
-                    <a href="#" class="link back">Kembali</a>
+                    <a href="#" class="link back" style="color: white;">
+                        <i class="icon icon-back"></i> 
+                    </a>
                 </div>
-                <div class="title">Riwayat Transaksi</div>
+                    <div class="title" style="margin: 0 auto;">Riwayat Transaksi</div>
+                <div class="right"></div>
             </div>
         </div>
 
-        <div class="page-content">
+        <div class="page-content" style="background: #f4f7f9;">
             <div class="block">
                 <div class="segmented segmented-raised">
                     <a href="#" class="button button-active" data-filter="all">Semua</a>
@@ -21,12 +24,9 @@
 
             <div id="order-list-container"></div>
 
-            <div
-                id="empty-state"
-                class="block text-align-center"
-                style="display: none; color: #8e8e93; margin-top: 30px"
-            >
-                Belum ada transaksi.
+            <div id="empty-state" class="block text-align-center" style="display: none; color: #8e8e93; margin-top: 50px">
+                <i class="f7-icons" style="font-size: 50px;">tray</i>
+                <p>Belum ada transaksi.</p>
             </div>
         </div>
     </div>
@@ -36,7 +36,8 @@
     import { getToken } from "./../js/auth.js";
 
     export default (props, { $, $on, $f7 }) => {
-        const API_BASE = "http://localhost:8000/api";
+        // GANTI IP INI SESUAI IP LAPTOP KAMU SAAT INI
+        const API_BASE = "http://10.103.98.238:8000/api";
 
         let orders = [];
         let activeFilter = "all";
@@ -54,29 +55,22 @@
             } catch { return "-"; }
         }
 
-        // FUNGSI FINAL: Menghitung selisih waktu dengan parsing objek Date yang aman
         function getTimeRemaining(targetDate) {
             if (!targetDate) return "";
-            
-            // Mengubah string dari backend menjadi objek Date JS
             const end = new Date(targetDate).getTime();
             const now = new Date().getTime();
-            
             const total = end - now;
 
-            // Jika waktu masih ada di masa depan (selisih > 0)
             if (total > 0) {
                 const seconds = Math.floor((total / 1000) % 60);
                 const minutes = Math.floor((total / 1000 / 60) % 60);
                 const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
-
                 return [
                     hours.toString().padStart(2, '0'),
                     minutes.toString().padStart(2, '0'),
                     seconds.toString().padStart(2, '0')
                 ].join(':');
             }
-
             return "Siap Disajikan!";
         }
 
@@ -154,34 +148,46 @@
                 const total = formatRupiah(o.grand_total);
                 const items = itemsSummary(o.items);
                 const tenantName = o.tenant?.name || "Kantin";
+                const tenantId = o.tenant?.id; // Ambil ID Tenant buat tujuan chat
                 const payable = canPay(o);
                 const detailHref = detailLink(o);
-                
                 const targetTime = o.estimation_time;
                 const displayEst = getTimeRemaining(targetTime);
 
                 const estimationHtml = (o.status === "process" && targetTime) 
-                    ? `<div style="margin-top:8px; font-size:13px; color:#5856d6; font-weight:600; display:flex; align-items:center; gap:4px;">
-                        <span style="font-size:14px;">⏱️</span>
+                    ? `<div style="margin-top:8px; font-size:13px; color:#0061a8; font-weight:600; display:flex; align-items:center; gap:4px;">
+                        <span>⏱️</span>
                         <span class="est-timer" data-target="${targetTime}">${displayEst}</span>
                     </div>`
                     : "";
 
                 return `
-                    <div class="card">
+                    <div class="card" style="border-radius: 12px; margin: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <div class="card-header">
-                            <b>${title}</b>
-                            <span>${date}</span>
+                            <b style="font-size: 16px;">${title}</b>
+                            <span style="font-size: 13px; color: #8e8e93;">${date}</span>
                         </div>
                         <div class="card-content card-content-padding">
-                            <div style="color:#8e8e93;font-size:12px;margin-bottom:6px;">${tenantName}</div>
-                            <div>${items}</div>
-                            <div class="text-bold margin-top">${total}</div>
+                            <div style="color:#0061a8; font-weight:600; font-size:12px; margin-bottom:4px; text-transform: uppercase;">${tenantName}</div>
+                            <div style="font-size: 14px; color: #444;">${items}</div>
+                            <div class="text-bold margin-top" style="font-size: 16px;">${total}</div>
                             ${estimationHtml}
                         </div>
-                        <div class="card-footer">
-                            <span class="badge color-${badgeColor(o)}">${labelStatus(o)}</span>
-                            <a class="link" href="${detailHref}">${payable ? "Bayar" : "Detail"}</a>
+                        <div class="card-footer" style="background: #fafafa;">
+                            <span class="badge color-${badgeColor(o)}" style="padding: 4px 8px;">${labelStatus(o)}</span>
+                            
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                ${tenantId ? `
+                                <a href="/chat/${tenantId}" class="link icon-only" style="color: #0061a8;">
+                                    <i class="icon f7-icons" style="font-size: 24px;">chat_bubble_text</i>
+                                </a>
+                                ` : ''}
+
+                                <a class="link" href="${detailHref}" 
+                                   style="background: #0061a8; color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold;">
+                                    ${payable ? "Bayar" : "Detail"}
+                                </a>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -198,23 +204,18 @@
         }
 
         function startPolling() {
-            // Update Tampilan Timer setiap detik tanpa merefresh seluruh list
             setInterval(() => {
                 $(".est-timer").each(function() {
                     const target = $(this).attr("data-target");
                     const currentText = $(this).text();
                     const newText = getTimeRemaining(target);
-                    
                     if (currentText !== newText) {
                         $(this).text(newText);
-                        if (newText === "Siap Disajikan!") {
-                            $(this).parent().css("color", "#34c759");
-                        }
+                        if (newText === "Siap Disajikan!") $(this).parent().css("color", "#34c759");
                     }
                 });
             }, 1000);
 
-            // Sync data dari database setiap 10 detik
             setInterval(async () => {
                 try {
                     const updatedOrders = await fetchMyOrders();

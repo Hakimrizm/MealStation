@@ -1599,10 +1599,14 @@
 						"description",
 						document.getElementById("description").value || "",
 					);
-					fd.append(
-						"category",
-						document.getElementById("category").value || "",
-					);
+const category = document.getElementById("category")?.value;
+
+if (!category) {
+	$f7.dialog.alert("Kategori wajib diisi");
+	return;
+}
+
+fd.append("category", category);
 					fd.append("option_groups", JSON.stringify(optionGroups));
 
 					const fileInput = document.getElementById("image");

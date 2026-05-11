@@ -6,15 +6,17 @@
 				<div class="left-icon">
 					<img src="icons/logo.png" class="app-logo" />
 				</div>
-
-				<div class="location-info">
-					<i class="fas fa-location-dot"></i>
-					<span>Current Location: Kantin LPKIA</span>
-				</div>
+                        <div>
+                            <div style="font-size: 10px; color: #8e8e93; font-weight: 500">Lokasi Saat Ini</div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1a1a1a">Kantin LPKIA</div>
+                        </div>
 				<div class="right right-icons">
+					<a href="/chat-list" class="link icon-only cart-icon">
+						<i class="fas fa-comment"></i>
+					</a>
 					<a href="/keranjang" class="link icon-only cart-icon"
-						><i class="fas fa-shopping-cart"></i
-					></a>
+						><i class="fas fa-shopping-cart"></i>
+					</a>
 					<a href="/scan-qr" class="link icon-only"
 						><i class="fas fa-qrcode"></i
 					></a>
@@ -127,6 +129,10 @@
 				<a href="/riwayat-transaksi" class="toolbar-link">
 					<i class="fas fa-wallet"></i>
 					<span>Riwayat Transaksi</span>
+				</a>
+				<a href="/notifikasi_user" class="toolbar-link">
+					<i class="fas fa-bell"></i>
+					<span>Notifikasi</span>
 				</a>
 				<a href="/profile" class="toolbar-link">
 					<i class="fas fa-user-circle"></i>
@@ -381,23 +387,18 @@
 		height: var(--f7-navbar-height);
 	}
 	.navbar .left-icon {
-		width: auto;
-		height: auto;
-		background-color: transparent;
-		color: transparent; /* Hapus warna Font Awesome */
-		font-size: 24px;
-		font-weight: normal;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0; /* Hapus padding yang tidak perlu jika menggunakan gambar */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	flex-shrink: 0;
 	}
 	/* CSS untuk gambar logo */
 	.navbar .left-icon .app-logo {
-		height: 30px; /* Ukuran logo */
-		width: auto;
-		display: block;
-		margin-top: 3px; /* Penyesuaian vertikal agar pas */
+	height: 32px;
+	width: auto;
+	display: block;
+	object-fit: contain;
 	}
 
 	.navbar .location-info {

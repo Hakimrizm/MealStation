@@ -5,9 +5,9 @@
             <div class="navbar-inner">
                 <div class="left">
                     <div style="padding-left: 16px; display: flex; align-items: center; gap: 8px;">
-                        <div class="icon-container-small">
-                            <i class="icon f7-icons text-color-blue" style="font-size: 20px">building_2_fill</i>
-                        </div>
+						<div class="left-icon">
+							<img src="icons/logo.png" class="app-logo" />
+						</div>
                         <div>
                             <div style="font-size: 10px; color: #8e8e93; font-weight: 500">Lokasi Saat Ini</div>
                             <div style="font-size: 14px; font-weight: 700; color: #1a1a1a">Kantin LPKIA</div>
@@ -15,7 +15,10 @@
                     </div>
                 </div>
                 <div class="right">
-                    <a class="link icon-only">
+					<a class="link icon-only" href="/chat-list">
+						<i class="icon f7-icons text-color-black">chat_bubble_2</i>
+					</a>
+                    <a class="link icon-only" href="/notifikasi_tenant">
                         <i class="icon f7-icons text-color-black">bell</i>
                         <span class="badge color-red" style="position: absolute; top: 8px; right: 8px; transform: scale(0.7);">
                             ${newCount()}
@@ -240,8 +243,34 @@
                                         <i class="f7-icons" style="margin-right: 10px">flag_fill</i> ${selectedOrder.orderActionText}
                                     </button>
                                 ` : ''}
-                                
-                                <button class="button button-large sheet-close" style="color: #8e8e93; font-weight: 600">Tutup Detail</button>
+                                <div style="display:flex; gap:10px;">
+									<a 
+										href="/chat/:id"
+										class="button button-large"
+										style="
+											flex:1;
+											background:#ff6b00;
+											color:white;
+											font-weight:700;
+											border-radius:14px;
+										"
+									>
+										<i class="icon f7-icons" style="margin-right:8px;">chat_bubble_2</i>
+										Chat
+									</a>
+
+									<button 
+										class="button button-large button-outline sheet-close"
+										style="
+											flex:1;
+											color:#8e8e93;
+											font-weight:600;
+											border-radius:14px;
+										"
+									>
+										Tutup
+									</button>
+								</div>
                             </div>
                         ` : ''}
                     </div>
@@ -269,7 +298,20 @@
 	.bg-green {
 		background: #4cd964;
 	}
+.left-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	flex-shrink: 0;
+}
 
+.left-icon .app-logo {
+	height: 32px;
+	width: auto;
+	display: block;
+	object-fit: contain;
+}
 	/* CSS Lama */
 	.icon-container-small {
 		width: 32px;
@@ -295,6 +337,7 @@
 		cursor: pointer;
 		-webkit-tap-highlight-color: transparent;
 	}
+	
 	.category-icon {
 		width: 50px;
 		height: 50px;

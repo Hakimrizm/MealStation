@@ -1,0 +1,286 @@
+<template>
+  <div class="page">
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a class="link icon-only" @click=${goBack}>
+            <i class="icon icon-back"></i>
+          </a>
+        </div>
+        <div class="title">
+          ${toko.nama}
+          <div class="status">${toko.status}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="page-content messages-content">
+
+      ${product ? $h`
+      <div class="product-preview-top">
+        <div class="preview-header">Product Preview</div>
+        <div class="product-card-row">
+          <img src="${product.image}" />
+          <div class="product-info">
+            <div class="p-name">${product.name}</div>
+            <div class="p-price">Rp ${product.price}</div>
+          </div>
+          <button class="btn-lihat" @click=${lihatProduk}>Lihat Produk</button>
+        </div>
+      </div>
+      ` : ''}
+
+      <div class="messages">
+
+        ${Array.isArray(messages) ? messages.map(msg => $h`
+          <div class="message message-${msg.sender_id == userId ? 'sent' : 'received'}">
+            <div class="message-content">
+              <div class="message-bubble">
+
+                ${msg.product ? $h`
+                  <div class="bubble-product">
+                    <img src="${msg.product.image}" />
+                    <div class="b-info">
+                      <div class="b-name">${msg.product.name}</div>
+                      <div class="b-price">Rp ${msg.product.price}</div>
+                    </div>
+                  </div>
+                ` : ''}
+
+                <div class="message-text">
+                  ${msg.message}
+                </div>
+
+              </div>
+            </div>
+          </div>
+        `) : ''}
+
+      </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="toolbar messagebar">
+      <div class="toolbar-inner">
+
+        <textarea id="chatInput" placeholder="Ketik pesan..."></textarea>
+
+        <a class="link icon-only">😊</a>
+        <a class="link icon-only">🖼️</a>
+
+        <a class="link send-btn-blue" @click=${sendMessage}>
+          Kirim
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+export default (props, { $f7, $on, $update }) => {
+
+  const BASE_URL = "http://10.103.98.238:8000";
+
+  let userId = null;
+  let receiverId = null;
+  let messages = [];
+  let product = null;
+  let toko = { nama: "Loading...", status: "online" };
+  let interval = null;
+
+  // =========================
+  // USER LOGIN
+  // =========================
+  async function getUser() {
+    const res = await fetch(`${BASE_URL}/api/user`, {
+      headers: { Authorization: `Bearer ${localStorage.token}` },
+    });
+
+    const data = await res.json();
+    userId = data.id;
+    $update();
+  }
+
+  // =========================
+  // LOAD CHAT
+  // =========================
+  async function loadChat() {
+    if (!receiverId) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/chat/${receiverId}`, {
+        headers: { Authorization: `Bearer ${localStorage.token}` },
+      });
+
+      const data = await res.json();
+
+      messages = Array.isArray(data.messages)
+        ? data.messages.map(item => ({
+            id: item.id,
+            sender_id: item.sender_id,
+            message: item.message,
+            product: item.product ?? null
+          }))
+        : [];
+
+      $update();
+      scrollBottom();
+
+    } catch (err) {
+      console.error("Load chat error", err);
+    }
+  }
+
+  // =========================
+  // SEND MESSAGE
+  // =========================
+  async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+
+    if (!text || !receiverId) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/chat/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.token}`
+        },
+        body: JSON.stringify({
+          receiver_id: receiverId,
+          message: text,
+          product_id: product ? product.id : null
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+
+        messages.push({
+          id: data.id,
+          sender_id: data.sender_id,
+          message: data.message,
+          product: data.product ?? null
+        });
+
+        input.value = "";
+        product = null;
+
+        $update();
+        scrollBottom();
+      }
+
+    } catch (err) {
+      $f7.dialog.alert("Gagal kirim pesan!");
+    }
+  }
+
+  // =========================
+  // SCROLL BOTTOM
+  // =========================
+  function scrollBottom() {
+    setTimeout(() => {
+      const el = document.querySelector(".messages-content");
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 100);
+  }
+
+  // =========================
+  // BACK BUTTON
+  // =========================
+  function goBack() {
+    const role = localStorage.role;
+
+    if (role === "tenant") {
+      $f7.views.main.router.navigate("/tenant", {
+        clearPreviousHistory: true,
+      });
+    } else {
+      $f7.views.main.router.navigate("/", {
+        clearPreviousHistory: true,
+      });
+    }
+  }
+
+  function lihatProduk() {
+    $f7.dialog.alert("Melihat Detail...");
+  }
+
+  // =========================
+  // PAGE INIT
+  // =========================
+  $on("pageInit", async (page) => {
+
+    receiverId = page.route.params.id;
+
+    await getUser();
+    await loadChat();
+
+    interval = setInterval(loadChat, 4000);
+  });
+
+  $on("pageBeforeRemove", () => {
+    if (interval) clearInterval(interval);
+  });
+
+  return $render;
+};
+</script>
+
+<style>
+.page { background: #f0f4f7; }
+
+.navbar { background: #0061a8; color: white; }
+.status { font-size: 10px; opacity: 0.8; }
+
+.messages-content { padding-bottom: 80px; }
+
+.message { margin-bottom: 10px; display: flex; }
+
+.message-sent { justify-content: flex-end; }
+
+.message-bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 15px;
+  font-size: 14px;
+}
+
+.message-sent .message-bubble {
+  background: #0061a8;
+  color: white;
+}
+
+.message-received .message-bubble {
+  background: white;
+  color: #333;
+}
+
+.bubble-product {
+  display: flex;
+  gap: 8px;
+  background: rgba(0,0,0,0.05);
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.bubble-product img {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+}
+
+.send-btn-blue {
+  background: #0061a8 !important;
+  color: white !important;
+  padding: 8px 15px;
+  border-radius: 20px;
+}
+</style>

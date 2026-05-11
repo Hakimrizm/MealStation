@@ -7,6 +7,10 @@ import RiwayatTransaksiPage from "../pages/riwayat-transaksi.f7";
 import TenantPage from "../pages/tenant.f7";
 import orderDetailPage from "../pages/order-detail.f7";
 import keranjangPage from "../pages/keranjang.f7";
+import chatList from "../pages/chat-list.f7";
+import chatRoom from "../pages/chat-room.f7";
+import notifikasiUser from "../pages/notifikasi_user.f7";
+import notifikasiTenant from "../pages/notifikasi_tenant.f7";
 import TenantMenus from "../pages/menuTenant/tenant-menus.f7";
 import TenantMenuCreate from "../pages/menuTenant/tenant-menu-create.f7";
 import TenantMenuEdit from "../pages/menuTenant/tenant-menu-edit.f7";
@@ -113,7 +117,27 @@ var routes = [
 		component: keranjangPage,
 		beforeEnter: authWithRole,
 	},
+	{
+	path: "/chat-list",
+	component: chatList,
+	beforeEnter: authWithRole,
+	},
 
+	{
+	path: "/chat/:id",
+	component: chatRoom,
+	beforeEnter: authWithRole,
+	},
+	{
+	path: "/notifikasi_user",
+	component: notifikasiUser,
+	beforeEnter: authWithRole,
+	},
+	{
+	path: "/notifikasi_tenant",
+	component: notifikasiTenant,
+	beforeEnter: authWithRole,
+	},
 	{
 		path: "/scan-qr",
 		component: ScanQrPage,

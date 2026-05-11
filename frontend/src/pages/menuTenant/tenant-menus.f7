@@ -136,19 +136,28 @@
             return result;
         }
 
-        async function fetchCurrentUser() {
-            const token = getToken();
-            const res = await fetch(`${API_BASE}/user`, {
-                headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const result = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(result?.message || "Gagal mengambil data user");
-            return result?.user || null;
-        }
+async function fetchCurrentUser() {
+    const token = getToken();
 
+    console.log("TOKEN:", token);
+
+    const res = await fetch(`${API_BASE}/user`, {
+        headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const result = await res.json().catch(() => ({}));
+
+    console.log(result);
+
+    if (!res.ok) {
+        throw new Error(result?.message || "Gagal mengambil data user");
+    }
+
+    return result;
+}
         // FUNGSI BARU: TOGGLE STATUS
         async function toggleStatus(menuId) {
             try {
