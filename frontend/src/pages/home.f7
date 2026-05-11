@@ -15,7 +15,7 @@
 					<a href="/keranjang" class="link icon-only cart-icon"
 						><i class="fas fa-shopping-cart"></i
 					></a>
-					<a href="/scan-qr" class="link icon-only"
+					<a href="#" class="link icon-only" id="btn-open-qr-scanner"
 						><i class="fas fa-qrcode"></i
 					></a>
 				</div>
@@ -24,7 +24,7 @@
 
 		<!-- PAGE CONTENT -->
 		<div class="page-content">
-			<div class="ptr-preloader">
+			<div class="ptr-preloader" style="display: none;">
 				<div class="preloader"></div>
 				<div class="ptr-arrow"></div>
 			</div>
@@ -115,6 +115,50 @@
 			>
 				Tidak ada menu yang cocok.
 			</div>
+
+			<div id="qr-scanner-overlay" class="qr-scanner-overlay" style="display: none">
+				<div class="qr-scanner-panel">
+					<div class="qr-scanner-header">
+						<div>
+							<div class="qr-scanner-title">Scan QR Menu</div>
+							<div class="qr-scanner-subtitle">Arahkan kamera ke QR tenant</div>
+						</div>
+						<a href="#" id="btn-close-qr-scanner" class="qr-scanner-close">
+							<i class="icon f7-icons">xmark</i>
+						</a>
+					</div>
+
+					<div class="scanner-shell">
+						<video
+							id="qr-video"
+							autoplay
+							muted
+							playsinline
+							webkit-playsinline="true"
+						></video>
+						<div class="scanner-frame">
+							<div class="scanner-corner tl"></div>
+							<div class="scanner-corner tr"></div>
+							<div class="scanner-corner bl"></div>
+							<div class="scanner-corner br"></div>
+						</div>
+						<div class="scan-hint">
+							<i class="icon f7-icons">camera_fill</i>
+							<span id="scan-status">Mencari QR...</span>
+						</div>
+					</div>
+
+					<div class="scan-card">
+						<div class="scan-card-label">Hasil scan</div>
+						<div id="scan-result" class="scan-result">Belum ada hasil.</div>
+						<div class="scan-actions">
+							<a class="button button-fill" id="btn-restart-scan">Mulai Ulang</a>
+						</div>
+					</div>
+
+					<canvas id="scan-canvas" style="display: none"></canvas>
+				</div>
+			</div>
 		</div>
 		<!-- TOOLBAR -->
 		<div class="toolbar toolbar-bottom">
@@ -142,18 +186,24 @@
 
 <script>
 	import { getToken } from "../js/auth.js";
+	import jsQR from "jsqr";
 
 	export default (props, { $, $on, $f7 }) => {
 		const API_BASE = "http://localhost:8000/api";
 		const STORAGE_BASE = "http://localhost:8000/storage/";
 		const token = getToken();
-		const tenantQueryId =
+		let tenantQueryId =
 			props?.f7route?.query?.tenant ||
 			new URLSearchParams(window.location.search).get("tenant") ||
 			null;
 
 		let allMenus = [];
 		let activeCategory = "semua";
+		let scannerStream = null;
+		let scannerFrameId = null;
+		let scannerStarted = false;
+		let scannerStopping = false;
+		let scannerLastValue = "";
 
 		const rupiah = (n) => {
 			const num = Number(n || 0);
@@ -257,6 +307,207 @@
 			});
 		}
 
+		function setTenantFilter(tenantId) {
+			tenantQueryId = tenantId ? String(tenantId) : null;
+
+			if (!tenantQueryId) {
+				window.history.replaceState({}, "", "/");
+				const banner = document.getElementById("tenant-filter-banner");
+				if (banner) banner.style.display = "none";
+			} else {
+				window.history.replaceState({}, "", `/?tenant=${encodeURIComponent(tenantQueryId)}`);
+			}
+
+			initTenantBanner();
+			applyFilters();
+		}
+
+		function setScannerStatus(text) {
+			$("#scan-status").text(text);
+		}
+
+		function setScannerResult(text) {
+			$("#scan-result").text(text || "Belum ada hasil.");
+		}
+
+		function showScannerOverlay() {
+			$("#qr-scanner-overlay").css("display", "block");
+		}
+
+		function hideScannerOverlay() {
+			$("#qr-scanner-overlay").css("display", "none");
+		}
+
+		function stopScanner() {
+			scannerStopping = true;
+
+			if (scannerFrameId) {
+				cancelAnimationFrame(scannerFrameId);
+				scannerFrameId = null;
+			}
+
+			const video = document.getElementById("qr-video");
+			if (video) {
+				video.pause?.();
+				video.srcObject = null;
+			}
+
+			if (scannerStream) {
+				scannerStream.getTracks().forEach((track) => track.stop());
+				scannerStream = null;
+			}
+
+			scannerStarted = false;
+		}
+
+		function parseScanValue(value) {
+			const raw = String(value || "").trim();
+			if (!raw) return null;
+
+			try {
+				const url = new URL(raw, window.location.origin);
+				const tenantId = url.searchParams.get("tenant");
+				if (tenantId) {
+					return {
+						type: "tenant",
+						tenantId,
+						raw,
+					};
+				}
+
+				if (url.origin === window.location.origin) {
+					return {
+						type: "internal",
+						url: `${url.pathname}${url.search}${url.hash}`,
+						raw,
+					};
+				}
+
+				return {
+					type: "external",
+					url: url.toString(),
+					raw,
+				};
+			} catch {
+				return {
+					type: "text",
+					raw,
+				};
+			}
+		}
+
+		function handleScanResult(parsed) {
+			if (!parsed) return;
+
+			stopScanner();
+			hideScannerOverlay();
+
+			if (parsed.type === "tenant") {
+				setScannerStatus("QR terbaca.");
+				setScannerResult(parsed.raw);
+				setTenantFilter(parsed.tenantId);
+				return;
+			}
+
+			if (parsed.type === "internal") {
+				setScannerStatus("QR terbaca.");
+				setScannerResult(parsed.raw);
+				if (parsed.url.startsWith("/?tenant=")) {
+					const tenantId = new URL(parsed.url, window.location.origin).searchParams.get("tenant");
+					setTenantFilter(tenantId);
+					return;
+				}
+				window.location.assign(parsed.url);
+				return;
+			}
+
+			if (parsed.type === "external") {
+				window.location.assign(parsed.url);
+				return;
+			}
+
+			setScannerStatus("QR terbaca, tetapi format tidak dikenali.");
+			setScannerResult(parsed.raw);
+		}
+
+		function scanFrame() {
+			if (scannerStopping) return;
+
+			const video = document.getElementById("qr-video");
+			const canvas = document.getElementById("scan-canvas");
+			if (!video || !canvas) {
+				scannerFrameId = requestAnimationFrame(scanFrame);
+				return;
+			}
+
+			const context = canvas.getContext("2d", { willReadFrequently: true });
+			if (!context) {
+				scannerFrameId = requestAnimationFrame(scanFrame);
+				return;
+			}
+
+			if (video.readyState === video.HAVE_ENOUGH_DATA) {
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+				const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+				const code = jsQR(imageData.data, imageData.width, imageData.height, {
+					inversionAttempts: "dontInvert",
+				});
+
+				if (code?.data && code.data !== scannerLastValue) {
+					scannerLastValue = code.data;
+					const parsed = parseScanValue(code.data);
+					setScannerResult(code.data);
+					handleScanResult(parsed);
+					return;
+				}
+			}
+
+			scannerFrameId = requestAnimationFrame(scanFrame);
+		}
+
+		async function startScanner() {
+			if (scannerStarted) return;
+			scannerStarted = true;
+			scannerStopping = false;
+			scannerLastValue = "";
+			setScannerStatus("Menyalakan kamera...");
+
+			try {
+				if (!navigator.mediaDevices?.getUserMedia) {
+					throw new Error("Browser tidak mendukung kamera.");
+				}
+
+				scannerStream = await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: { ideal: "environment" } },
+					audio: false,
+				});
+
+				const video = document.getElementById("qr-video");
+				if (!video) throw new Error("Elemen kamera tidak ditemukan.");
+
+				video.srcObject = scannerStream;
+				await video.play();
+
+				setScannerStatus("Arahkan ke QR tenant.");
+				scannerFrameId = requestAnimationFrame(scanFrame);
+			} catch (err) {
+				scannerStarted = false;
+				setScannerStatus("Gagal membuka kamera.");
+				setScannerResult(String(err?.message || err || "Tidak bisa membuka kamera."));
+				$f7.dialog.alert(String(err?.message || err || "Tidak bisa membuka kamera."), "Kamera tidak tersedia");
+			}
+		}
+
+		function openScanner() {
+			showScannerOverlay();
+			setScannerResult("Belum ada hasil.");
+			setScannerStatus("Menyalakan kamera...");
+			startScanner();
+		}
+
 		function applyFilters() {
 			const query =
 				document.querySelector(".searchbar input")?.value?.toLowerCase() || "";
@@ -302,11 +553,11 @@
 			// Setup clear filter button
 			const clearBtn = document.getElementById("btn-clear-tenant-filter");
 			if (clearBtn) {
-				clearBtn.addEventListener("click", (e) => {
+				clearBtn.onclick = (e) => {
 					e.preventDefault();
 					e.stopPropagation();
-					$f7.views.main.router.navigate("/");
-				});
+					setTenantFilter(null);
+				};
 			}
 		}
 
@@ -352,6 +603,35 @@
 				initCategoryButtons();
 				initSearch();
 
+				const openScannerBtn = document.getElementById("btn-open-qr-scanner");
+				if (openScannerBtn) {
+					openScannerBtn.onclick = (e) => {
+						e.preventDefault();
+						openScanner();
+					};
+				}
+
+				const closeScannerBtn = document.getElementById("btn-close-qr-scanner");
+				if (closeScannerBtn) {
+					closeScannerBtn.onclick = (e) => {
+						e.preventDefault();
+						stopScanner();
+						hideScannerOverlay();
+					};
+				}
+
+				const restartScannerBtn = document.getElementById("btn-restart-scan");
+				if (restartScannerBtn) {
+					restartScannerBtn.onclick = (e) => {
+						e.preventDefault();
+						stopScanner();
+						scannerStarted = false;
+						setScannerResult("Belum ada hasil.");
+						showScannerOverlay();
+						startScanner();
+					};
+				}
+
 				// initial load
 				$f7.preloader.show();
 				allMenus = await fetchMenus();
@@ -364,6 +644,18 @@
 				console.log(err);
 				$f7.dialog.alert(String(err.message || err), "Error");
 			}
+		});
+
+		$on("pageBeforeOut", () => {
+			stopScanner();
+			scannerStarted = false;
+			hideScannerOverlay();
+		});
+
+		$on("pageBeforeRemove", () => {
+			stopScanner();
+			scannerStarted = false;
+			hideScannerOverlay();
 		});
 
 		return $render;
@@ -694,5 +986,157 @@
 		font-size: 15px;
 		font-weight: 800 !important;
 		color: #222;
+	}
+
+	/* ==================== QR SCANNER OVERLAY ==================== */
+	.qr-scanner-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		background: rgba(15, 23, 42, 0.92);
+		backdrop-filter: blur(10px);
+		overflow-y: auto;
+		padding: 16px;
+	}
+
+	.qr-scanner-panel {
+		max-width: 520px;
+		margin: 20px auto 0;
+		border-radius: 24px;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		padding: 16px;
+		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+	}
+
+	.qr-scanner-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.qr-scanner-title {
+		font-size: 20px;
+		font-weight: 800;
+		color: #fff;
+	}
+
+	.qr-scanner-subtitle {
+		margin-top: 4px;
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.72);
+	}
+
+	.qr-scanner-close {
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.12);
+		color: #fff;
+	}
+
+	.qr-scanner-close .icon {
+		font-size: 18px;
+	}
+
+	.qr-scanner-overlay .scanner-shell {
+		position: relative;
+		border-radius: 24px;
+		overflow: hidden;
+		background: #020617;
+		aspect-ratio: 3 / 4;
+	}
+
+	.qr-scanner-overlay #qr-video {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	.qr-scanner-overlay .scanner-frame {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.qr-scanner-overlay .scanner-corner {
+		position: absolute;
+		width: 44px;
+		height: 44px;
+		border-color: #60a5fa;
+		border-style: solid;
+	}
+
+	.qr-scanner-overlay .scanner-corner.tl {
+		top: 16px;
+		left: 16px;
+		border-width: 4px 0 0 4px;
+		border-top-left-radius: 14px;
+	}
+
+	.qr-scanner-overlay .scanner-corner.tr {
+		top: 16px;
+		right: 16px;
+		border-width: 4px 4px 0 0;
+		border-top-right-radius: 14px;
+	}
+
+	.qr-scanner-overlay .scanner-corner.bl {
+		bottom: 16px;
+		left: 16px;
+		border-width: 0 0 4px 4px;
+		border-bottom-left-radius: 14px;
+	}
+
+	.qr-scanner-overlay .scanner-corner.br {
+		bottom: 16px;
+		right: 16px;
+		border-width: 0 4px 4px 0;
+		border-bottom-right-radius: 14px;
+	}
+
+	.qr-scanner-overlay .scan-hint {
+		position: absolute;
+		left: 50%;
+		bottom: 18px;
+		transform: translateX(-50%);
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 14px;
+		border-radius: 999px;
+		background: rgba(15, 23, 42, 0.75);
+		color: #fff;
+		font-size: 12px;
+	}
+
+	.qr-scanner-overlay .scan-card {
+		margin-top: 14px;
+		padding: 14px;
+		border-radius: 18px;
+		background: rgba(255, 255, 255, 0.94);
+	}
+
+	.qr-scanner-overlay .scan-card-label {
+		font-size: 12px;
+		font-weight: 700;
+		color: #64748b;
+		margin-bottom: 6px;
+	}
+
+	.qr-scanner-overlay .scan-result {
+		font-size: 13px;
+		color: #111827;
+		word-break: break-all;
+	}
+
+	.qr-scanner-overlay .scan-actions {
+		margin-top: 12px;
 	}
 </style>
