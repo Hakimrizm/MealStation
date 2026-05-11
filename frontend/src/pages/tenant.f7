@@ -105,12 +105,20 @@
                 ${getFilteredOrders().map((order) => $h`
                 <div class="card-replica" @click="${() => openActionSheet(order)}">
                     <div class="card-top">
-                        <div class="order-id">#${order.id}</div>
+                        <div>
+                            <div class="order-id">#${order.id}</div>
+
+                            <div class="order-type-badge ${order.orderTypeClass}">
+                                <i class="f7-icons">${order.orderTypeIcon}</i>
+                                <span>${order.orderTypeLabel}</span>
+                            </div>
+                        </div>
+
                         <div class="order-time">${order.time}</div>
                     </div>
                     <div class="card-body">
-                        <div class="food-thumb">
-                            <i class="icon f7-icons text-color-white">bag_fill</i>
+                        <div class="food-thumb ${order.orderTypeClass}">
+                            <i class="icon f7-icons text-color-white">${order.orderTypeIcon}</i>
                         </div>
                         <div class="food-details">
                             <div class="food-title">${order.items} Item Pesanan</div>
@@ -158,6 +166,18 @@
                                 <div class="text-align-right">
                                     <div style="font-size: 11px; color: #8e8e93; font-weight: 600">Pelanggan</div>
                                     <div style="font-size: 15px; font-weight: 700; color: #333">${selectedOrder.customer}</div>
+                                </div>
+                            </div>
+
+                            <div class="order-method-card ${selectedOrder.orderTypeClass}">
+                                <div class="order-method-icon">
+                                    <i class="f7-icons">${selectedOrder.orderTypeIcon}</i>
+                                </div>
+
+                                <div class="order-method-info">
+                                    <div class="order-method-label">Metode Pesanan</div>
+                                    <div class="order-method-title">${selectedOrder.orderTypeLabel}</div>
+                                    <div class="order-method-desc">${selectedOrder.orderTypeDesc}</div>
                                 </div>
                             </div>
 
@@ -217,7 +237,7 @@
 
                                 ${selectedOrder.status === 'process' ? $h`
                                     <button @click="${() => updateStatus('done')}" class="button button-large button-fill color-blue" style="border-radius: 16px; height: 56px; font-weight: 800; font-size: 16px; box-shadow: 0 8px 20px rgba(33, 150, 243, 0.3)">
-                                        <i class="f7-icons" style="margin-right: 10px">flag_fill</i> TANDAI SIAP DIAMBIL
+                                        <i class="f7-icons" style="margin-right: 10px">flag_fill</i> ${selectedOrder.orderActionText}
                                     </button>
                                 ` : ''}
                                 
@@ -408,6 +428,109 @@
 		border-color: rgba(33, 150, 243, 0.35) !important;
 		color: #2196f3 !important;
 	}
+
+    .order-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 6px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .order-type-badge i {
+        font-size: 12px;
+    }
+
+    .order-type-badge.take-away {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .order-type-badge.dine-in {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .food-thumb.take-away {
+        background: linear-gradient(135deg, #ff9800, #ff6d00);
+    }
+
+    .food-thumb.dine-in {
+        background: linear-gradient(135deg, #2196f3, #1976d2);
+    }
+
+    .order-method-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        border: 1.5px solid transparent;
+    }
+
+    .order-method-card.take-away {
+        background: #fff8ed;
+        border-color: #ffd59b;
+    }
+
+    .order-method-card.dine-in {
+        background: #f0f7ff;
+        border-color: #bbdefb;
+    }
+
+    .order-method-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .order-method-card.take-away .order-method-icon {
+        background: #ff9800;
+        color: #fff;
+    }
+
+    .order-method-card.dine-in .order-method-icon {
+        background: #2196f3;
+        color: #fff;
+    }
+
+    .order-method-icon i {
+        font-size: 26px;
+    }
+
+    .order-method-info {
+        flex: 1;
+    }
+
+    .order-method-label {
+        font-size: 10px;
+        font-weight: 800;
+        color: #8e8e93;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 3px;
+    }
+
+    .order-method-title {
+        font-size: 17px;
+        font-weight: 900;
+        color: #1a1a1a;
+    }
+
+    .order-method-desc {
+        font-size: 12px;
+        color: #666;
+        margin-top: 2px;
+    }
 </style>
 
 <script>
@@ -423,6 +546,29 @@
         let loading = false;
 
         const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+        function getOrderTypeMeta(type) {
+            if (type === "take_away") {
+                return {
+                    type: "take_away",
+                    label: "Take Away",
+                    desc: "Pesanan dibungkus untuk dibawa",
+                    icon: "bag_fill",
+                    className: "take-away",
+                    actionText: "TANDAI SIAP DIAMBIL",
+                };
+            }
+
+            return {
+                type: "dine_in",
+                label: "Dine In",
+                desc: "Makan di tempat",
+                icon: "fork_knife",
+                className: "dine-in",
+                actionText: "TANDAI SIAP DISAJIKAN",
+            };
+        }
+
 
         function shortTime(dt) {
             try {
@@ -485,19 +631,29 @@
         }
 
         function normalizeOrder(o) {
+            const orderType = getOrderTypeMeta(o.order_type);
+
             return {
                 id: o.id,
                 time: shortTime(o.created_at),
-                targetTime: o.estimation_time, 
-                // TAMBAHKAN o.status di dalam kurung ini
-                estimation: getTimeRemaining(o.estimation_time, o.status), 
+                targetTime: o.estimation_time,
+                estimation: getTimeRemaining(o.estimation_time, o.status),
                 items: itemsCount(o.items),
                 desc: buildDesc(o.items),
                 price: rupiah(o.grand_total),
                 customer: o.user?.name || "User",
                 status: o.status,
                 payment_status: o.payment_status,
-                raw: o
+
+                // Tambahan untuk Dine In / Take Away
+                orderType: orderType.type,
+                orderTypeLabel: orderType.label,
+                orderTypeDesc: orderType.desc,
+                orderTypeIcon: orderType.icon,
+                orderTypeClass: orderType.className,
+                orderActionText: orderType.actionText,
+
+                raw: o,
             };
         }
 

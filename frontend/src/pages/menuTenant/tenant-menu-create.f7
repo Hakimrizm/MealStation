@@ -318,6 +318,552 @@
 				font-weight: 700;
 				margin-top: 18px;
 			}
+
+			.generic-hero {
+				background: linear-gradient(135deg, #fff7ed, #ffffff);
+				border: 1.5px solid #ffe0b2;
+				border-radius: 18px;
+				padding: 14px;
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				margin: 18px 0 14px;
+				box-shadow: 0 8px 20px rgba(223, 127, 16, 0.08);
+			}
+
+			.generic-hero-icon {
+				width: 46px;
+				height: 46px;
+				border-radius: 14px;
+				background: #ff9800;
+				color: #fff;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+			}
+
+			.generic-hero-icon i {
+				font-size: 24px;
+			}
+
+			.generic-hero-title {
+				font-size: 16px;
+				font-weight: 900;
+				color: #1a1a1a;
+			}
+
+			.generic-hero-desc {
+				font-size: 12px;
+				color: #666;
+				line-height: 1.4;
+				margin-top: 2px;
+			}
+
+			.option-empty-state {
+				background: #fff;
+				border: 1.5px dashed #ddd;
+				border-radius: 16px;
+				padding: 18px;
+				text-align: center;
+				color: #8e8e93;
+				margin-bottom: 14px;
+			}
+
+			.option-empty-state i {
+				font-size: 34px;
+				color: #c7c7cc;
+				margin-bottom: 6px;
+			}
+
+			.group-card {
+				background: #ffffff;
+				border: 1px solid #ececf2;
+				border-radius: 18px;
+				padding: 14px;
+				margin-bottom: 14px;
+				box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+			}
+
+			.group-title-row {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.group-icon {
+				width: 40px;
+				height: 40px;
+				border-radius: 12px;
+				background: #fff3e0;
+				color: #f57c00;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+			}
+
+			.group-icon i {
+				font-size: 22px;
+			}
+
+			.group-title {
+				font-size: 15px;
+				font-weight: 900;
+				color: #1a1a1a;
+			}
+
+			.group-desc {
+				font-size: 11px;
+				color: #8e8e93;
+				margin-top: 2px;
+				line-height: 1.35;
+			}
+
+			.type-badge {
+				background: #fff3e0;
+				color: #f57c00;
+				border-radius: 999px;
+				padding: 6px 10px;
+				font-size: 11px;
+				font-weight: 800;
+				white-space: nowrap;
+			}
+
+			.required-badge {
+				background: #ffe5e5;
+				color: #e53935;
+				border-radius: 999px;
+				padding: 6px 10px;
+				font-size: 11px;
+				font-weight: 800;
+				white-space: nowrap;
+			}
+
+			.preview-label {
+				font-size: 11px;
+				font-weight: 800;
+				color: #8e8e93;
+				text-transform: uppercase;
+				letter-spacing: 0.4px;
+				margin: 12px 0 8px;
+			}
+
+			.friendly-option-card {
+				border: 1.5px solid #eeeeee;
+				background: #fafafa;
+				border-radius: 14px;
+				padding: 12px;
+				margin-bottom: 8px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.friendly-option-left {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				min-width: 0;
+			}
+
+			.friendly-dot {
+				width: 18px;
+				height: 18px;
+				border-radius: 50%;
+				border: 2px solid #ff9800;
+				background: #fff;
+				flex-shrink: 0;
+			}
+
+			.friendly-check {
+				width: 18px;
+				height: 18px;
+				border-radius: 5px;
+				border: 2px solid #ff9800;
+				background: #fff;
+				flex-shrink: 0;
+			}
+
+			.friendly-option-text {
+				font-size: 14px;
+				font-weight: 700;
+				color: #1a1a1a;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.friendly-option-price {
+				font-size: 11px;
+				font-weight: 800;
+				color: #f57c00;
+				background: #fff3e0;
+				padding: 4px 8px;
+				border-radius: 999px;
+				white-space: nowrap;
+			}
+
+			.group-footer {
+				display: flex;
+				gap: 8px;
+				margin-top: 12px;
+				flex-wrap: wrap;
+			}
+
+			.btn-add-item {
+				background: #fff7ed !important;
+				color: #f57c00 !important;
+				border-color: #ffd59b !important;
+				font-weight: 800;
+			}
+
+			.mini-action.danger {
+				color: #e53935;
+				border-color: #ffcdd2;
+				background: #fff5f5;
+			}
+
+			.dialog-helper {
+				font-size: 12px;
+				color: #8e8e93;
+				line-height: 1.4;
+				padding: 0 16px 10px;
+			}
+
+			.dialog-type-hint {
+				background: #f8fafc;
+				border-radius: 12px;
+				padding: 10px 12px;
+				margin: 8px 16px 12px;
+				font-size: 12px;
+				color: #64748b;
+				line-height: 1.45;
+			}
+
+			/* FIX TOTAL: Dialog form tidak melebar ke samping */
+			.dialog.friendly-form-dialog {
+				width: calc(100% - 36px) !important;
+				max-width: 360px !important;
+				max-height: 88vh !important;
+				border-radius: 22px !important;
+				overflow: hidden !important;
+			}
+
+			.dialog.friendly-form-dialog .dialog-inner {
+				padding: 22px 20px 14px !important;
+				max-height: calc(88vh - 58px) !important;
+				overflow-y: auto !important;
+				-webkit-overflow-scrolling: touch;
+				box-sizing: border-box !important;
+			}
+
+			.dialog.friendly-form-dialog .dialog-title {
+				font-size: 21px !important;
+				font-weight: 800 !important;
+				text-align: left !important;
+				color: #2c2c34 !important;
+				margin-bottom: 6px !important;
+			}
+
+			.dialog.friendly-form-dialog .dialog-buttons {
+				height: 58px !important;
+				background: #fff !important;
+				border-top: 1px solid #eee !important;
+				position: sticky !important;
+				bottom: 0 !important;
+				z-index: 10 !important;
+			}
+
+			.dialog.friendly-form-dialog .dialog-button {
+				color: #df7f10 !important;
+				font-weight: 800 !important;
+			}
+
+			/* Form custom */
+			.friendly-dialog-form {
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+				width: 100%;
+				box-sizing: border-box;
+			}
+
+			.friendly-dialog-desc {
+				font-size: 12px;
+				color: #8e8e93;
+				line-height: 1.4;
+				margin-bottom: 12px;
+			}
+
+			.friendly-field {
+				width: 100%;
+				background: #e9e9ef;
+				border-radius: 12px;
+				padding: 12px;
+				box-sizing: border-box;
+			}
+
+			.friendly-field label {
+				display: block;
+				font-size: 12px;
+				font-weight: 700;
+				color: #777783;
+				margin-bottom: 6px;
+			}
+
+			.friendly-field input,
+			.friendly-field select {
+				width: 100%;
+				border: none;
+				outline: none;
+				background: transparent;
+				font-size: 15px;
+				color: #333;
+				box-sizing: border-box;
+			}
+
+			.friendly-hint {
+				background: #ffffff;
+				border-radius: 12px;
+				padding: 12px;
+				font-size: 12px;
+				color: #64748b;
+				line-height: 1.45;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+			}
+
+			.friendly-toggle-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				background: #fff;
+				border: 1px solid #ededf3;
+				border-radius: 14px;
+				padding: 12px;
+			}
+
+			.friendly-toggle-title {
+				font-size: 15px;
+				font-weight: 800;
+				color: #333;
+			}
+
+			.friendly-toggle-desc {
+				font-size: 11px;
+				color: #8e8e93;
+				line-height: 1.35;
+				margin-top: 3px;
+			}
+
+			.friendly-two-cols {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+
+			@media (max-width: 390px) {
+				.dialog.friendly-form-dialog {
+					width: calc(100% - 30px) !important;
+					max-width: 345px !important;
+				}
+
+				.dialog.friendly-form-dialog .dialog-inner {
+					padding: 20px 16px 14px !important;
+				}
+
+				.friendly-two-cols {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			/* SHEET MODAL UNTUK VARIASI PESANAN */
+			.option-sheet {
+				height: 88vh !important;
+				border-radius: 24px 24px 0 0 !important;
+				overflow: hidden !important;
+				background: #f5f5f7 !important;
+			}
+
+			.sheet-form-inner {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				background: #f5f5f7;
+			}
+
+			.sheet-drag-handle {
+				width: 44px;
+				height: 5px;
+				border-radius: 999px;
+				background: #d1d1d6;
+				margin: 10px auto 6px;
+				flex-shrink: 0;
+			}
+
+			.sheet-form-header {
+				padding: 10px 20px 12px;
+				background: #f5f5f7;
+				flex-shrink: 0;
+			}
+
+			.sheet-form-title {
+				font-size: 22px;
+				font-weight: 900;
+				color: #1f2933;
+				margin-bottom: 4px;
+			}
+
+			.sheet-form-desc {
+				font-size: 12px;
+				color: #8e8e93;
+				line-height: 1.45;
+			}
+
+			.sheet-form-body {
+				flex: 1;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
+				padding: 8px 20px 120px;
+				box-sizing: border-box;
+			}
+
+			.sheet-form-footer {
+				position: fixed;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				display: flex;
+				gap: 10px;
+				padding: 14px 20px calc(18px + env(safe-area-inset-bottom));
+				background: rgba(255, 255, 255, 0.96);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border-top: 1px solid #ececec;
+				z-index: 9999;
+				box-sizing: border-box;
+			}
+
+			.btn-sheet-cancel,
+			.btn-sheet-save {
+				flex: 1;
+				height: 50px;
+				border-radius: 14px;
+				border: none;
+				font-size: 15px;
+				font-weight: 900;
+			}
+
+			.btn-sheet-cancel {
+				background: #f2f2f7;
+				color: #666;
+			}
+
+			.btn-sheet-save {
+				background: #df7f10;
+				color: #fff;
+			}
+
+			.friendly-dialog-form {
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+			}
+
+			.friendly-field {
+				width: 100%;
+				background: #ffffff;
+				border-radius: 16px;
+				padding: 13px 14px;
+				box-sizing: border-box;
+				border: 1px solid #ededf3;
+			}
+
+			.friendly-field label {
+				display: block;
+				font-size: 12px;
+				font-weight: 800;
+				color: #777783;
+				margin-bottom: 8px;
+			}
+
+			.friendly-field input,
+			.friendly-field select {
+				width: 100%;
+				border: none;
+				outline: none;
+				background: transparent;
+				font-size: 15px;
+				color: #333;
+				box-sizing: border-box;
+			}
+
+			.friendly-hint {
+				background: #ffffff;
+				border-radius: 16px;
+				padding: 13px 14px;
+				font-size: 12px;
+				color: #64748b;
+				line-height: 1.45;
+				border: 1px solid #ededf3;
+			}
+
+			.friendly-toggle-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				background: #ffffff;
+				border: 1px solid #ededf3;
+				border-radius: 16px;
+				padding: 14px;
+			}
+
+			.friendly-toggle-title {
+				font-size: 15px;
+				font-weight: 900;
+				color: #333;
+			}
+
+			.friendly-toggle-desc {
+				font-size: 11px;
+				color: #8e8e93;
+				line-height: 1.35;
+				margin-top: 4px;
+			}
+
+			.friendly-two-cols {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+
+			@media (max-width: 390px) {
+				.option-sheet {
+					height: 92vh !important;
+				}
+
+				.sheet-form-header {
+					padding-left: 16px;
+					padding-right: 16px;
+				}
+
+				.sheet-form-body {
+					padding-left: 16px;
+					padding-right: 16px;
+				}
+
+				.sheet-form-footer {
+					padding-left: 16px;
+					padding-right: 16px;
+				}
+
+				.friendly-two-cols {
+					grid-template-columns: 1fr;
+				}
+			}
 		</style>
 
 		<div class="page-content">
@@ -371,11 +917,22 @@
 					<img id="preview-2" class="preview-thumb" />
 				</div>
 
-				<div class="generic-header">Kustomisasi Menu (Generic Form)</div>
+				<div class="generic-hero">
+					<div class="generic-hero-icon">
+						<i class="f7-icons">slider_horizontal_3</i>
+					</div>
+					<div>
+						<div class="generic-hero-title">Variasi & Catatan Pesanan</div>
+						<div class="generic-hero-desc">
+							Tambahkan pilihan seperti level pedas, topping, ukuran, atau
+							catatan khusus untuk pembeli.
+						</div>
+					</div>
+				</div>
 
 				<a href="#" class="btn-add-option" id="btn-add-group">
 					<i class="icon f7-icons" style="font-size: 18px">plus</i>
-					<span>Tambah Opsi</span>
+					<span>Tambah Pilihan untuk Pembeli</span>
 				</a>
 
 				<div id="option-groups-container"></div>
@@ -395,17 +952,77 @@
 		const API_BASE = "http://localhost:8000/api";
 		let optionGroups = [];
 
+		const TYPE_META = {
+			radio: {
+				label: "Pilih Satu",
+				desc: "Pembeli hanya bisa memilih 1 pilihan. Cocok untuk level pedas atau ukuran.",
+				icon: "circle",
+				example: "Contoh: Level Pedas — Tidak Pedas / Sedang / Pedas",
+			},
+			checkbox: {
+				label: "Bisa Pilih Banyak",
+				desc: "Pembeli bisa memilih lebih dari 1 pilihan. Cocok untuk topping tambahan.",
+				icon: "checkmark_square",
+				example: "Contoh: Topping — Keju / Telur / Sosis",
+			},
+			select: {
+				label: "Dropdown Pilihan",
+				desc: "Pilihan ditampilkan dalam bentuk daftar turun. Cocok jika pilihannya banyak.",
+				icon: "list_bullet",
+				example: "Contoh: Pilih Varian — Original / Spesial / Jumbo",
+			},
+			switch: {
+				label: "Pilihan Ya / Tidak",
+				desc: "Pembeli cukup menyalakan atau mematikan pilihan.",
+				icon: "switch_2",
+				example: "Contoh: Pakai alat makan? Ya / Tidak",
+			},
+			number: {
+				label: "Input Angka",
+				desc: "Pembeli mengisi jumlah angka tertentu.",
+				icon: "number",
+				example: "Contoh: Jumlah cabai tambahan",
+			},
+			text: {
+				label: "Isian Singkat",
+				desc: "Pembeli mengisi jawaban pendek.",
+				icon: "text_cursor",
+				example: "Contoh: Nama untuk tulisan di kue",
+			},
+			textarea: {
+				label: "Catatan Panjang",
+				desc: "Pembeli bisa menulis catatan lebih panjang.",
+				icon: "chat_bubble_text",
+				example: "Contoh: Jangan pakai bawang, sambal dipisah",
+			},
+		};
+
+		function formatMoneySimple(num) {
+			return "Rp " + Number(num || 0).toLocaleString("id-ID");
+		}
+
 		function typeLabel(type) {
-			const map = {
-				radio: "Radio",
-				checkbox: "Checkbox",
-				select: "Select",
-				switch: "Switch",
-				number: "Number",
-				text: "Text",
-				textarea: "Textarea",
-			};
-			return map[type] || type;
+			return TYPE_META[type]?.label || type;
+		}
+
+		function typeDesc(type) {
+			return TYPE_META[type]?.desc || "";
+		}
+
+		function typeIcon(type) {
+			return TYPE_META[type]?.icon || "slider_horizontal_3";
+		}
+
+		function typeExample(type) {
+			return TYPE_META[type]?.example || "";
+		}
+
+		function slugify(text) {
+			return String(text || "")
+				.toLowerCase()
+				.trim()
+				.replace(/\s+/g, "_")
+				.replace(/[^\w_]/g, "");
 		}
 
 		function setPreviewImages(src) {
@@ -427,69 +1044,115 @@
 		function previewHtml(group, groupIndex) {
 			const items = group.items || [];
 
+			if (
+				(group.input_type === "radio" ||
+					group.input_type === "checkbox" ||
+					group.input_type === "select") &&
+				!items.length
+			) {
+				return `
+			<div class="text-preview">
+				Belum ada pilihan. Klik tombol <b>Tambah Pilihan</b> di bawah.
+			</div>
+		`;
+			}
+
 			if (group.input_type === "radio") {
 				return `
-          <div class="radio-pill-row">
-            ${items
-							.map(
-								(item) => `
-              <div class="radio-pill">
-                <div class="radio-dot"></div>
-                <div>${item.label || "-"}</div>
-              </div>
-            `,
-							)
-							.join("")}
-          </div>
-        `;
+			<div>
+				${items
+					.map(
+						(item, itemIndex) => `
+							<div class="friendly-option-card">
+								<div class="friendly-option-left">
+									<div class="friendly-dot"></div>
+									<div class="friendly-option-text">${item.label || "-"}</div>
+								</div>
+
+								<div style="display:flex; align-items:center; gap:8px;">
+									${
+										Number(item.price_adjustment || 0) > 0
+											? `<div class="friendly-option-price">+ ${formatMoneySimple(item.price_adjustment)}</div>`
+											: ""
+									}
+									<button type="button" class="mini-action btn-edit-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">
+										Edit
+									</button>
+									<button type="button" class="mini-action danger btn-delete-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">
+										Hapus
+									</button>
+								</div>
+							</div>
+						`,
+					)
+					.join("")}
+			</div>
+		`;
 			}
 
 			if (group.input_type === "checkbox") {
 				return `
-          <div class="check-list">
-            ${items
-							.map(
-								(item, itemIndex) => `
-              <div class="check-row">
-                <div class="check-left">
-                  <div class="check-box"></div>
-                  <div>${item.label || "-"} ${Number(item.price_adjustment || 0) > 0 ? `( +${item.price_adjustment} )` : ""}</div>
-                </div>
-                <div style="display:flex; gap:8px;">
-                  <button type="button" class="mini-action btn-edit-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">Edit</button>
-                  <button type="button" class="mini-action btn-delete-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">Hapus</button>
-                </div>
-              </div>
-            `,
-							)
-							.join("")}
-          </div>
-        `;
-			}
+			<div>
+				${items
+					.map(
+						(item, itemIndex) => `
+							<div class="friendly-option-card">
+								<div class="friendly-option-left">
+									<div class="friendly-check"></div>
+									<div class="friendly-option-text">${item.label || "-"}</div>
+								</div>
 
-			if (group.input_type === "textarea") {
-				return `<div class="textarea-preview">${group.placeholder || "Tulis catatan untuk tenant"}</div>`;
-			}
-
-			if (group.input_type === "text") {
-				return `<div class="text-preview">${group.placeholder || "Input text"}</div>`;
+								<div style="display:flex; align-items:center; gap:8px;">
+									${
+										Number(item.price_adjustment || 0) > 0
+											? `<div class="friendly-option-price">+ ${formatMoneySimple(item.price_adjustment)}</div>`
+											: ""
+									}
+									<button type="button" class="mini-action btn-edit-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">
+										Edit
+									</button>
+									<button type="button" class="mini-action danger btn-delete-item" data-group-index="${groupIndex}" data-item-index="${itemIndex}">
+										Hapus
+									</button>
+								</div>
+							</div>
+						`,
+					)
+					.join("")}
+			</div>
+		`;
 			}
 
 			if (group.input_type === "select") {
-				return `<div class="select-preview">${items.length ? items.map((i) => i.label).join(", ") : "Belum ada pilihan"}</div>`;
+				return `
+			<div class="select-preview">
+				${items.map((i) => i.label).join(" / ")}
+			</div>
+		`;
+			}
+
+			if (group.input_type === "textarea") {
+				return `<div class="textarea-preview">${group.placeholder || "Contoh: Jangan pakai sambal, sambal dipisah, dll."}</div>`;
+			}
+
+			if (group.input_type === "text") {
+				return `<div class="text-preview">${group.placeholder || "Contoh: Nama penerima / request singkat"}</div>`;
 			}
 
 			if (group.input_type === "number") {
-				return `<div class="number-preview">${group.min_value ?? 0} - ${group.max_value ?? 10}</div>`;
+				return `<div class="number-preview">Pembeli isi angka dari ${group.min_value ?? 0} sampai ${group.max_value ?? 10}</div>`;
 			}
 
 			if (group.input_type === "switch") {
 				return `
-          <div class="switch-preview">
-            <div>${group.label || "Switch option"}</div>
-            <div class="fake-switch"></div>
-          </div>
-        `;
+			<div class="switch-preview">
+				<div>
+					<div style="font-weight:700; color:#1a1a1a">${group.label || "Pilihan tambahan"}</div>
+					<div style="font-size:12px; color:#8e8e93">Pembeli bisa pilih Ya atau Tidak</div>
+				</div>
+				<div class="fake-switch"></div>
+			</div>
+		`;
 			}
 
 			return `<div class="text-preview">Belum ada preview</div>`;
@@ -498,32 +1161,66 @@
 		function renderOptionGroups() {
 			let html = "";
 
+			if (!optionGroups.length) {
+				html = `
+			<div class="option-empty-state">
+				<i class="f7-icons">slider_horizontal_3</i>
+				<div style="font-weight:800; color:#333; margin-bottom:4px">
+					Belum ada variasi pesanan
+				</div>
+				<div style="font-size:12px; line-height:1.4">
+					Tambahkan opsi seperti level pedas, topping, ukuran, atau catatan khusus.
+				</div>
+			</div>
+		`;
+
+				$("#option-groups-container").html(html);
+				return;
+			}
+
 			optionGroups.forEach((group, groupIndex) => {
 				html += `
-          <div class="group-card">
-            <div class="group-top">
-              <div class="group-title">${groupIndex + 1}. ${group.label || "Nama Group"}</div>
+			<div class="group-card">
+				<div class="group-top">
+					<div class="group-title-row">
+						<div class="group-icon">
+							<i class="f7-icons">${typeIcon(group.input_type)}</i>
+						</div>
+						<div>
+							<div class="group-title">${groupIndex + 1}. ${group.label || "Nama Opsi"}</div>
+							<div class="group-desc">${typeDesc(group.input_type)}</div>
+						</div>
+					</div>
 
-              <div class="group-actions">
-                <div class="type-badge">${typeLabel(group.input_type)}</div>
-                <button type="button" class="mini-action btn-edit-group" data-group-index="${groupIndex}">Edit</button>
-                <button type="button" class="mini-action btn-delete-group" data-group-index="${groupIndex}">Hapus</button>
-              </div>
-            </div>
+					<div class="group-actions">
+						<div class="type-badge">${typeLabel(group.input_type)}</div>
+						${group.is_required ? `<div class="required-badge">Wajib</div>` : ""}
+						<button type="button" class="mini-action btn-edit-group" data-group-index="${groupIndex}">
+							Edit
+						</button>
+						<button type="button" class="mini-action danger btn-delete-group" data-group-index="${groupIndex}">
+							Hapus
+						</button>
+					</div>
+				</div>
 
-            ${previewHtml(group, groupIndex)}
+				<div class="preview-label">Tampilan yang akan dilihat pembeli</div>
 
-            <div class="group-footer">
-              ${
-								group.input_type === "radio" ||
-								group.input_type === "checkbox" ||
-								group.input_type === "select"
-									? `<button type="button" class="mini-action btn-add-item" data-group-index="${groupIndex}">Tambah Pilihan</button>`
-									: ""
-							}
-            </div>
-          </div>
-        `;
+				${previewHtml(group, groupIndex)}
+
+				<div class="group-footer">
+					${
+						group.input_type === "radio" ||
+						group.input_type === "checkbox" ||
+						group.input_type === "select"
+							? `<button type="button" class="mini-action btn-add-item" data-group-index="${groupIndex}">
+								+ Tambah Pilihan
+							</button>`
+							: ""
+					}
+				</div>
+			</div>
+		`;
 			});
 
 			$("#option-groups-container").html(html);
@@ -543,105 +1240,163 @@
 						items: [],
 					};
 
-			const dialog = $f7.dialog.create({
-				title: isEdit ? "Edit Opsi" : "Tambah Opsi",
+			const typeOptions = Object.keys(TYPE_META)
+				.map(
+					(type) => `
+				<option value="${type}" ${group.input_type === type ? "selected" : ""}>
+					${TYPE_META[type].label}
+				</option>
+			`,
+				)
+				.join("");
+
+			const sheet = $f7.sheet.create({
+				backdrop: true,
+				closeByBackdropClick: true,
 				content: `
-          <div class="list no-hairlines-md" style="margin:0;">
-            <ul>
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Nama Group</div>
-                  <div class="item-input-wrap">
-                    <input type="text" id="dlg-group-label" value="${group.label || ""}">
-                  </div>
-                </div>
-              </li>
+			<div class="sheet-modal option-sheet">
+				<div class="sheet-modal-inner sheet-form-inner">
+					<div class="sheet-drag-handle"></div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Tipe Input</div>
-                  <div class="item-input-wrap">
-                    <select id="dlg-group-type">
-                      <option value="radio" ${group.input_type === "radio" ? "selected" : ""}>Radio</option>
-                      <option value="checkbox" ${group.input_type === "checkbox" ? "selected" : ""}>Checkbox</option>
-                      <option value="select" ${group.input_type === "select" ? "selected" : ""}>Select</option>
-                      <option value="switch" ${group.input_type === "switch" ? "selected" : ""}>Switch</option>
-                      <option value="number" ${group.input_type === "number" ? "selected" : ""}>Number</option>
-                      <option value="text" ${group.input_type === "text" ? "selected" : ""}>Text</option>
-                      <option value="textarea" ${group.input_type === "textarea" ? "selected" : ""}>Textarea</option>
-                    </select>
-                  </div>
-                </div>
-              </li>
+					<div class="sheet-form-header">
+						<div class="sheet-form-title">
+							${isEdit ? "Edit Variasi Pesanan" : "Tambah Variasi Pesanan"}
+						</div>
+						<div class="sheet-form-desc">
+							Buat pilihan tambahan yang akan muncul saat pembeli memesan menu ini.
+						</div>
+					</div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Placeholder (opsional)</div>
-                  <div class="item-input-wrap">
-                    <input type="text" id="dlg-group-placeholder" value="${group.placeholder || ""}">
-                  </div>
-                </div>
-              </li>
+					<div class="sheet-form-body">
+						<div class="friendly-dialog-form">
+							<div class="friendly-field">
+								<label>Nama opsi untuk pembeli</label>
+								<input 
+									type="text" 
+									id="dlg-group-label" 
+									value="${group.label || ""}" 
+									placeholder="Contoh: Level Pedas"
+								>
+							</div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title">Wajib?</div>
-                  <div class="item-input-wrap">
-                    <label class="toggle">
-                      <input type="checkbox" id="dlg-group-required" ${group.is_required ? "checked" : ""}>
-                      <span class="toggle-icon"></span>
-                    </label>
-                  </div>
-                </div>
-              </li>
+							<div class="friendly-field">
+								<label>Model pilihan</label>
+								<select id="dlg-group-type">
+									${typeOptions}
+								</select>
+							</div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Min Value</div>
-                  <div class="item-input-wrap">
-                    <input type="number" id="dlg-group-min" value="${group.min_value ?? 0}">
-                  </div>
-                </div>
-              </li>
+							<div class="friendly-hint" id="dlg-type-hint">
+								${typeExample(group.input_type)}
+							</div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Max Value</div>
-                  <div class="item-input-wrap">
-                    <input type="number" id="dlg-group-max" value="${group.max_value ?? 10}">
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        `,
-				buttons: [
-					{
-						text: "Batal",
-					},
-					{
-						text: "Simpan",
-						bold: true,
-						onClick: () => {
+							<div class="friendly-field">
+								<label>Teks bantuan untuk pembeli</label>
+								<input 
+									type="text" 
+									id="dlg-group-placeholder" 
+									value="${group.placeholder || ""}" 
+									placeholder="Contoh: Pilih level pedas kamu"
+								>
+							</div>
+
+							<div class="friendly-toggle-row">
+								<div>
+									<div class="friendly-toggle-title">Wajib dipilih?</div>
+									<div class="friendly-toggle-desc">
+										Aktifkan jika pembeli harus mengisi opsi ini sebelum checkout.
+									</div>
+								</div>
+
+								<label class="toggle">
+									<input 
+										type="checkbox" 
+										id="dlg-group-required" 
+										${group.is_required ? "checked" : ""}
+									>
+									<span class="toggle-icon"></span>
+								</label>
+							</div>
+
+							<div class="friendly-two-cols">
+								<div class="friendly-field">
+									<label>Angka minimal</label>
+									<input 
+										type="number" 
+										id="dlg-group-min" 
+										value="${group.min_value ?? 0}"
+									>
+								</div>
+
+								<div class="friendly-field">
+									<label>Angka maksimal</label>
+									<input 
+										type="number" 
+										id="dlg-group-max" 
+										value="${group.max_value ?? 10}"
+									>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="sheet-form-footer">
+						<button type="button" class="btn-sheet-cancel" id="btn-cancel-group">
+							Batal
+						</button>
+						<button type="button" class="btn-sheet-save" id="btn-save-group">
+							Simpan
+						</button>
+					</div>
+				</div>
+			</div>
+		`,
+				on: {
+					opened() {
+						const root = sheet.el;
+
+						const typeSelect = root.querySelector("#dlg-group-type");
+						const hint = root.querySelector("#dlg-type-hint");
+
+						if (typeSelect && hint) {
+							typeSelect.addEventListener("change", function () {
+								hint.textContent = typeExample(this.value);
+							});
+						}
+
+						root.querySelector("#btn-cancel-group").onclick = () => {
+							sheet.close();
+						};
+
+						root.querySelector("#btn-save-group").onclick = () => {
+							const selectedType =
+								root.querySelector("#dlg-group-type")?.value || "radio";
+
 							const payload = {
-								label: document.getElementById("dlg-group-label")?.value || "",
-								input_type:
-									document.getElementById("dlg-group-type")?.value || "radio",
+								label: root.querySelector("#dlg-group-label")?.value || "",
+								input_type: selectedType,
 								placeholder:
-									document.getElementById("dlg-group-placeholder")?.value || "",
-								is_required:
-									!!document.getElementById("dlg-group-required")?.checked,
+									root.querySelector("#dlg-group-placeholder")?.value || "",
+								is_required: !!root.querySelector("#dlg-group-required")
+									?.checked,
 								min_value: Number(
-									document.getElementById("dlg-group-min")?.value || 0,
+									root.querySelector("#dlg-group-min")?.value || 0,
 								),
 								max_value: Number(
-									document.getElementById("dlg-group-max")?.value || 10,
+									root.querySelector("#dlg-group-max")?.value || 10,
 								),
 								items: isEdit ? optionGroups[groupIndex].items || [] : [],
 							};
 
 							if (!payload.label) {
-								$f7.dialog.alert("Nama group wajib diisi.");
+								$f7.toast
+									.create({
+										text: "Nama opsi wajib diisi. Contoh: Level Pedas.",
+										closeTimeout: 2000,
+									})
+									.open();
+
+								root.querySelector("#dlg-group-label")?.focus();
 								return;
 							}
 
@@ -655,12 +1410,16 @@
 							}
 
 							renderOptionGroups();
-						},
+							sheet.close();
+						};
 					},
-				],
+					closed() {
+						sheet.destroy();
+					},
+				},
 			});
 
-			dialog.open();
+			sheet.open();
 		}
 
 		function openItemDialog(groupIndex, itemIndex = null) {
@@ -673,56 +1432,91 @@
 						price_adjustment: 0,
 					};
 
-			const dialog = $f7.dialog.create({
-				title: isEdit ? "Edit Pilihan" : "Tambah Pilihan",
+			const sheet = $f7.sheet.create({
+				backdrop: true,
+				closeByBackdropClick: true,
 				content: `
-          <div class="list no-hairlines-md" style="margin:0;">
-            <ul>
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Label</div>
-                  <div class="item-input-wrap">
-                    <input type="text" id="dlg-item-label" value="${item.label || ""}">
-                  </div>
-                </div>
-              </li>
+			<div class="sheet-modal option-sheet">
+				<div class="sheet-modal-inner sheet-form-inner">
+					<div class="sheet-drag-handle"></div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Value</div>
-                  <div class="item-input-wrap">
-                    <input type="text" id="dlg-item-value" value="${item.value || ""}">
-                  </div>
-                </div>
-              </li>
+					<div class="sheet-form-header">
+						<div class="sheet-form-title">
+							${isEdit ? "Edit Pilihan" : "Tambah Pilihan"}
+						</div>
+						<div class="sheet-form-desc">
+							Tambahkan pilihan yang akan dipilih oleh pembeli.
+						</div>
+					</div>
 
-              <li class="item-content item-input">
-                <div class="item-inner">
-                  <div class="item-title item-floating-label">Harga Tambahan</div>
-                  <div class="item-input-wrap">
-                    <input type="number" id="dlg-item-price" value="${item.price_adjustment || 0}">
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        `,
-				buttons: [
-					{ text: "Batal" },
-					{
-						text: "Simpan",
-						bold: true,
-						onClick: () => {
+					<div class="sheet-form-body">
+						<div class="friendly-dialog-form">
+							<div class="friendly-field">
+								<label>Nama pilihan</label>
+								<input 
+									type="text" 
+									id="dlg-item-label" 
+									value="${item.label || ""}" 
+									placeholder="Contoh: Pedas, Keju, Jumbo"
+								>
+							</div>
+
+							<div class="friendly-field">
+								<label>Harga tambahan</label>
+								<input 
+									type="number" 
+									id="dlg-item-price" 
+									value="${item.price_adjustment || 0}" 
+									placeholder="Isi 0 jika gratis"
+								>
+							</div>
+
+							<div class="friendly-hint">
+								Contoh: jika topping Keju tambah Rp 3.000, isi harga tambahan dengan 3000.
+								Jika gratis, isi 0.
+							</div>
+						</div>
+					</div>
+
+					<div class="sheet-form-footer">
+						<button type="button" class="btn-sheet-cancel" id="btn-cancel-item">
+							Batal
+						</button>
+						<button type="button" class="btn-sheet-save" id="btn-save-item">
+							Simpan
+						</button>
+					</div>
+				</div>
+			</div>
+		`,
+				on: {
+					opened() {
+						const root = sheet.el;
+
+						root.querySelector("#btn-cancel-item").onclick = () => {
+							sheet.close();
+						};
+
+						root.querySelector("#btn-save-item").onclick = () => {
+							const label = root.querySelector("#dlg-item-label")?.value || "";
+
 							const payload = {
-								label: document.getElementById("dlg-item-label")?.value || "",
-								value: document.getElementById("dlg-item-value")?.value || "",
+								label,
+								value: slugify(label),
 								price_adjustment: Number(
-									document.getElementById("dlg-item-price")?.value || 0,
+									root.querySelector("#dlg-item-price")?.value || 0,
 								),
 							};
 
 							if (!payload.label) {
-								$f7.dialog.alert("Label item wajib diisi.");
+								$f7.toast
+									.create({
+										text: "Nama pilihan wajib diisi. Contoh: Pedas.",
+										closeTimeout: 2000,
+									})
+									.open();
+
+								root.querySelector("#dlg-item-label")?.focus();
 								return;
 							}
 
@@ -736,12 +1530,16 @@
 							}
 
 							renderOptionGroups();
-						},
+							sheet.close();
+						};
 					},
-				],
+					closed() {
+						sheet.destroy();
+					},
+				},
 			});
 
-			dialog.open();
+			sheet.open();
 		}
 
 		$on("pageInit", () => {
@@ -752,7 +1550,8 @@
 				setPreviewImages(localUrl);
 			});
 
-			$("#btn-add-group").on("click", function () {
+			$("#btn-add-group").on("click", function (e) {
+				e.preventDefault();
 				openGroupDialog();
 			});
 
