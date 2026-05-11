@@ -140,7 +140,11 @@
 
 			if (parsed.type === "tenant" || parsed.type === "internal") {
 				setStatus("Mengarahkan ke menu...");
-				window.location.assign(toAbsoluteUrl(parsed.url));
+				$router.navigate(parsed.url, {
+					reloadCurrent: true,
+					ignoreCache: true,
+					clearPreviousHistory: true,
+				});
 				return;
 			}
 
