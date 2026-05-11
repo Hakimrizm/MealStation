@@ -20,6 +20,7 @@ class OrderController extends Controller
             'items.*.qty' => 'required|integer|min:1',
             'items.*.notes' => 'nullable|string',
             'notes' => 'nullable|string',
+            'order_type' => 'required|in:dine_in,take_away',
         ]);
 
         $user = $request->user();
@@ -48,6 +49,7 @@ class OrderController extends Controller
                 'user_id' => $user->id,
                 'tenant_id' => $tenantId,
                 'status' => 'new',
+                'order_type' => $request->order_type,
                 'grand_total' => 0,
                 'notes' => $request->notes,
             ]);
@@ -71,7 +73,7 @@ class OrderController extends Controller
                     'unit_price' => $menu->price,
                     'qty' => $qty,
                     'notes' => $it['notes'] ?? null,
-                    'options' => $options, // ✅ sekarang aman karena cast array
+                    'options' => $options,
                     'option_total' => $optionTotal,
                     'subtotal' => $sub,
                 ]);
