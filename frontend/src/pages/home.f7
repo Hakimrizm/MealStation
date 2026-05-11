@@ -148,12 +148,8 @@
 						</div>
 					</div>
 
-					<div class="scan-card">
-						<div class="scan-card-label">Hasil scan</div>
-						<div id="scan-result" class="scan-result">Belum ada hasil.</div>
-						<div class="scan-actions">
-							<a class="button button-fill" id="btn-restart-scan">Mulai Ulang</a>
-						</div>
+					<div class="scan-actions">
+						<a class="button button-fill" id="btn-restart-scan">Mulai Ulang</a>
 					</div>
 
 					<canvas id="scan-canvas" style="display: none"></canvas>
@@ -327,7 +323,10 @@
 		}
 
 		function setScannerResult(text) {
-			$("#scan-result").text(text || "Belum ada hasil.");
+			const resultEl = $("#scan-result");
+			if (resultEl && resultEl.length) {
+				resultEl.text(text || "Belum ada hasil.");
+			}
 		}
 
 		function showScannerOverlay() {
@@ -1116,27 +1115,10 @@
 		font-size: 12px;
 	}
 
-	.qr-scanner-overlay .scan-card {
+	.qr-scanner-overlay .scan-actions {
 		margin-top: 14px;
 		padding: 14px;
 		border-radius: 18px;
 		background: rgba(255, 255, 255, 0.94);
-	}
-
-	.qr-scanner-overlay .scan-card-label {
-		font-size: 12px;
-		font-weight: 700;
-		color: #64748b;
-		margin-bottom: 6px;
-	}
-
-	.qr-scanner-overlay .scan-result {
-		font-size: 13px;
-		color: #111827;
-		word-break: break-all;
-	}
-
-	.qr-scanner-overlay .scan-actions {
-		margin-top: 12px;
 	}
 </style>
