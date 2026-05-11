@@ -48,6 +48,9 @@
 				>
 					<i class="icon f7-icons" style="font-size: 14px">building_2_fill</i>
 					<span id="tenant-filter-text">Menu Toko</span>
+					<a href="#" class="link" id="btn-clear-tenant-filter" style="margin-left: 6px; color: #3730a3">
+						<i class="icon f7-icons" style="font-size: 12px">xmark_circle_fill</i>
+					</a>
 				</div>
 			</div>
 
@@ -295,6 +298,16 @@
 			const tenantName = tenantMenu?.tenant?.name || `Tenant #${tenantQueryId}`;
 			const text = document.getElementById("tenant-filter-text");
 			if (text) text.textContent = `Menu ${tenantName}`;
+
+			// Setup clear filter button
+			const clearBtn = document.getElementById("btn-clear-tenant-filter");
+			if (clearBtn) {
+				clearBtn.addEventListener("click", (e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					$f7.views.main.router.navigate("/");
+				});
+			}
 		}
 
 		function initCategoryButtons() {
