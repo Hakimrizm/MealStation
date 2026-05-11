@@ -10,6 +10,7 @@ import keranjangPage from "../pages/keranjang.f7";
 import TenantMenus from "../pages/menuTenant/tenant-menus.f7";
 import TenantMenuCreate from "../pages/menuTenant/tenant-menu-create.f7";
 import TenantMenuEdit from "../pages/menuTenant/tenant-menu-edit.f7";
+import ScanQrPage from "../pages/scan-qr.f7";
 import PaymentPage from "../pages/payment.f7";
 import RiwayatDetailTransaksiPage from "../pages/riwayat-detail-transaksi.f7";
 import TenantRiwayat from "../pages/tenant-riwayat.f7";
@@ -111,6 +112,12 @@ var routes = [
 		path: "/keranjang",
 		component: keranjangPage,
 		beforeEnter: authWithRole,
+	},
+
+	{
+		path: "/scan-qr",
+		component: ScanQrPage,
+		beforeEnter: authOnly,
 	},
 
 	{

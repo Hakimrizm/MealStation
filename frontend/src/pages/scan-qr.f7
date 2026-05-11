@@ -1,0 +1,394 @@
+<template>
+	<div class="page" data-name="scan-qr" style="background: #0f172a">
+		<div class="navbar navbar-transparent">
+			<div class="navbar-bg" style="background: rgba(15, 23, 42, 0.92)"></div>
+			<div class="navbar-inner">
+				<div class="left">
+					<a class="link back text-color-white">
+						<i class="icon f7-icons">arrow_left</i>
+					</a>
+				</div>
+				<div class="title text-color-white">Scan QR Menu</div>
+				<div class="right"></div>
+			</div>
+		</div>
+
+		<div class="page-content scan-page-content">
+			<div class="scan-hero">
+				<div class="scan-title">Arahkan kamera ke QR toko</div>
+				<div class="scan-subtitle">
+					Setelah terbaca, kamu akan langsung diarahkan ke menu tenant yang sesuai.
+				</div>
+			</div>
+
+			<div class="scanner-shell">
+				<video
+					id="qr-video"
+					autoplay
+					muted
+					playsinline
+					webkit-playsinline="true"
+				></video>
+				<div class="scanner-frame">
+					<div class="scanner-corner tl"></div>
+					<div class="scanner-corner tr"></div>
+					<div class="scanner-corner bl"></div>
+					<div class="scanner-corner br"></div>
+				</div>
+				<div class="scan-hint">
+					<i class="icon f7-icons">camera_fill</i>
+					<span id="scan-status">Mencari QR...</span>
+				</div>
+			</div>
+
+			<div class="scan-card">
+				<div class="scan-card-label">Hasil scan</div>
+				<div id="scan-result" class="scan-result">Belum ada hasil.</div>
+				<div class="scan-actions">
+					<a class="button button-fill" id="btn-restart-scan">Mulai Ulang</a>
+				</div>
+			</div>
+
+			<canvas id="scan-canvas" style="display: none"></canvas>
+		</div>
+	</div>
+</template>
+
+<script>
+	import jsQR from "jsqr";
+
+	export default (props, { $, $on, $f7, $router }) => {
+		let stream = null;
+		let animationFrameId = null;
+		let started = false;
+		let lastValue = "";
+		let stopping = false;
+
+		function setStatus(text) {
+			$("#scan-status").text(text);
+		}
+
+		function setResult(text) {
+			$("#scan-result").text(text || "Belum ada hasil.");
+		}
+
+		function stopScanner() {
+			stopping = true;
+
+			if (animationFrameId) {
+				cancelAnimationFrame(animationFrameId);
+				animationFrameId = null;
+			}
+
+			const video = document.getElementById("qr-video");
+			if (video) {
+				video.pause?.();
+				video.srcObject = null;
+			}
+
+			if (stream) {
+				stream.getTracks().forEach((track) => track.stop());
+				stream = null;
+			}
+		}
+
+		function parseScanValue(value) {
+			const raw = String(value || "").trim();
+			if (!raw) return null;
+
+			try {
+				const url = new URL(raw, window.location.origin);
+				const tenantId = url.searchParams.get("tenant");
+				if (tenantId) {
+					return {
+						type: "tenant",
+						tenantId,
+						url: `/?tenant=${encodeURIComponent(tenantId)}`,
+						raw,
+					};
+				}
+
+				if (url.origin === window.location.origin) {
+					return {
+						type: "internal",
+						url: `${url.pathname}${url.search}${url.hash}`,
+						raw,
+					};
+				}
+
+				return {
+					type: "external",
+					url: url.toString(),
+					raw,
+				};
+			} catch {
+				return {
+					type: "text",
+					raw,
+				};
+			}
+		}
+
+		function toAbsoluteUrl(path) {
+			return new URL(path, window.location.origin).toString();
+		}
+
+		async function openResult(parsed) {
+			if (!parsed) return;
+
+			stopScanner();
+
+			if (parsed.type === "tenant" || parsed.type === "internal") {
+				setStatus("Mengarahkan ke menu...");
+				window.location.assign(toAbsoluteUrl(parsed.url));
+				return;
+			}
+
+			if (parsed.type === "external") {
+				setStatus("Membuka tautan...");
+				window.location.assign(parsed.url);
+				return;
+			}
+
+			setStatus("QR terbaca, tetapi format tidak dikenali.");
+			setResult(parsed.raw);
+		}
+
+		function scanFrame() {
+			if (stopping) return;
+
+			const video = document.getElementById("qr-video");
+			const canvas = document.getElementById("scan-canvas");
+			if (!video || !canvas) {
+				animationFrameId = requestAnimationFrame(scanFrame);
+				return;
+			}
+
+			const context = canvas.getContext("2d", { willReadFrequently: true });
+			if (!context) {
+				animationFrameId = requestAnimationFrame(scanFrame);
+				return;
+			}
+
+			if (video.readyState === video.HAVE_ENOUGH_DATA) {
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+				const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+				const code = jsQR(imageData.data, imageData.width, imageData.height, {
+					inversionAttempts: "dontInvert",
+				});
+
+				if (code?.data && code.data !== lastValue) {
+					lastValue = code.data;
+					const parsed = parseScanValue(code.data);
+					setResult(code.data);
+					openResult(parsed);
+					return;
+				}
+			}
+
+			animationFrameId = requestAnimationFrame(scanFrame);
+		}
+
+		async function startScanner() {
+			if (started) return;
+			started = true;
+			stopping = false;
+			lastValue = "";
+			setStatus("Menyalakan kamera...");
+
+			try {
+				if (!navigator.mediaDevices?.getUserMedia) {
+					throw new Error("Browser tidak mendukung kamera.");
+				}
+
+				stream = await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: { ideal: "environment" } },
+					audio: false,
+				});
+
+				const video = document.getElementById("qr-video");
+				if (!video) throw new Error("Elemen kamera tidak ditemukan.");
+
+				video.srcObject = stream;
+				await video.play();
+
+				setStatus("Arahkan ke QR tenant.");
+				animationFrameId = requestAnimationFrame(scanFrame);
+			} catch (err) {
+				started = false;
+				setStatus("Gagal membuka kamera.");
+				setResult(String(err?.message || err || "Tidak bisa membuka kamera."));
+				$f7.dialog.alert(String(err?.message || err || "Tidak bisa membuka kamera."), "Kamera tidak tersedia");
+			}
+		}
+
+		$on("pageInit", () => {
+			setResult("Belum ada hasil.");
+			setStatus("Menyalakan kamera...");
+			startScanner();
+
+			$("#btn-restart-scan").on("click", function () {
+				stopScanner();
+				started = false;
+				setResult("Belum ada hasil.");
+				startScanner();
+			});
+		});
+
+		$on("pageBeforeOut", () => {
+			stopScanner();
+			started = false;
+		});
+
+		$on("pageBeforeRemove", () => {
+			stopScanner();
+			started = false;
+		});
+
+		return $render;
+	};
+</script>
+
+<style>
+	.scan-page-content {
+		background: radial-gradient(circle at top, rgba(59, 130, 246, 0.35), transparent 34%),
+			linear-gradient(180deg, #0f172a 0%, #111827 48%, #f3f4f6 48%, #f3f4f6 100%);
+		padding: 16px;
+	}
+
+	.scan-hero {
+		color: #fff;
+		padding: 14px 4px 18px;
+	}
+
+	.scan-title {
+		font-size: 22px;
+		font-weight: 800;
+	}
+
+	.scan-subtitle {
+		margin-top: 6px;
+		font-size: 13px;
+		line-height: 1.45;
+		opacity: 0.82;
+	}
+
+	.scanner-shell {
+		position: relative;
+		border-radius: 28px;
+		overflow: hidden;
+		background: #020617;
+		box-shadow: 0 22px 40px rgba(15, 23, 42, 0.32);
+		min-height: 420px;
+	}
+
+	#qr-video {
+		width: 100%;
+		height: 420px;
+		object-fit: cover;
+		display: block;
+		background: #000;
+	}
+
+	.scanner-frame {
+		position: absolute;
+		inset: 14%;
+		border-radius: 22px;
+		border: 2px solid rgba(255, 255, 255, 0.12);
+		box-shadow: inset 0 0 0 9999px rgba(15, 23, 42, 0.22);
+		pointer-events: none;
+	}
+
+	.scanner-corner {
+		position: absolute;
+		width: 28px;
+		height: 28px;
+		border-color: #60a5fa;
+	}
+
+	.scanner-corner.tl {
+		top: -1px;
+		left: -1px;
+		border-top: 4px solid;
+		border-left: 4px solid;
+		border-top-left-radius: 18px;
+	}
+
+	.scanner-corner.tr {
+		top: -1px;
+		right: -1px;
+		border-top: 4px solid;
+		border-right: 4px solid;
+		border-top-right-radius: 18px;
+	}
+
+	.scanner-corner.bl {
+		bottom: -1px;
+		left: -1px;
+		border-bottom: 4px solid;
+		border-left: 4px solid;
+		border-bottom-left-radius: 18px;
+	}
+
+	.scanner-corner.br {
+		bottom: -1px;
+		right: -1px;
+		border-bottom: 4px solid;
+		border-right: 4px solid;
+		border-bottom-right-radius: 18px;
+	}
+
+	.scan-hint {
+		position: absolute;
+		left: 50%;
+		bottom: 14px;
+		transform: translateX(-50%);
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 9px 14px;
+		border-radius: 999px;
+		background: rgba(15, 23, 42, 0.76);
+		color: #fff;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.scan-card {
+		margin-top: 18px;
+		background: #fff;
+		border-radius: 22px;
+		padding: 16px;
+		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+	}
+
+	.scan-card-label {
+		font-size: 12px;
+		color: #6b7280;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.scan-result {
+		margin-top: 10px;
+		font-size: 14px;
+		line-height: 1.55;
+		color: #111827;
+		word-break: break-word;
+		min-height: 44px;
+	}
+
+	.scan-actions {
+		margin-top: 14px;
+	}
+
+	.scan-actions .button {
+		border-radius: 14px;
+		font-weight: 700;
+		text-transform: none;
+	}
+</style>

@@ -15,8 +15,8 @@
 					<a href="/keranjang" class="link icon-only cart-icon"
 						><i class="fas fa-shopping-cart"></i
 					></a>
-					<a href="/profile" class="link icon-only"
-						><i class="fas fa-user-circle"></i
+					<a href="/scan-qr" class="link icon-only"
+						><i class="fas fa-qrcode"></i
 					></a>
 				</div>
 			</div>
