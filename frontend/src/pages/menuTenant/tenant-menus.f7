@@ -154,7 +154,9 @@ async function fetchCurrentUser() {
         throw new Error(result?.message || "Gagal mengambil data user");
     }
 
-    return result;
+    // API returns { user: { ... } } — return the inner user object so
+    // callers can use tenantUser.id directly.
+    return result.user || result;
 }
         // FUNGSI BARU: TOGGLE STATUS
         async function toggleStatus(menuId) {

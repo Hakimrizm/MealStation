@@ -31,9 +31,22 @@
 				<div class="ptr-arrow"></div>
 			</div>
 
+			<!-- SEARCH BAR -->
+			<div
+				class="searchbar searchbar-inline padding-horizontal padding-vertical-half"
+			>
+				<div class="searchbar-inner">
+					<div class="searchbar-input-wrap">
+						<i class="icon f7-icons">search</i>
+						<input type="search" placeholder="Cari menu..." />
+						<i class="icon searchbar-clear f7-icons">xmark_circle_fill</i>
+					</div>
+				</div>
+			</div>
+
 			<div
 				id="tenant-filter-banner"
-				style="display: none; padding: 8px 15px 0 15px"
+				style="display: none; padding: 0 15px 8px 15px"
 			>
 				<div
 					style="
@@ -53,19 +66,6 @@
 					<a href="#" class="link" id="btn-clear-tenant-filter" style="margin-left: 6px; color: #3730a3">
 						<i class="icon f7-icons" style="font-size: 12px">xmark_circle_fill</i>
 					</a>
-				</div>
-			</div>
-
-			<!-- SEARCH BAR -->
-			<div
-				class="searchbar searchbar-inline padding-horizontal padding-vertical-half"
-			>
-				<div class="searchbar-inner">
-					<div class="searchbar-input-wrap">
-						<i class="icon f7-icons">search</i>
-						<input type="search" placeholder="Cari menu..." />
-						<i class="icon searchbar-clear f7-icons">xmark_circle_fill</i>
-					</div>
 				</div>
 			</div>
 
