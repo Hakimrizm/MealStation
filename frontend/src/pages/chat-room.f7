@@ -34,49 +34,61 @@
       ` : ''}
 
       <div class="messages">
-
-        ${Array.isArray(messages) ? messages.map(msg => $h`
-          <div class="message message-${msg.sender_id == userId ? 'sent' : 'received'}">
-            <div class="message-content">
-              <div class="message-bubble">
-
-                ${msg.product ? $h`
-                  <div class="bubble-product">
-                    <img src="${msg.product.image}" />
-                    <div class="b-info">
-                      <div class="b-name">${msg.product.name}</div>
-                      <div class="b-price">Rp ${msg.product.price}</div>
-                    </div>
-                  </div>
-                ` : ''}
-
-                <div class="message-text">
-                  ${msg.message}
-                </div>
-
-              </div>
+  ${Array.isArray(messages) ? messages.map(msg => $h`
+    <div class="message ${Number(msg.sender_id) === Number(userId) ? 'message-sent' : 'message-received'}">
+      
+      <div class="message-bubble">
+        ${msg.product ? $h`
+          <div class="bubble-product">
+            <img src="${msg.product.image}" />
+            <div class="b-info">
+              <div class="b-name">${msg.product.name}</div>
+              <div class="b-price">Rp ${msg.product.price}</div>
             </div>
           </div>
-        `) : ''}
+        ` : ''}
 
+        <div class="message-text">
+          ${msg.message}
+        </div>
+
+        <div class="message-time">
+  ${msg.created_at
+    ? new Date(msg.created_at).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    : ''}
+</div>
       </div>
+      
+    </div>
+  `) : ''}
+</div>
+
     </div>
 
     <!-- INPUT -->
-    <div class="toolbar messagebar">
-      <div class="toolbar-inner">
+    <!-- INPUT -->
+<div class="chat-input-container">
+  <div class="chat-input-box">
 
-        <textarea id="chatInput" placeholder="Ketik pesan..."></textarea>
+    <textarea
+      id="chatInput"
+      placeholder="Ketik pesan..."
+      class="chat-textarea"
+    ></textarea>
 
-        <a class="link icon-only">😊</a>
-        <a class="link icon-only">🖼️</a>
+    <button
+      type="button"
+      class="chat-send-btn"
+      @click=${sendMessage}
+    >
+      <i class="f7-icons">paperplane_fill</i>
+    </button>
 
-        <a class="link send-btn-blue" @click=${sendMessage}>
-          Kirim
-        </a>
-
-      </div>
-    </div>
+  </div>
+</div>
 
   </div>
 </template>
@@ -84,37 +96,93 @@
 <script>
 export default (props, { $f7, $on, $update }) => {
 
-  const BASE_URL = "http://10.103.98.238:8000";
+  const BASE_URL = "http://127.0.0.1:8000";
 
   let userId = null;
   let receiverId = null;
   let messages = [];
   let product = null;
-  let toko = { nama: "Loading...", status: "online" };
+  let toko = { nama: "Memuat...", status: "" };
+
+// Fungsi ini dipanggil saat data chat sudah berhasil di-load/diterima
+function updateTokoInfo(chatData) {
+    if (chatData) {
+        toko.nama = chatData.name;
+        toko.status = chatData.status;
+        
+        // Update tampilan nama di UI
+        const titleElement = document.querySelector('.item-title');
+        if (titleElement) {
+            titleElement.textContent = chatData.name;
+        }
+    }
+}
   let interval = null;
 
   // =========================
   // USER LOGIN
   // =========================
   async function getUser() {
-    const res = await fetch(`${BASE_URL}/api/user`, {
-      headers: { Authorization: `Bearer ${localStorage.token}` },
-    });
+  const res = await fetch(`${BASE_URL}/api/user`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${localStorage.token}`,
+    },
+  });
 
-    const data = await res.json();
-    userId = data.id;
+  const data = await res.json();
+
+  console.log("USER API =", data);
+
+  userId = Number(data.user.id);
+
+  console.log("USER ID SET =", userId);
+
+  $update();
+}
+
+  // =========================
+  // AMBIL INFO USER/TOKO
+  // =========================
+  async function getChatInfo() {
+  // 1. Ambil data dari 'chat-list' yang sudah kita tahu isinya ada di console
+  // Karena variabel 'chats' kemungkinan sudah tersedia global atau di localStorage
+  // Kita coba cari di localStorage terlebih dahulu
+  const storedChats = JSON.parse(localStorage.getItem('chats') || '[]');
+  
+  // 2. Cari user berdasarkan ID yang diklik (receiverId)
+  const user = storedChats.find(c => Number(c.user_id) === Number(receiverId));
+
+  if (user) {
+    // 3. Update nama toko menggunakan data yang ditemukan
+    toko.nama = user.name;
+    toko.status = "Aktif"; 
     $update();
+    console.log("Data berhasil diambil dari cache:", user.name);
+  } else {
+    // 4. Jika tidak ada di localStorage, berarti mungkin belum tersimpan
+    console.error("User dengan ID " + receiverId + " tidak ditemukan di list.");
+    toko.nama = "User Tidak Ditemukan";
   }
+}
 
   // =========================
   // LOAD CHAT
   // =========================
   async function loadChat() {
-    if (!receiverId) return;
-
-    try {
-      const res = await fetch(`${BASE_URL}/api/chat/${receiverId}`, {
-        headers: { Authorization: `Bearer ${localStorage.token}` },
+  if (!receiverId) return;
+  
+  // Tambahkan log ini untuk pengecekan
+  console.log("Current User ID:", userId); 
+  console.log("USER LOGIN =", userId);
+console.log("MESSAGES =", messages);
+  
+  try {
+    const res = await fetch(`${BASE_URL}/api/chat/${receiverId}`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.token}`,
+        },
       });
 
       const data = await res.json();
@@ -124,6 +192,7 @@ export default (props, { $f7, $on, $update }) => {
             id: item.id,
             sender_id: item.sender_id,
             message: item.message,
+            created_at: item.created_at ?? '',
             product: item.product ?? null
           }))
         : [];
@@ -139,47 +208,47 @@ export default (props, { $f7, $on, $update }) => {
   // =========================
   // SEND MESSAGE
   // =========================
-  async function sendMessage() {
+  async function sendMessage(event) {
+    event?.preventDefault();
+
     const input = document.getElementById("chatInput");
     const text = input.value.trim();
 
-    if (!text || !receiverId) return;
+    if (!text) return;
+    if (!localStorage.token) {
+      console.error("No auth token available.");
+      return;
+    }
 
     try {
+
       const res = await fetch(`${BASE_URL}/api/chat/send`, {
         method: "POST",
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.token}`
         },
         body: JSON.stringify({
           receiver_id: receiverId,
-          message: text,
-          product_id: product ? product.id : null
-        }),
+          message: text
+        })
       });
 
-      if (res.ok) {
-        const data = await res.json();
+    console.log("SEND STATUS =", res.status);
 
-        messages.push({
-          id: data.id,
-          sender_id: data.sender_id,
-          message: data.message,
-          product: data.product ?? null
-        });
+    const data = await res.json();
 
-        input.value = "";
-        product = null;
+    console.log("SEND RESPONSE =", data);
 
-        $update();
-        scrollBottom();
-      }
+    input.value = "";
 
-    } catch (err) {
-      $f7.dialog.alert("Gagal kirim pesan!");
-    }
+    await loadChat();
+
+  } catch (err) {
+    console.error(err);
   }
+}
 
   // =========================
   // SCROLL BOTTOM
@@ -215,15 +284,27 @@ export default (props, { $f7, $on, $update }) => {
   // =========================
   // PAGE INIT
   // =========================
-  $on("pageInit", async (page) => {
+$on("pageInit", async () => {
 
-    receiverId = page.route.params.id;
+  const currentRoute = $f7.views.main.router.currentRoute;
+  const params = currentRoute?.params || {};
 
-    await getUser();
-    await loadChat();
+  console.log("F7 ROUTE =", currentRoute);
+  console.log("PARAMS =", params);
 
-    interval = setInterval(loadChat, 4000);
-  });
+  receiverId = params.id;
+
+  // TEST: Paksa isi nama
+  toko.nama = "ibi lpkia"; 
+  toko.status = "Aktif";
+  $update();
+
+  console.log("receiverId =", receiverId);
+
+  await getUser();
+  await getChatInfo();
+  await loadChat();
+});
 
   $on("pageBeforeRemove", () => {
     if (interval) clearInterval(interval);
@@ -234,53 +315,211 @@ export default (props, { $f7, $on, $update }) => {
 </script>
 
 <style>
-.page { background: #f0f4f7; }
+.page{
+  background:#eef2f5;
+}
+/* Pastikan konten chat turun agar tidak tertutup navbar */
+.page-content {
+  padding-top: 60px !important; /* Nilai 60px bisa disesuaikan dengan tinggi navbar kamu */
+  padding-bottom: 90px;
+  box-sizing: border-box;
+}
+.messages-content {
+  padding-top: 60px !important; /* Penting untuk navbar */
+  padding-bottom: 90px;         /* Penting untuk area input chat */
+  height: 100%;
+  overflow-y: auto;
+}
+/* ==========================
+   NAVBAR
+========================== */
 
-.navbar { background: #0061a8; color: white; }
-.status { font-size: 10px; opacity: 0.8; }
+.navbar{
+  background:#0061a8;
+  color:white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500; /* Pastikan navbar di atas konten */
+}
 
-.messages-content { padding-bottom: 80px; }
+.status{
+  font-size:11px;
+  opacity:.8;
+}
 
-.message { margin-bottom: 10px; display: flex; }
+/* ==========================
+   CHAT AREA
+========================== */
 
-.message-sent { justify-content: flex-end; }
+/* 1. Reset container chat agar tidak ada padding horizontal tambahan */
+.messages-content {
+  padding: 15px 0; /* Hapus padding horizontal */
+  padding-bottom: 90px;
+}
 
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Hapus padding di sini jika sudah di handle oleh container utama */
+}
+
+/* 2. Sesuaikan bubble agar memenuhi ruang dengan margin yang tipis */
 .message-bubble {
-  max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 15px;
+  max-width: 100%; /* Sedikit diperlebar agar lebih modern */
+  padding: 12px 15px;
+  border-radius: 18px;
+  word-break: break-word;
+  line-height: 1.4;
   font-size: 14px;
 }
-
+/* PESAN KITA (Sender) - Warna Biru ke Warna Pilihanmu */
 .message-sent .message-bubble {
-  background: #0061a8;
+  background: #007bff; /* Ganti kode warna ini (contoh: #ff5733 untuk oranye) */
   color: white;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
+/* PESAN LAWAN (Receiver) - Warna Putih ke Warna Pilihanmu */
 .message-received .message-bubble {
-  background: white;
+  background: #dfdfdf; /* Ganti kode warna ini (contoh: #e0e0e0 untuk abu-abu muda) */
   color: #333;
+  border-bottom-left-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.bubble-product {
-  display: flex;
-  gap: 8px;
-  background: rgba(0,0,0,0.05);
-  padding: 8px;
-  border-radius: 10px;
-  margin-bottom: 6px;
+/* 3. Khusus untuk elemen yang mentok di pinggir */
+.message-sent {
+  justify-content: flex-end;
+  padding-right: 5px; /* Sedikit padding agar tidak menempel terlalu keras ke sisi kanan */
 }
 
-.bubble-product img {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
+.message-received {
+  justify-content: flex-start;
+  padding-left: 5px; /* Sedikit padding agar tidak menempel terlalu keras ke sisi kiri */
 }
 
-.send-btn-blue {
-  background: #0061a8 !important;
-  color: white !important;
-  padding: 8px 15px;
-  border-radius: 20px;
+/* ==========================
+   TEXT
+========================== */
+
+.message-text{
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+/* ==========================
+   PRODUCT CARD
+========================== */
+
+.bubble-product{
+  display:flex;
+  gap:10px;
+  margin-bottom:8px;
+  padding:8px;
+  border-radius:12px;
+  background:rgba(0,0,0,.06);
+}
+
+.bubble-product img{
+  width:50px;
+  height:50px;
+  border-radius:10px;
+  object-fit:cover;
+}
+
+.b-name{
+  font-weight:600;
+}
+
+.b-price{
+  font-size:12px;
+  opacity:.8;
+}
+
+/* ==========================
+   INPUT CHAT
+========================== */
+
+.chat-input-container{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:10px;
+  background:#eef2f5;
+  z-index:999;
+}
+
+.chat-input-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  background:#fff;
+  border-radius:18px;
+
+  padding:8px 10px;
+
+  box-shadow:
+    0 2px 10px rgba(0,0,0,.08);
+}
+
+.chat-textarea{
+  flex:1;
+  border:none !important;
+  resize:none;
+  background:transparent;
+
+  min-height:24px;
+  max-height:100px;
+
+  font-size:14px;
+  padding:8px;
+}
+
+.chat-textarea:focus{
+  outline:none;
+}
+
+.chat-send-btn{
+  width:42px;
+  height:42px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#0d6efd;
+  color:white;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  flex-shrink:0;
+}
+
+.chat-send-btn i{
+  font-size:18px;
+}
+
+.message-time{
+  font-size:10px;
+  margin-top:4px;
+  opacity:.7;
+  text-align:right;
+}
+
+.message-sent .message-time{
+  color:rgba(255,255,255,.8);
+}
+
+.message-received .message-time{
+  color:#888;
 }
 </style>

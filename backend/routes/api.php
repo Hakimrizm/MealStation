@@ -20,11 +20,9 @@ Route::get('/menus', [MenuController::class, 'index']);
 Route::get('/menus/{menu}', [MenuController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::get('/chat/{receiverId}', [ChatController::class, 'chat']);
     Route::post('/chat/send', [ChatController::class, 'send']);
     Route::get('/chat-list', [ChatController::class, 'chatList']);
-
 });
 /*
 |--------------------------------------------------------------------------

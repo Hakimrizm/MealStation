@@ -21,8 +21,8 @@
         <ul>
 
           ${Array.isArray(chats) && chats.length > 0 ? chats.map(chat => $h`
-            <li>
-              <a href="/chat/${chat.user_id}" class="item-link item-content">
+            <li class="chat-item ${chat.unread > 0 ? 'unread' : ''}">
+              <a href="/chat/${chat.user_id}" class="item-link item-content chat-link">
 
                 <div class="item-media">
                   <img src="${chat.photo || 'https://placehold.co/48'}"
@@ -33,18 +33,18 @@
                 <div class="item-inner">
 
                   <div class="item-title-row">
-                    <div class="item-title">${chat.name}</div>
+                    <div class="item-title ${chat.unread > 0 ? 'title-unread' : ''}">${chat.name}</div>
                     <div class="item-after">${chat.time || ''}</div>
                   </div>
 
-                  <div class="item-subtitle">
+                  <div class="item-subtitle message-preview ${chat.unread > 0 ? 'subtitle-unread' : ''}">
                     ${chat.last_message || ''}
                   </div>
 
                 </div>
 
                 ${chat.unread > 0 ? $h`
-                  <span class="badge color-green">${chat.unread}</span>
+                  <span class="chat-badge">${chat.unread}</span>
                 ` : ''}
 
               </a>
@@ -86,15 +86,39 @@ export default (props, { $f7, $on, $update }) => {
 
   const loadChatList = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/chat-list", {
+
+      console.log("TOKEN =", localStorage.token);
+
+      const res = await fetch("http://127.0.0.1:8000/api/chat-list", {
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.token}`,
-        },
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.token}`
+        }
       });
 
-      const data = await res.json();
+      console.log("STATUS =", res.status);
+
+      // IMPORTANT: debug raw response dulu
+      const raw = await res.clone().text();
+      console.log("RAW RESPONSE =", raw);
+
+      // kalau bukan JSON, jangan crash
+      let data = [];
+      try {
+        data = await res.json();
+
+        localStorage.setItem('chats', JSON.stringify(data));
+        
+      } catch (e) {
+        console.error("Response bukan JSON!");
+        data = [];
+      }
 
       chats = Array.isArray(data) ? data : [];
+      console.log("CHAT LIST =", chats);
+
       $update();
 
     } catch (err) {
@@ -112,9 +136,91 @@ export default (props, { $f7, $on, $update }) => {
   });
 
   $on("pageBeforeRemove", () => {
-    clearInterval(interval);
+    if (interval) clearInterval(interval);
   });
 
   return $render;
 }
 </script>
+<style>
+  .navbar { background: #0061a8; color: white; }
+
+  /* Membuat list lebih rapat dengan navbar */
+  /* Mematikan padding otomatis Framework7 agar kamu punya kontrol penuh */
+.page-content {
+  --f7-page-navbar-offset: 0px !important; 
+  padding-top: 28px !important; /* Paksa angkanya tetap 60px di SEMUA halaman */
+  padding-bottom: 90px;
+}
+
+  .chat-item {
+    position: relative;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 10px 16px; /* Padding yang lebih pas */
+  }
+
+  .item-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .item-inner {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 0;
+  }
+
+  /* Kolom kiri: Nama & Pesan */
+  .item-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Kolom kanan: Waktu di atas, Badge di bawah */
+.item-right {
+  display: flex;
+  flex-direction: column; /* Mengubah susunan menjadi vertikal (atas-bawah) */
+  align-items: flex-end;  /* Memastikan keduanya tetap rata kanan */
+  justify-content: center;
+  gap: 4px;               /* Jarak vertikal antara waktu dan badge */
+  margin-left: 12px;
+}
+
+  .item-title { font-size: 16px; font-weight: 500; }
+  
+  .item-subtitle {
+    font-size: 14px;
+    color: #6e6e6e;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+.item-after {
+  font-size: 12px;
+  color: #8e8e93;
+  margin: 0; 
+}
+  .chat-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #0061a8; 
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Status Unread */
+  .chat-item.unread .item-title,
+  .chat-item.unread .item-subtitle { color: #111; font-weight: 600; }
+  .chat-item.unread .item-after { color: #0061a8; font-weight: 600; }
+</style>

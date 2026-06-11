@@ -123,11 +123,10 @@ var routes = [
 	beforeEnter: authWithRole,
 	},
 
-	{
-	path: "/chat/:id",
-	component: chatRoom,
-	beforeEnter: authWithRole,
-	},
+{
+  path: '/chat/:id',
+  component: chatRoom,
+},
 	{
 	path: "/notifikasi_user",
 	component: notifikasiUser,

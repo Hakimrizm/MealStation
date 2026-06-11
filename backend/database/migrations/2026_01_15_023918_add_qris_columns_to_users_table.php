@@ -11,16 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('qris_image')->nullable()->after('email');
-            $table->string('qris_name')->nullable()->after('qris_image');
-        });
+        if (!Schema::hasColumn('users', 'qris_image') || !Schema::hasColumn('users', 'qris_name')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (!Schema::hasColumn('users', 'qris_image')) {
+                    $table->string('qris_image')->nullable()->after('email');
+                }
+                if (!Schema::hasColumn('users', 'qris_name')) {
+                    $table->string('qris_name')->nullable()->after('qris_image');
+                }
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['qris_image', 'qris_name']);
-        });
+        if (Schema::hasColumn('users', 'qris_image') || Schema::hasColumn('users', 'qris_name')) {
+            Schema::table('users', function (Blueprint $table) {
+                $columns = [];
+                if (Schema::hasColumn('users', 'qris_image')) {
+                    $columns[] = 'qris_image';
+                }
+                if (Schema::hasColumn('users', 'qris_name')) {
+                    $columns[] = 'qris_name';
+                }
+                if (!empty($columns)) {
+                    $table->dropColumn($columns);
+                }
+            });
+        }
     }
 };

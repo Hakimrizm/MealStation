@@ -245,7 +245,7 @@
                                 ` : ''}
                                 <div style="display:flex; gap:10px;">
 									<a 
-										href="/chat/:id"
+										href="/chat/${selectedOrder.customerId}"
 										class="button button-large"
 										style="
 											flex:1;
@@ -695,6 +695,7 @@
                 orderTypeIcon: orderType.icon,
                 orderTypeClass: orderType.className,
                 orderActionText: orderType.actionText,
+                customerId: o.user?.id ?? null,
 
                 raw: o,
             };
