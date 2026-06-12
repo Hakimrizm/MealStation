@@ -380,7 +380,7 @@
 <script>
 	import { getToken } from "../js/auth.js";
 
-	export default (props, { $on, $f7 }) => {
+		export default (props, { $on, $f7, $store }) => {
 		const API_BASE = "http://localhost:8000/api";
 		const STORAGE_BASE = "http://localhost:8000/storage/";
 
@@ -570,9 +570,22 @@
 			});
 
 			const data = await res.json().catch(() => ({}));
-			if (!res.ok) throw new Error(data?.message || "Checkout gagal");
-			return data;
-		}
+    if (!res.ok) throw new Error(data?.message || "Checkout gagal");
+
+    const menuName = cart.length > 0
+    ? cart[0].name
+    : 'Pesanan Baru';
+
+$store.dispatch(
+    'addNotification',
+    {
+        itemName: menuName
+    }
+);
+    // ------------------------------------------
+
+    return data; // Return diletakkan paling akhir
+}
 
 		// ✅ EVENT DELEGATION: 1 listener untuk semua tombol + - hapus
 		function attachCartEvents() {

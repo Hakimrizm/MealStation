@@ -1,30 +1,24 @@
-import $ from 'dom7';
-import Framework7, { getDevice } from 'framework7/bundle';
+import $ from "dom7";
+import Framework7, { getDevice } from "framework7/bundle";
 
 // Import F7 Styles
-import 'framework7/css/bundle';
+import "framework7/css/bundle";
+import "../css/icons.css";
+import "../css/app.css";
 
-// Import Icons and App Custom Styles
-import '../css/icons.css';
-import '../css/app.css';
-// Import Cordova APIs
-import cordovaApp from './cordova-app.js';
-
-// Import Routes
-import routes from './routes.js';
-// Import Store
-import store from './store.js';
-
-// Import main app component
-import App from '../app.f7';
+// Import Store, Routes, Cordova, dan App
+import store from "./store.js";
+import routes from "./routes.js";
+import cordovaApp from "./cordova-app.js";
+import App from "../app.f7";
 
 var device = getDevice();
+
 var app = new Framework7({
-  name: 'kantin', // App name
-  theme: 'auto', // Automatic theme detection
+  name: "kantin", // App name
+  theme: "auto", // Automatic theme detection
 
-
-  el: '#app', // App root element
+  el: "#app", // App root element
   component: App, // App main component
   // App store
   store: store,
@@ -32,9 +26,12 @@ var app = new Framework7({
   routes: routes,
 
   // Register service worker (only on production build)
-  serviceWorker: process.env.NODE_ENV ==='production' ? {
-    path: '/service-worker.js',
-  } : {},
+  serviceWorker:
+    process.env.NODE_ENV === "production"
+      ? {
+          path: "/service-worker.js",
+        }
+      : {},
 
   // Input settings
   input: {
@@ -55,4 +52,24 @@ var app = new Framework7({
       }
     },
   },
+});
+
+window.addEventListener("new-order-received", (event) => {
+  const notif = event.detail;
+
+  app.notification
+    .create({
+      icon: '<i class="f7-icons">bell_fill</i>',
+      title: notif.title || "Pesanan Baru",
+      text: notif.message || "Ada pesanan baru",
+      closeButton: true,
+      closeTimeout: 5000,
+
+      on: {
+        click() {
+          app.views.main.router.navigate("/notifikasi_tenant");
+        },
+      },
+    })
+    .open();
 });

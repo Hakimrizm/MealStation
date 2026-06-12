@@ -5,6 +5,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\NotificationController;
 
 
 /*
@@ -24,6 +25,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chat/send', [ChatController::class, 'send']);
     Route::get('/chat-list', [ChatController::class, 'chatList']);
 });
+
+Route::get('/notifications', [NotificationController::class, 'index']);
+
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 /*
 |--------------------------------------------------------------------------
 | Protected Routes (Wajib Login Sanctum)

@@ -20,9 +20,13 @@
 					</a>
                     <a class="link icon-only" href="/notifikasi_tenant">
                         <i class="icon f7-icons text-color-black">bell</i>
-                        <span class="badge color-red" style="position: absolute; top: 8px; right: 8px; transform: scale(0.7);">
-                            ${newCount()}
-                        </span>
+
+                        ${newCount() > 0 ? $h`
+                            <span class="badge color-red"
+                                style="position:absolute;top:8px;right:8px;transform:scale(.7);">
+                                ${newCount()}
+                            </span>
+                        ` : ''}
                     </a>
                     <a class="link icon-only" href="/profile">
                         <i class="icon f7-icons text-color-black">person_circle</i>
@@ -577,9 +581,11 @@
 </style>
 
 <script>
-    import { getToken } from "./../js/auth.js";
+    import { getToken } from "../js/auth.js"; 
+// Dan jika Anda butuh store juga:
+import store from "../js/store.js";
 
-    export default (props, { $h, $on, $update, $f7 }) => {
+    export default (props, { $h, $on, $update, $f7, $store }) => {
         const API_BASE = "http://localhost:8000/api";
         
         let activeFilter = "all";
@@ -587,6 +593,7 @@
         let selectedOrder = null;
         let orders = [];
         let loading = false;
+        let lastNotifCount = null;
 
         const rupiah = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
 
@@ -710,6 +717,26 @@
                 });
                 const data = await res.json();
                 orders = data.map(normalizeOrder);
+                window.tenantOrders = orders;
+
+window.openTenantOrder = (orderId) => {
+
+    const order = orders.find(
+        o => o.id == orderId
+    );
+
+    if (!order) {
+        console.log("Order tidak ditemukan", orderId);
+        return;
+    }
+
+    selectedOrder = order;
+
+    $update();
+
+    $f7.sheet.open('.my-sheet');
+};
+
             } catch (err) { console.error(err); }
             finally { loading = false; $update(); }
         }
@@ -796,7 +823,6 @@
 
         const setFilter = (f) => { activeFilter = f; $update(); };
         const getItemsWithNotes = () => selectedOrder?.raw?.items?.filter(it => it.notes) || [];
-        const newCount = () => orders.filter(o => o.status === 'new').length;
 
         $on("pageInit", () => {
             loadOrders();
@@ -818,6 +844,87 @@
                 if (needUpdate) $update();
             }, 1000); 
         });
+
+        async function fetchNotificationsFromDB() {
+    try {
+        const token = getToken();
+
+        const res = await fetch(
+            'http://localhost:8000/api/tenant/orders',
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await res.json();
+
+        // ambil data read dari localStorage
+        const readIds = JSON.parse(
+            localStorage.getItem('readNotifications') || '[]'
+        );
+
+        const notifications = data.map(order => {
+
+            const menuName =
+                order.items?.[0]?.menu_name || "Menu";
+
+            const customerName =
+                order.user?.name || "Pelanggan";
+
+            return {
+                id: order.id,
+                title: "Pesanan Baru",
+                message: `${menuName} dipesan oleh ${customerName}`,
+                time: new Date(order.created_at).toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }),
+
+                read: readIds.includes(order.id)
+            };
+        });
+
+        console.log("FIRST ORDER =", data?.[0]);
+
+        // cek notif baru (simple compare)
+        if (
+            lastNotifCount !== null &&
+            notifications.length > lastNotifCount
+        ) {
+            const newestNotif = notifications[0];
+
+            window.dispatchEvent(
+                new CustomEvent('new-order-received', {
+                    detail: newestNotif
+                })
+            );
+        }
+
+        lastNotifCount = notifications.length;
+
+        // kirim ke store
+        $store.dispatch('setNotifications', notifications);
+
+    } catch (err) {
+        console.error("FETCH NOTIF ERROR:", err);
+    }
+}
+
+    $on('pageInit', () => {
+        // Ambil data saat halaman dibuka
+        fetchNotificationsFromDB();
+        
+        // Lakukan polling setiap 10 detik agar terlihat 'real-time'
+        setInterval(fetchNotificationsFromDB, 10000);
+    });
+
+    // Sesuaikan fungsi newCount agar mengambil dari store yang sudah terisi
+    const newCount = () => {
+        if (!$store || !$store.state.notifications) return 0;
+        return $store.state.notifications.filter(n => n.read === false).length;
+    };
 
         return $render;
     };

@@ -1,35 +1,77 @@
-
 import { createStore } from 'framework7';
 
 const store = createStore({
   state: {
+    notifications: [],
     products: [
       {
         id: '1',
         title: 'Apple iPhone 8',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi tempora similique reiciendis, error nesciunt vero, blanditiis pariatur dolor, minima sed sapiente rerum, dolorem corrupti hic modi praesentium unde saepe perspiciatis.'
+        description: 'Lorem ipsum dolor sit amet...'
       },
       {
         id: '2',
         title: 'Apple iPhone 8 Plus',
-        description: 'Velit odit autem modi saepe ratione totam minus, aperiam, labore quia provident temporibus quasi est ut aliquid blanditiis beatae suscipit odio vel! Nostrum porro sunt sint eveniet maiores, dolorem itaque!'
+        description: 'Velit odit autem modi...'
       },
       {
         id: '3',
         title: 'Apple iPhone X',
-        description: 'Expedita sequi perferendis quod illum pariatur aliquam, alias laboriosam! Vero blanditiis placeat, mollitia necessitatibus reprehenderit. Labore dolores amet quos, accusamus earum asperiores officiis assumenda optio architecto quia neque, quae eum.'
+        description: 'Expedita sequi perferendis...'
       },
     ]
   },
+
   getters: {
-    products({ state }) {
-      return state.products;
-    }
+    notifications: ({ state }) => state.notifications,
+    products: ({ state }) => state.products,
   },
+
   actions: {
+
+    // =========================
+    // NOTIFICATION ACTIONS
+    // =========================
+
+    setNotifications({ state }, notifications) {
+      state.notifications = notifications;
+    },
+
+    addNotification({ state }, order) {
+      state.notifications.unshift({
+        id: order.id || Date.now(),
+        title: 'Pesanan Baru!',
+        message: `Ada 1 pesanan baru: ${order.itemName}.`,
+        time: new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+
+        // ⚠️ ini hanya default UI sementara
+        read: false
+      });
+    },
+
+    removeNotification({ state }, id) {
+      state.notifications = state.notifications.filter(
+        n => n.id !== id
+      );
+    },
+
+    clearNotifications({ state }) {
+      state.notifications = [];
+    },
+
+
+    // =========================
+    // PRODUCT ACTIONS
+    // =========================
+
     addProduct({ state }, product) {
       state.products = [...state.products, product];
-    },
-  },
-})
+    }
+
+  }
+});
+
 export default store;
