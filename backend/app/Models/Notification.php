@@ -10,7 +10,10 @@ class Notification extends Model
         'user_id',
         'title',
         'message',
-        'read_at'
+        'read_at',
+        'type',
+        'estimation_minutes',
+        'order_id'
     ];
 
     protected $casts = [

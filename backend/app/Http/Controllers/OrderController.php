@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+
 
 class OrderController extends Controller
 {
@@ -100,13 +102,13 @@ class OrderController extends Controller
             ->map(function ($order) {
                 // LOGIKA PERBAIKAN: Hentikan estimasi jika sudah selesai atau batal
                 if (in_array($order->status, ['done', 'cancelled'], true)) {
-                    $order->estimation_time = null; 
-                } 
+                    $order->estimation_time = null;
+                }
                 // Jika masih proses, baru dikonversi ke ISO8601
                 elseif ($order->estimation_time) {
                     $order->estimation_time = \Carbon\Carbon::parse($order->estimation_time)->toIso8601String();
                 }
-                
+
                 return $order;
             });
 
@@ -162,7 +164,7 @@ class OrderController extends Controller
 
         $request->validate([
             'status' => 'required|in:new,process,done,cancelled',
-            'estimation_time' => 'nullable|integer', 
+            'estimation_time' => 'nullable|integer',
         ]);
 
         $from = $order->status;
@@ -186,13 +188,57 @@ class OrderController extends Controller
         // LOGIKA PERBAIKAN: Simpan sebagai string waktu yang bersih
         if ($request->has('estimation_time') && $to === 'process') {
             $minutes = (int) $request->estimation_time;
-            
+
             // Kita format ke 'Y-m-d H:i:s' agar JavaScript bisa membacanya dengan pasti
             $updateData['estimation_time'] = now()->addMinutes($minutes)->format('Y-m-d H:i:s');
         }
 
         $order->update($updateData);
 
+        // Load data terbaru
+        $order = $order->fresh()->load(['items', 'user:id,name']);
+
+        $firstMenu = $order->items->first()->menu_name;
+
+        $countOther = $order->items->count() - 1;
+
+        $menuText = $countOther > 0
+            ? "{$firstMenu} dan {$countOther} item lainnya"
+            : $firstMenu;
+
+        if ($to === 'process') {
+
+            Notification::create([
+                'user_id' => $order->user_id,
+                'title' => 'Pesanan Diproses',
+                'message' => "Pesanan {$menuText} sedang diproses.",
+                'type' => 'process',
+                'estimation_minutes' => $request->estimation_time,
+                'order_id' => $order->id,
+            ]);
+        }
+
+        if ($to === 'done') {
+
+            Notification::create([
+                'user_id' => $order->user_id,
+                'title' => 'Pesanan Selesai',
+                'message' => "Pesanan {$menuText} telah selesai.",
+                'type' => 'done',
+                'order_id' => $order->id,
+            ]);
+        }
+
+        if ($to === 'cancelled') {
+
+            Notification::create([
+                'user_id' => $order->user_id,
+                'title' => 'Pesanan Dibatalkan',
+                'message' => "Pesanan {$menuText} dibatalkan.",
+                'type' => 'cancelled',
+                'order_id' => $order->id,
+            ]);
+        }
         // Load data terbaru
         $order = $order->fresh()->load(['items', 'user:id,name']);
 
@@ -210,7 +256,7 @@ class OrderController extends Controller
         }
 
         // tidak boleh bayar kalau sudah cancelled/done
-        if (in_array($order->status, ['done','cancelled'], true)) {
+        if (in_array($order->status, ['done', 'cancelled'], true)) {
             return response()->json(['message' => 'Order tidak bisa dibayar'], 422);
         }
 

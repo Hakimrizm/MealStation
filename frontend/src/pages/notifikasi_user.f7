@@ -1,5 +1,6 @@
 <template>
-  <div class="page" data-name="notifikasi">
+  <div class="page" data-name="notifikasi-user">
+
     <div class="navbar navbar-blue">
       <div class="navbar-inner sliding">
         <div class="left">
@@ -10,96 +11,294 @@
         <div class="title">Notifikasi</div>
         <div class="right">
           <a href="#" class="link icon-only" @click=${clearAll} style="color: white;">
-            <i class="icon f7-icons">trash</i>
+            <i class="f7-icons">trash</i>
           </a>
         </div>
       </div>
     </div>
 
     <div class="page-content page-bg">
-      <div class="list media-list no-chevron no-hairlines" style="margin-top: 0;">
-        <ul id="list-notif-user">
-          <li class="swipeout">
-            <div class="swipeout-content">
-              <a href="/riwayat-transaksi" class="item-link item-content notif-item unread">
-                <div class="item-media">
-                  <div class="notif-icon orange">
-                    <i class="f7-icons">timer</i>
-                  </div>
-                </div>
-                <div class="item-inner">
-                  <div class="item-title-row">
-                    <div class="item-title title-unread">Pesanan Diproses</div>
-                    <div class="item-after time-text">Baru saja</div>
-                  </div>
-                  <div class="item-text">Menu <b>Ayam Geprek</b> sedang disiapkan oleh Kantin.</div>
-                </div>
-              </a>
-            </div>
-            <div class="swipeout-actions-right">
-              <a href="#" class="swipeout-delete">Hapus</a>
-            </div>
-          </li>
+
+      <div class="list media-list no-chevron no-hairlines">
+
+        <ul>
+
+          ${notifications.length > 0 ? notifications.map((notif) => $h`
 
           <li class="swipeout">
+
             <div class="swipeout-content">
-              <a href="/riwayat-transaksi" class="item-link item-content notif-item read">
+
+              <a href="#"
+                 @click=${() => openNotif(notif)}
+                 class="item-link item-content notif-item ${notif.read ? 'read' : 'unread'}">
+
                 <div class="item-media">
-                  <div class="notif-icon green">
-                    <i class="f7-icons">check_mark_circled</i>
+                  <div class="notif-icon ${getIconClass(notif.type)}">
+                    <i class="f7-icons">${getIcon(notif.type)}</i>
                   </div>
                 </div>
+
                 <div class="item-inner">
+
                   <div class="item-title-row">
-                    <div class="item-title title-read">Pesanan Selesai</div>
-                    <div class="item-after time-text">10:30</div>
+                    <div class="item-title ${notif.read ? 'title-read' : 'title-unread'}">
+                      ${notif.title}
+                    </div>
+                    <div class="item-after time-text">
+                      ${notif.time}
+                    </div>
                   </div>
-                  <div class="item-text">Menu <b>Es Teh Manis</b> sudah siap diambil di kantin!</div>
+
+                  <div class="item-text">
+                    ${notif.message}
+                  </div>
+
+                  ${notif.estimation_minutes ? $h`
+                    <div style="font-size:11px;color:#2196f3;margin-top:4px">
+                      Estimasi: ${notif.estimation_minutes} menit
+                    </div>
+                  ` : ''}
+
                 </div>
+
+              </a>
+
+            </div>
+
+            <div class="swipeout-actions-right">
+              <a class="swipeout-delete" @click=${() => deleteNotif(notif.id)}>
+                Hapus
               </a>
             </div>
-            <div class="swipeout-actions-right">
-              <a href="#" class="swipeout-delete">Hapus</a>
-            </div>
+
           </li>
+
+          `) : $h`
+
+          <div class="empty-state">
+            <i class="f7-icons">bell_slash</i>
+            <p>Belum ada notifikasi</p>
+          </div>
+
+          `}
+
         </ul>
+
       </div>
+
     </div>
+
   </div>
 </template>
 
 <script>
-export default (props, { $, $f7, $f7router, $on }) => {
-  $on('pageInit', () => {
-    // Pop-up sesuai gambar referensi lo
-    $f7.notification.create({
-      icon: '<i class="f7-icons" style="color: #ff9500">timer</i>',
-      title: 'Pemberitahuan Sistem!',
-      text: 'Pesanan Ayam Geprek Anda sedang diproses! Harap tunggu sebentar.',
-      closeTimeout: 3000,
-    }).open();
-  });
+import { getToken } from '../js/auth';
 
-  const goBack = () => $f7router.back();
-  const clearAll = () => {
-    $f7.dialog.confirm('Hapus semua?', () => { $('#list-notif-user').empty(); });
+export default (props, { $f7, $f7router, $on, $update }) => {
+
+  let notifications = [];
+
+  // =========================
+  // LOAD NOTIF DARI API
+  // =========================
+  const loadNotifications = async () => {
+
+    try {
+
+      const token = getToken();
+
+      const res = await fetch(
+        'http://127.0.0.1:8000/api/notifications',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json'
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      console.log('NOTIF =', data);
+
+      notifications = data;
+
+      $update();
+
+    } catch (err) {
+      console.error('LOAD NOTIF ERROR =', err);
+    }
   };
 
-  return $render;
-}
-</script>
+  // =========================
+  // OPEN NOTIF + MARK READ
+  // =========================
+  const openNotif = async (notif) => {
 
+    if (!notif.read) {
+
+      try {
+
+        const token = getToken();
+
+        await fetch(
+          `http://127.0.0.1:8000/api/notifications/${notif.id}/read`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json'
+            }
+          }
+        );
+
+        notif.read = true;
+
+        $update();
+
+      } catch (err) {
+        console.error('READ NOTIF ERROR =', err);
+      }
+    }
+
+    if (notif.type === 'process' || notif.type === 'done') {
+      $f7router.navigate('/riwayat-transaksi');
+    }
+  };
+
+  // =========================
+  // DELETE 1 NOTIF
+  // =========================
+  const deleteNotif = async (id) => {
+
+    try {
+
+      const token = getToken();
+
+      await fetch(
+        `http://127.0.0.1:8000/api/notifications/${id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json'
+          }
+        }
+      );
+
+      notifications = notifications.filter(
+        n => n.id !== id
+      );
+
+      $update();
+
+    } catch (err) {
+      console.error('DELETE NOTIF ERROR =', err);
+    }
+  };
+
+  // =========================
+  // CLEAR ALL
+  // =========================
+  const clearAll = async () => {
+
+    $f7.dialog.confirm(
+      'Hapus semua notifikasi?',
+      async () => {
+
+        try {
+
+          const token = getToken();
+
+          for (let n of notifications) {
+
+            await fetch(
+              `http://127.0.0.1:8000/api/notifications/${n.id}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: 'application/json'
+                }
+              }
+            );
+          }
+
+          notifications = [];
+
+          $update();
+
+        } catch (err) {
+          console.error('CLEAR NOTIF ERROR =', err);
+        }
+      }
+    );
+  };
+
+  const goBack = () => $f7router.back();
+
+  // =========================
+  // ICON SYSTEM
+  // =========================
+  const getIcon = (type) => {
+    if (type === 'process') return 'timer';
+    if (type === 'done') return 'checkmark_circle_fill';
+    return 'bell_fill';
+  };
+
+  const getIconClass = (type) => {
+    if (type === 'process') return 'orange';
+    if (type === 'done') return 'green';
+    return 'blue';
+  };
+
+  const formatTime = (t) => {
+    if (!t) return '';
+
+    return new Date(t).toLocaleTimeString(
+      'id-ID',
+      {
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    );
+  };
+
+  // =========================
+  // INIT
+  // =========================
+  $on('pageInit', () => {
+    loadNotifications();
+  });
+
+  return $render;
+};
+</script>
 <style>
   .navbar-blue { background: #0061a8; color: white; }
   .page-bg { background: #f0f4f7; }
-  .notif-item { padding: 12px 16px; border-bottom: 1px solid #eee; }
-  .notif-item.unread { background: #f0f8ff; }
-  .notif-item.read { background: #fff; }
-  .notif-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; }
-  .notif-icon.orange { background: #ff9500; }
-  .notif-icon.green { background: #34c759; }
+.notif-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  background: #ffffff;
+}
+
+.notif-item.unread {
+  background: #f0f8ff;
+}
+
+.item-title {
+  font-weight: 500;
+  color: #666;
+}
+
+.title-unread {
+  font-weight: 800;
+  color: #000;
+}
+  .notif-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; background: #0061a8; }
   .title-unread { font-weight: 800; color: #000; font-size: 15px; }
-  .title-read { font-weight: 600; color: #444; font-size: 15px; }
   .time-text { font-size: 11px; color: #888; }
   .empty-state { text-align: center; margin-top: 100px; color: #ccc; }
   .empty-state i { font-size: 80px; opacity: 0.3; }

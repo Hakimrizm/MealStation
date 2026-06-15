@@ -23,10 +23,11 @@ class NotificationController extends Controller
                     'id' => $n->id,
                     'title' => $n->title,
                     'message' => $n->message,
+                    'type' => $n->type,
                     'time' => $n->created_at->format('H:i'),
-
-                    // INI KUNCI READ/UNREAD
                     'read' => $n->read_at !== null,
+                    'estimation_minutes' => $n->estimation_minutes,
+                    'order_id' => $n->order_id,
                 ];
             })
         );

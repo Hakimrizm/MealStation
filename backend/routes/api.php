@@ -6,7 +6,27 @@ use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\NotificationController;
+use App\Models\Notification;
 
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+    Route::delete('/notifications/{id}', function ($id) {
+
+        $notif = Notification::findOrFail($id);
+
+        $notif->delete();
+
+        return response()->json([
+            'success' => true
+        ]);
+    });
+
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +46,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat-list', [ChatController::class, 'chatList']);
 });
 
-Route::get('/notifications', [NotificationController::class, 'index']);
 
-Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes (Wajib Login Sanctum)

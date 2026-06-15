@@ -3,6 +3,7 @@ import { createStore } from 'framework7';
 const store = createStore({
   state: {
     notifications: [],
+    chats: [],
     products: [
       {
         id: '1',
@@ -25,8 +26,12 @@ const store = createStore({
   getters: {
     notifications: ({ state }) => state.notifications,
     products: ({ state }) => state.products,
+    chats: ({ state }) => state.chats,
   },
 
+  setChats({ state }, chats) {
+    state.chats = [...chats]; // FORCE REACTIVE
+},
   actions: {
 
     // =========================
