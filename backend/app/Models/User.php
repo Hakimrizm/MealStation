@@ -91,4 +91,11 @@ class User extends Authenticatable
 
         return $now->between($open, $close);
     }
+
+    // Accessor untuk rating toko (tenant)
+    public function getStoreRatingAttribute()
+    {
+        $menuIds = $this->menus()->pluck('id');
+        return round(\App\Models\Review::whereIn('menu_id', $menuIds)->avg('rating'), 1) ?? 0;
+    }
 }

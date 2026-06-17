@@ -27,7 +27,7 @@ class MenuController extends Controller
     public function show($id)
     {
         // Ambil menu + relasi
-        $menu = Menu::with(['tenant', 'optionGroups.items'])->find($id);
+        $menu = Menu::with(['tenant', 'optionGroups.items', 'reviews.user'])->find($id);
 
         if (!$menu) {
             return response()->json([

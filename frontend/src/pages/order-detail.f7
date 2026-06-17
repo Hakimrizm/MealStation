@@ -58,6 +58,13 @@
 
 			<div id="menuOptions" class="order-options"></div>
 
+			<div class="order-reviews">
+				<h3>Ulasan Pembeli</h3>
+				<div id="reviewsContainer">
+					<p style="font-size: 13px; color: #777">Memuat ulasan...</p>
+				</div>
+			</div>
+
 			<!-- QTY -->
 			<div class="order-footer">
 				<div class="qty">
@@ -244,6 +251,128 @@
 	.open-status.is-closed {
 		color: #f44336;
 	}
+
+	/* --- STYLING UNTUK ULASAN (MODERN) --- */
+	.order-reviews {
+		background: #fff;
+		margin-top: 12px;
+		padding: 20px 16px;
+		border-radius: 16px;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); /* Bayangan sangat halus */
+	}
+
+	/* Judul Section dengan aksen garis di kirinya */
+	.order-reviews h3 {
+		font-size: 16px;
+		font-weight: 700;
+		color: #333;
+		margin-bottom: 20px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.order-reviews h3::before {
+		content: "";
+		display: inline-block;
+		width: 4px;
+		height: 16px;
+		background: var(--primary, #ff9800);
+		border-radius: 4px;
+	}
+
+	/* Tampilan saat belum ada ulasan */
+	.empty-review {
+		text-align: center;
+		padding: 30px 10px;
+	}
+	.empty-review i {
+		font-size: 40px;
+		color: #e0e0e0;
+		margin-bottom: 12px;
+	}
+	.empty-review p {
+		font-size: 13px;
+		color: #888;
+		margin: 0;
+	}
+
+	/* Layout per item ulasan */
+	.review-item {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 24px;
+	}
+	.review-item:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Foto Profil / Avatar */
+	.review-avatar img {
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 1px solid #eee;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	}
+
+	/* Konten Teks */
+	.review-content {
+		flex: 1;
+		min-width: 0; /* Mencegah teks bablas */
+	}
+
+	.review-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 4px;
+	}
+
+	.review-name {
+		font-weight: 700;
+		font-size: 14px;
+		color: #222;
+	}
+
+	.review-date {
+		font-size: 11px;
+		color: #999;
+		font-weight: 500;
+	}
+
+	/* Barisan Bintang */
+	.review-rating-stars {
+		font-size: 11px;
+		margin-bottom: 10px;
+		display: flex;
+		align-items: center;
+		gap: 2px;
+	}
+	.review-rating-stars .filled {
+		color: #ffc107; /* Warna emas untuk bintang terisi */
+	}
+	.review-rating-stars .empty {
+		color: #e4e5e9; /* Warna abu untuk bintang kosong */
+	}
+	.rating-number {
+		font-weight: 700;
+		color: #555;
+		margin-left: 6px;
+		font-size: 12px;
+	}
+
+	/* Balon Chat untuk Komentar */
+	.review-comment-bubble {
+		background: #f8f9fa;
+		padding: 12px 14px;
+		border-radius: 0 12px 12px 12px; /* Gaya seperti balon chat Whatsapp */
+		font-size: 13px;
+		color: #444;
+		line-height: 1.5;
+		word-wrap: break-word;
+		border: 1px solid #f1f1f1;
+	}
 </style>
 
 <script>
@@ -333,6 +462,83 @@
 			} else {
 				statusEl.style.display = "none";
 			}
+		}
+
+		// Fungsi untuk merender daftar ulasan dari backend
+		function renderReviews(reviews) {
+			const container = document.getElementById("reviewsContainer");
+
+			// --- TAMPILAN JIKA KOSONG ---
+			if (!reviews || reviews.length === 0) {
+				container.innerHTML = `
+          <div class="empty-review">
+            <i class="fas fa-comment-slash"></i>
+            <p>Belum ada ulasan untuk menu ini. Jadilah yang pertama mencoba!</p>
+          </div>
+        `;
+				return;
+			}
+
+			let html = "";
+			reviews.forEach((r) => {
+				const userName = r.user?.name || "Anonim";
+
+				// Generate Avatar otomatis dari inisial nama (UI Avatars API)
+				const avatarUrl =
+					r.user?.avatar ||
+					`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=100&bold=true`;
+
+				// Format Tanggal (Jika ada dari backend)
+				let dateText = "";
+				if (r.created_at) {
+					const dt = new Date(r.created_at);
+					dateText = dt.toLocaleDateString("id-ID", {
+						day: "numeric",
+						month: "short",
+						year: "numeric",
+					});
+				}
+
+				// Kalkulasi Bintang (Contoh: Rating 4 akan menampilkan 4 bintang emas, 1 bintang abu)
+				let starsHtml = "";
+				const rating = Number(r.rating) || 0;
+				for (let i = 1; i <= 5; i++) {
+					if (i <= rating) {
+						starsHtml += `<i class="fas fa-star filled"></i>`; // Bintang penuh
+					} else {
+						starsHtml += `<i class="fas fa-star empty"></i>`; // Bintang kosong
+					}
+				}
+
+				// Teks komentar (Beri teks default jika user hanya memberi rating tanpa komentar)
+				const commentText = r.comment
+					? r.comment
+					: `<span style="color:#aaa; font-style:italic;">Pengguna tidak meninggalkan ulasan tertulis.</span>`;
+
+				// Susun HTML
+				html += `
+          <div class="review-item">
+            <div class="review-avatar">
+              <img src="${avatarUrl}" alt="${userName}" />
+            </div>
+            <div class="review-content">
+              <div class="review-header">
+                <span class="review-name">${userName}</span>
+                <span class="review-date">${dateText}</span>
+              </div>
+              <div class="review-rating-stars">
+                ${starsHtml} 
+                <span class="rating-number">${rating.toFixed(1)}</span>
+              </div>
+              <div class="review-comment-bubble">
+                ${commentText}
+              </div>
+            </div>
+          </div>
+        `;
+			});
+
+			container.innerHTML = html;
 		}
 
 		function getOptionPrice() {
@@ -536,6 +742,10 @@
 						? JSON.parse(menu.option_groups)
 						: menu.option_groups || [],
 				);
+
+				// +++ PANGGIL FUNGSI RENDER ULASAN DI SINI +++
+				// Asumsi dari backend Laravel mengirim data: menu.reviews
+				renderReviews(menu.reviews);
 				$f7.preloader.hide();
 
 				bindUi();

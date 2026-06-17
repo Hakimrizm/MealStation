@@ -210,13 +210,72 @@
 			);
 		}
 
-		function formatItemsToList(items) {
+		function formatItemsToList(items, orderId) {
 			if (!Array.isArray(items) || items.length === 0) return "<li>-</li>";
 			return items
 				.map((it) => {
 					const name = it?.name || it?.menu?.name || it?.menu_name || "Item";
 					const qty = it?.qty || it?.quantity || it?.pivot?.qty || 1;
-					return `<li>${name} (${qty}x)</li>`;
+					const menuId = it?.menu_id || it?.id || it?.menu?.id;
+
+					return `
+            <li style="
+              display: flex; 
+              flex-direction: row; 
+              align-items: center; 
+              justify-content: space-between; 
+              background: #fff; 
+              border: 1px solid #e5e7eb; 
+              border-radius: 10px; 
+              padding: 12px; 
+              margin-bottom: 10px; 
+              gap: 16px; /* Memberikan jarak pasti antara teks dan tombol agar tidak dempet */
+            ">
+              
+              <div style="
+                flex: 1; 
+                min-width: 0; /* PENTING: Mencegah flexbox bablas ke kanan */
+                display: flex; 
+                flex-direction: column; 
+                gap: 4px;
+              ">
+                <div style="
+                  font-size: 14px; 
+                  font-weight: 600; 
+                  color: #1f2937; 
+                  word-wrap: break-word; /* Memaksa teks panjang turun ke bawah */
+                  white-space: normal; 
+                  line-height: 1.4;
+                ">
+                  ${name}
+                </div>
+                <div style="font-size: 12px; color: #6b7280; font-weight: 500;">
+                  Jumlah: ${qty}x
+                </div>
+              </div>
+
+              <div style="flex-shrink: 0; /* Memastikan tombol tidak ikut mengecil atau gepeng */">
+                <button class="button button-fill btn-ulas-item" 
+                  style="
+                    background-color: #ff9800;
+                    color: white;
+                    border-radius: 8px; 
+                    height: 32px; 
+                    line-height: 32px; 
+                    padding: 0 14px; 
+                    font-size: 12px; 
+                    font-weight: 600; 
+                    min-width: max-content; /* Ukuran tombol akan selalu pas dengan teks di dalamnya */
+                    box-shadow: none;
+                  "
+                  data-menu-id="${menuId}" 
+                  data-order-id="${orderId}" 
+                  data-menu-name="${name}">
+                  Ulas
+                </button>
+              </div>
+
+            </li>`;
 				})
 				.join("");
 		}
@@ -270,7 +329,7 @@
               <div style="font-weight:700; font-size:15px; color:#111827;">${tenantName}</div>
               <div style="font-size:12px; color:#64748b; margin-top:2px;">${dtText}</div>
               <div style="font-weight:800; margin-top:8px; color:#111827;">${rupiah(
-								total
+								total,
 							)}</div>
               <div style="font-size:12px; margin-top:6px; color:#16a34a; font-weight:700;">
                 Selesai
@@ -319,6 +378,132 @@
 			renderList(doneOrders);
 		}
 
+		function bukaFormUlasan(menuId, orderId, menuName) {
+			const reviewSheet = $f7.sheet.create({
+				content: `
+        <div class="sheet-modal" style="height:auto; border-radius:16px 16px 0 0;">
+          <div class="toolbar">
+            <div class="toolbar-inner">
+              <div class="left"></div>
+              <div class="title">Ulas ${menuName}</div>
+              <div class="right"><a href="#" class="sheet-close link">Batal</a></div>
+            </div>
+          </div>
+          <div class="sheet-modal-inner">
+            <div class="block" style="padding-top: 15px;">
+              
+              <div style="text-align: center; margin-bottom: 25px;">
+                <div style="font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #333;">Berapa bintang untuk menu ini?</div>
+                <div id="starRatingContainer" style="display: flex; justify-content: center; gap: 12px; font-size: 34px; cursor: pointer;">
+                  <i class="fas fa-star" data-rating="1" style="color: #ff9800; transition: 0.2s;"></i>
+                  <i class="fas fa-star" data-rating="2" style="color: #ff9800; transition: 0.2s;"></i>
+                  <i class="fas fa-star" data-rating="3" style="color: #ff9800; transition: 0.2s;"></i>
+                  <i class="fas fa-star" data-rating="4" style="color: #ff9800; transition: 0.2s;"></i>
+                  <i class="fas fa-star" data-rating="5" style="color: #ff9800; transition: 0.2s;"></i>
+                </div>
+                <input type="hidden" id="inputRating" value="5" />
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #555;">Komentar (Opsional)</div>
+                <textarea id="inputKomentar" placeholder="Bagaimana rasa makanannya? Ceritakan di sini..." 
+                  style="width: 100%; height: 90px; padding: 12px; border: 1px solid #ddd; border-radius: 12px; background: transparent; font-size: 14px; outline: none; box-sizing: border-box; resize: none;"></textarea>
+              </div>
+
+              <button class="button button-fill button-large color-orange" id="btnSubmitUlasan" style="border-radius: 12px;">Kirim Ulasan</button>
+            </div>
+          </div>
+        </div>
+        `,
+			});
+
+			reviewSheet.open();
+
+			// Tangani event submit saat sheet ulasan terbuka
+			reviewSheet.on("opened", function () {
+				// --- LOGIKA UNTUK KLIK BINTANG ---
+				const stars = document.querySelectorAll(
+					"#starRatingContainer .fa-star",
+				);
+				const inputRating = document.getElementById("inputRating");
+
+				stars.forEach((star) => {
+					star.addEventListener("click", function () {
+						// Ambil nilai dari bintang yang diklik
+						const clickedRating = parseInt(this.getAttribute("data-rating"));
+						inputRating.value = clickedRating; // Simpan ke input hidden
+
+						// Ubah warna bintang
+						stars.forEach((s) => {
+							const starRating = parseInt(s.getAttribute("data-rating"));
+							if (starRating <= clickedRating) {
+								s.style.color = "#ff9800"; // Warna oren (aktif)
+								s.style.transform = "scale(1.1)"; // Sedikit membesar saat diklik
+							} else {
+								s.style.color = "#e0e0e0"; // Warna abu-abu (tidak aktif)
+								s.style.transform = "scale(1)";
+							}
+						});
+
+						// Kembalikan ukuran bintang setelah 200ms
+						setTimeout(() => {
+							stars.forEach((s) => (s.style.transform = "scale(1)"));
+						}, 200);
+					});
+				});
+				// --- AKHIR LOGIKA BINTANG ---
+
+				document
+					.getElementById("btnSubmitUlasan")
+					.addEventListener("click", async () => {
+						const rating = document.getElementById("inputRating").value; // Nilai diambil dari input hidden
+						const comment = document.getElementById("inputKomentar").value;
+
+						if (!rating || rating < 1 || rating > 5) {
+							$f7.dialog.alert("Rating harus antara 1 sampai 5");
+							return;
+						}
+
+						$f7.preloader.show();
+						try {
+							const token = getToken();
+							const res = await fetch(`${API_BASE}/menus/${menuId}/reviews`, {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Accept: "application/json",
+									Authorization: `Bearer ${token}`,
+								},
+								body: JSON.stringify({
+									rating: rating,
+									comment: comment,
+									order_id: orderId,
+								}),
+							});
+
+							const resData = await res.json();
+							$f7.preloader.hide();
+
+							// Jika validasi dari Laravel mengembalikan error
+							if (!res.ok) {
+								throw new Error(resData.message || "Gagal mengirim ulasan");
+							}
+
+							reviewSheet.close();
+							$f7.toast
+								.create({
+									text: "Ulasan berhasil dikirim!",
+									closeTimeout: 2000,
+								})
+								.open();
+						} catch (err) {
+							$f7.preloader.hide();
+							$f7.dialog.alert(err.message, "Pemberitahuan");
+						}
+					});
+			});
+		}
+
 		function bukaDetail(idPesanan) {
 			const data = allOrders.find((x) => String(x.id) === String(idPesanan));
 			if (!data) return;
@@ -328,11 +513,11 @@
 			const dtText = dt ? dt.toLocaleString("id-ID") : "-";
 
 			const items = getItems(data);
-			const listMenu = formatItemsToList(items);
+			// PENTING: Tambahkan data.id di sini
+			const listMenu = formatItemsToList(items, data.id);
 
 			const total = getTotal(data);
 
-			// Sheet detail pakai $f7
 			const sheet = $f7.sheet.create({
 				content: `
         <div class="sheet-modal" style="height:auto; border-radius:16px 16px 0 0;">
@@ -351,7 +536,7 @@
               <hr>
 
               <p style="font-weight:700; margin:10px 0 6px;">Menu:</p>
-              <ul style="margin-top:0;">${listMenu}</ul>
+              <ul style="margin-top:0; padding-left:0; list-style:none;">${listMenu}</ul>
 
               <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; margin-top:12px;">
                 <span>Total Bayar:</span>
@@ -359,9 +544,7 @@
               </div>
 
               <a href="#" class="button button-fill button-large button-round margin-top sheet-close btn-pesan-lagi"
-                 style="background:var(--f7-theme-color)" data-order-id="${
-										data.id
-									}">
+                 style="background:var(--f7-theme-color)" data-order-id="${data.id}">
                 Pesan Lagi
               </a>
             </div>
@@ -372,19 +555,35 @@
 
 			sheet.open();
 
-			// bind pesan lagi setelah sheet open
 			setTimeout(() => {
+				// Event untuk tombol Pesan Lagi
 				document
 					.querySelector(".btn-pesan-lagi")
 					?.addEventListener("click", (e) => {
 						e.preventDefault();
 						$f7.toast
 							.create({
-								text: "Pesan lagi belum dihubungkan ke menu (silakan arahkan ke halaman tenant/menu).",
+								text: "Pesan lagi belum dihubungkan ke menu.",
 								closeTimeout: 2000,
 							})
 							.open();
 					});
+
+				// Event untuk tombol Ulas per item menu
+				document.querySelectorAll(".btn-ulas-item").forEach((btn) => {
+					btn.addEventListener("click", (e) => {
+						e.preventDefault();
+						const menuId = btn.getAttribute("data-menu-id");
+						const orderId = btn.getAttribute("data-order-id");
+						const menuName = btn.getAttribute("data-menu-name");
+
+						// Tutup detail pesanan, lalu buka form ulasan
+						sheet.close();
+						setTimeout(() => {
+							bukaFormUlasan(menuId, orderId, menuName);
+						}, 300); // jeda animasi
+					});
+				});
 			}, 50);
 		}
 

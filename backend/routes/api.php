@@ -99,5 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my/orders', [OrderController::class, 'myOrders']);
         Route::get('/my/orders/{order}', [OrderController::class, 'myOrderShow']);
         Route::post('/my/orders/{order}/pay', [OrderController::class, 'pay']);
+
+        Route::post('/menus/{menu}/reviews', [\App\Http\Controllers\ReviewController::class, 'store']);
     });
 });
