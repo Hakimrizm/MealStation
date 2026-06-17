@@ -201,17 +201,167 @@
 		padding: 15px;
 	}
 
+	/* --- STYLING UNTUK GENERIC FORM OPTIONS --- */
+	.order-options {
+		background: #fff;
+		margin-top: 10px;
+		padding: 20px 16px;
+	}
+
 	.option-group {
-		margin-bottom: 15px;
+		margin-bottom: 24px;
+	}
+	.option-group:last-child {
+		margin-bottom: 0;
 	}
 
+	/* Header Grup (Judul & Badge) */
+	.option-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
 	.option-title {
+		font-weight: 700;
+		font-size: 15px;
+		color: #333;
+	}
+	.badge-required {
+		background: #ffebee;
+		color: #d32f2f;
+		font-size: 10px;
+		font-weight: 700;
+		padding: 4px 8px;
+		border-radius: 4px;
+		text-transform: uppercase;
+	}
+	.badge-optional {
+		background: #f5f5f5;
+		color: #888;
+		font-size: 10px;
 		font-weight: 600;
-		margin-bottom: 8px;
+		padding: 4px 8px;
+		border-radius: 4px;
+		text-transform: uppercase;
 	}
 
-	.option-item {
-		margin-bottom: 6px;
+	/* Container List Pilihan */
+	.option-list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	/* Kotak Pilihan (Card Row) */
+	.option-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 14px 16px;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		cursor: pointer;
+		background: #fafafa;
+		transition: all 0.2s ease;
+	}
+
+	/* Efek saat dipilih (Menggunakan :has jika browser support) */
+	.option-row:has(input:checked) {
+		border-color: var(--primary, #ff9800);
+		background: #fff8f0;
+	}
+
+	.option-details {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.option-label-text {
+		font-size: 14px;
+		font-weight: 600;
+		color: #444;
+	}
+	.option-price {
+		font-size: 12px;
+		color: var(--primary, #ff9800);
+		font-weight: 600;
+	}
+
+	/* Menyembunyikan Input Asli */
+	.option-input-wrap input {
+		position: absolute;
+		opacity: 0;
+		cursor: pointer;
+		height: 0;
+		width: 0;
+	}
+
+	/* Custom Radio Button */
+	.custom-radio {
+		width: 22px;
+		height: 22px;
+		border: 2px solid #ccc;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s ease;
+	}
+	.option-input-wrap input[type="radio"]:checked ~ .custom-radio {
+		border-color: var(--primary, #ff9800);
+	}
+	.option-input-wrap input[type="radio"]:checked ~ .custom-radio::after {
+		content: "";
+		width: 10px;
+		height: 10px;
+		background: var(--primary, #ff9800);
+		border-radius: 50%;
+	}
+
+	/* Custom Checkbox */
+	.custom-checkbox {
+		width: 22px;
+		height: 22px;
+		border: 2px solid #ccc;
+		border-radius: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s ease;
+	}
+	.option-input-wrap input[type="checkbox"]:checked ~ .custom-checkbox {
+		background: var(--primary, #ff9800);
+		border-color: var(--primary, #ff9800);
+	}
+	.option-input-wrap input[type="checkbox"]:checked ~ .custom-checkbox::after {
+		content: "✔";
+		color: white;
+		font-size: 12px;
+		font-weight: bold;
+	}
+
+	/* Text & Textarea Input Style */
+	.custom-text-input,
+	.custom-textarea {
+		width: 100%;
+		padding: 14px;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		background: #fafafa;
+		font-size: 14px;
+		outline: none;
+		box-sizing: border-box;
+		transition: 0.2s;
+	}
+	.custom-text-input:focus,
+	.custom-textarea:focus {
+		border-color: var(--primary, #ff9800);
+		background: #fff;
+	}
+	.custom-textarea {
+		min-height: 80px;
+		resize: none;
 	}
 
 	.open-badge {
@@ -567,54 +717,86 @@
 
 			groups.forEach((group, gIndex) => {
 				html += `<div class="option-group">`;
-				html += `<div class="option-title">${group.label} ${group.is_required ? "*" : ""}</div>`;
+
+				// Header Grup (Judul & Badge Wajib/Opsional)
+				const badgeHtml = group.is_required
+					? `<span class="badge-required">Wajib</span>`
+					: `<span class="badge-optional">Opsional</span>`;
+
+				html += `
+          <div class="option-header">
+            <div class="option-title">${group.label}</div>
+            ${badgeHtml}
+          </div>
+        `;
 
 				const name = `group_${gIndex}`;
 
-				if (group.input_type === "radio") {
+				// Jika tipe Radio atau Checkbox
+				if (group.input_type === "radio" || group.input_type === "checkbox") {
+					html += `<div class="option-list">`;
+
 					group.items.forEach((item) => {
+						const priceHtml =
+							item.price_adjustment > 0
+								? `<span class="option-price">+${formatRupiah(item.price_adjustment)}</span>`
+								: "";
+
+						const inputType = group.input_type; // "radio" atau "checkbox"
+						const customIndicator =
+							inputType === "radio" ? "custom-radio" : "custom-checkbox";
+
 						html += `
-												<label class="option-item">
-														<input type="radio" name="${name}" value="${item.value}" data-price="${item.price_adjustment || 0}">
-														${item.label} ${item.price_adjustment > 0 ? `( +${item.price_adjustment} )` : ""}
-												</label>
-										`;
+              <label class="option-row">
+                <div class="option-details">
+                  <span class="option-label-text">${item.label}</span>
+                  ${priceHtml}
+                </div>
+                <div class="option-input-wrap">
+                  <input type="${inputType}" name="${name}" value="${item.value}" data-price="${item.price_adjustment || 0}">
+                  <div class="${customIndicator}"></div>
+                </div>
+              </label>
+            `;
 					});
+					html += `</div>`;
 				}
 
-				if (group.input_type === "checkbox") {
-					group.items.forEach((item) => {
-						html += `
-												<label class="option-item">
-														<input type="checkbox" name="${name}" value="${item.value}" data-price="${item.price_adjustment || 0}">
-														${item.label} ${item.price_adjustment > 0 ? `( +${item.price_adjustment} )` : ""}
-												</label>
-										`;
-					});
-				}
-
+				// Jika tipe Text
 				if (group.input_type === "text") {
-					html += `<input type="text" class="text-input" placeholder="${group.placeholder || ""}" data-group="${name}">`;
+					html += `<input type="text" class="custom-text-input" placeholder="${group.placeholder || "Ketik catatan..."}" data-group="${name}">`;
 				}
 
+				// Jika tipe Textarea
 				if (group.input_type === "textarea") {
-					html += `<textarea placeholder="${group.placeholder || ""}" data-group="${name}"></textarea>`;
+					html += `<textarea class="custom-textarea" placeholder="${group.placeholder || "Tuliskan sesuatu..."}" data-group="${name}"></textarea>`;
 				}
 
+				// Jika tipe Number
 				if (group.input_type === "number") {
-					html += `<input type="number" min="${group.min_value || 0}" max="${group.max_value || 10}" data-group="${name}">`;
+					html += `
+            <div class="option-row" style="cursor: default;">
+              <span class="option-label-text">${group.placeholder || "Jumlah"}</span>
+              <input type="number" min="${group.min_value || 0}" max="${group.max_value || 10}" data-group="${name}" 
+                style="width: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 8px; text-align: center;">
+            </div>
+          `;
 				}
 
+				// Jika tipe Switch
 				if (group.input_type === "switch") {
 					html += `
-										<label>
-												<input type="checkbox" data-group="${name}">
-												${group.label}
-										</label>
-								`;
+            <label class="option-row">
+              <span class="option-label-text">${group.label || "Pilih"}</span>
+              <div class="option-input-wrap">
+                <input type="checkbox" data-group="${name}">
+                <div class="custom-checkbox"></div>
+              </div>
+            </label>
+          `;
 				}
 
-				html += `</div>`;
+				html += `</div>`; // Tutup option-group
 			});
 
 			container.innerHTML = html;
