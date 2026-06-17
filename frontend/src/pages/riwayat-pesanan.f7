@@ -218,6 +218,43 @@
 					const qty = it?.qty || it?.quantity || it?.pivot?.qty || 1;
 					const menuId = it?.menu_id || it?.id || it?.menu?.id;
 
+					// Cek apakah item sudah diulas (dari backend atau dari interaksi user saat ini)
+					const isReviewed =
+						it?.is_reviewed || it?.pivot?.is_reviewed || it?.review_id;
+
+					let actionHtml = "";
+
+					if (isReviewed) {
+						// Jika SUDAH DIULAS: Tombol hilang, ganti dengan teks Centang Hijau
+						actionHtml = `
+              <div style="font-size: 12px; color: #16a34a; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                <i class="fas fa-check-circle"></i> Diulas
+              </div>
+            `;
+					} else {
+						// Jika BELUM DIULAS: Tampilkan Tombol Ulas
+						actionHtml = `
+              <button class="button button-fill btn-ulas-item" 
+                style="
+                  background-color: #ff9800;
+                  color: white;
+                  border-radius: 8px; 
+                  height: 32px; 
+                  line-height: 32px; 
+                  padding: 0 14px; 
+                  font-size: 12px; 
+                  font-weight: 600; 
+                  min-width: max-content; 
+                  box-shadow: none;
+                "
+                data-menu-id="${menuId}" 
+                data-order-id="${orderId}" 
+                data-menu-name="${name}">
+                Ulas
+              </button>
+            `;
+					}
+
 					return `
             <li style="
               display: flex; 
@@ -229,12 +266,12 @@
               border-radius: 10px; 
               padding: 12px; 
               margin-bottom: 10px; 
-              gap: 16px; /* Memberikan jarak pasti antara teks dan tombol agar tidak dempet */
+              gap: 16px;
             ">
               
               <div style="
                 flex: 1; 
-                min-width: 0; /* PENTING: Mencegah flexbox bablas ke kanan */
+                min-width: 0; 
                 display: flex; 
                 flex-direction: column; 
                 gap: 4px;
@@ -243,7 +280,7 @@
                   font-size: 14px; 
                   font-weight: 600; 
                   color: #1f2937; 
-                  word-wrap: break-word; /* Memaksa teks panjang turun ke bawah */
+                  word-wrap: break-word; 
                   white-space: normal; 
                   line-height: 1.4;
                 ">
@@ -254,25 +291,8 @@
                 </div>
               </div>
 
-              <div style="flex-shrink: 0; /* Memastikan tombol tidak ikut mengecil atau gepeng */">
-                <button class="button button-fill btn-ulas-item" 
-                  style="
-                    background-color: #ff9800;
-                    color: white;
-                    border-radius: 8px; 
-                    height: 32px; 
-                    line-height: 32px; 
-                    padding: 0 14px; 
-                    font-size: 12px; 
-                    font-weight: 600; 
-                    min-width: max-content; /* Ukuran tombol akan selalu pas dengan teks di dalamnya */
-                    box-shadow: none;
-                  "
-                  data-menu-id="${menuId}" 
-                  data-order-id="${orderId}" 
-                  data-menu-name="${name}">
-                  Ulas
-                </button>
+              <div style="flex-shrink: 0;">
+                ${actionHtml}
               </div>
 
             </li>`;
@@ -496,6 +516,28 @@
 									closeTimeout: 2000,
 								})
 								.open();
+
+							// --- TAMBAHKAN LOGIKA SINKRONISASI INI ---
+							// Temukan pesanan yang sedang dibuka detailnya di array allOrders
+							const orderIndex = allOrders.findIndex(
+								(o) => String(o.id) === String(orderId),
+							);
+							if (orderIndex !== -1) {
+								// Temukan item menu di dalam order tersebut
+								const items = allOrders[orderIndex].items;
+								const itemIndex = items.findIndex(
+									(i) => String(i.menu_id || i.id) === String(menuId),
+								);
+
+								if (itemIndex !== -1) {
+									// Tandai secara lokal (Frontend) bahwa item ini sudah diulas
+									allOrders[orderIndex].items[itemIndex].is_reviewed = true;
+
+									// Refresh tampilan daftar agar tombol berubah jadi "Diulas"
+									filterAndRender();
+								}
+							}
+							// ------------------------------------------
 						} catch (err) {
 							$f7.preloader.hide();
 							$f7.dialog.alert(err.message, "Pemberitahuan");

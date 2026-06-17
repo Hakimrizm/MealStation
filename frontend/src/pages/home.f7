@@ -6,10 +6,14 @@
 				<div class="left-icon">
 					<img src="icons/logo.png" class="app-logo" />
 				</div>
-                        <div>
-                            <div style="font-size: 10px; color: #8e8e93; font-weight: 500">Lokasi Saat Ini</div>
-                            <div style="font-size: 14px; font-weight: 700; color: #1a1a1a">Kantin LPKIA</div>
-                        </div>
+				<div>
+					<div style="font-size: 10px; color: #8e8e93; font-weight: 500">
+						Lokasi Saat Ini
+					</div>
+					<div style="font-size: 14px; font-weight: 700; color: #1a1a1a">
+						Kantin LPKIA
+					</div>
+				</div>
 				<div class="right right-icons">
 					<a href="/chat-list" class="link icon-only cart-icon">
 						<i class="fas fa-comment"></i>
@@ -26,7 +30,7 @@
 
 		<!-- PAGE CONTENT -->
 		<div class="page-content">
-			<div class="ptr-preloader" style="display: none;">
+			<div class="ptr-preloader" style="display: none">
 				<div class="preloader"></div>
 				<div class="ptr-arrow"></div>
 			</div>
@@ -63,8 +67,15 @@
 				>
 					<i class="icon f7-icons" style="font-size: 14px">building_2_fill</i>
 					<span id="tenant-filter-text">Menu Toko</span>
-					<a href="#" class="link" id="btn-clear-tenant-filter" style="margin-left: 6px; color: #3730a3">
-						<i class="icon f7-icons" style="font-size: 12px">xmark_circle_fill</i>
+					<a
+						href="#"
+						class="link"
+						id="btn-clear-tenant-filter"
+						style="margin-left: 6px; color: #3730a3"
+					>
+						<i class="icon f7-icons" style="font-size: 12px"
+							>xmark_circle_fill</i
+						>
 					</a>
 				</div>
 			</div>
@@ -118,7 +129,11 @@
 				Tidak ada menu yang cocok.
 			</div>
 
-			<div id="qr-scanner-overlay" class="qr-scanner-overlay" style="display: none">
+			<div
+				id="qr-scanner-overlay"
+				class="qr-scanner-overlay"
+				style="display: none"
+			>
 				<div class="qr-scanner-panel">
 					<div class="qr-scanner-header">
 						<div>
@@ -317,7 +332,11 @@
 				const banner = document.getElementById("tenant-filter-banner");
 				if (banner) banner.style.display = "none";
 			} else {
-				window.history.replaceState({}, "", `/?tenant=${encodeURIComponent(tenantQueryId)}`);
+				window.history.replaceState(
+					{},
+					"",
+					`/?tenant=${encodeURIComponent(tenantQueryId)}`,
+				);
 			}
 
 			initTenantBanner();
@@ -418,7 +437,10 @@
 				setScannerStatus("QR terbaca.");
 				setScannerResult(parsed.raw);
 				if (parsed.url.startsWith("/?tenant=")) {
-					const tenantId = new URL(parsed.url, window.location.origin).searchParams.get("tenant");
+					const tenantId = new URL(
+						parsed.url,
+						window.location.origin,
+					).searchParams.get("tenant");
 					setTenantFilter(tenantId);
 					return;
 				}
@@ -456,7 +478,12 @@
 				canvas.height = video.videoHeight;
 				context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-				const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+				const imageData = context.getImageData(
+					0,
+					0,
+					canvas.width,
+					canvas.height,
+				);
 				const code = jsQR(imageData.data, imageData.width, imageData.height, {
 					inversionAttempts: "dontInvert",
 				});
@@ -501,8 +528,13 @@
 			} catch (err) {
 				scannerStarted = false;
 				setScannerStatus("Gagal membuka kamera.");
-				setScannerResult(String(err?.message || err || "Tidak bisa membuka kamera."));
-				$f7.dialog.alert(String(err?.message || err || "Tidak bisa membuka kamera."), "Kamera tidak tersedia");
+				setScannerResult(
+					String(err?.message || err || "Tidak bisa membuka kamera."),
+				);
+				$f7.dialog.alert(
+					String(err?.message || err || "Tidak bisa membuka kamera."),
+					"Kamera tidak tersedia",
+				);
 			}
 		}
 
@@ -691,18 +723,18 @@
 		height: var(--f7-navbar-height);
 	}
 	.navbar .left-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 10px;
-	flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 10px;
+		flex-shrink: 0;
 	}
 	/* CSS untuk gambar logo */
 	.navbar .left-icon .app-logo {
-	height: 32px;
-	width: auto;
-	display: block;
-	object-fit: contain;
+		height: 32px;
+		width: auto;
+		display: block;
+		object-fit: contain;
 	}
 
 	.navbar .location-info {
@@ -1003,7 +1035,11 @@
 		max-width: 520px;
 		margin: 20px auto 0;
 		border-radius: 24px;
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+		background: linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.07),
+			rgba(255, 255, 255, 0.03)
+		);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		padding: 16px;
 		box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);

@@ -523,6 +523,18 @@
 		word-wrap: break-word;
 		border: 1px solid #f1f1f1;
 	}
+
+	/* Opsional: Membuat bintang lebih menonjol */
+	.rating i {
+		color: #ffc107; /* Warna emas */
+		margin-right: 4px;
+		font-size: 14px;
+	}
+
+	#menuRating {
+		font-weight: 700;
+		color: #333;
+	}
 </style>
 
 <script>
@@ -574,6 +586,22 @@
 			document.getElementById("menuRating").textContent = m.rating
 				? Number(m.rating).toFixed(1)
 				: "0.0";
+
+			// --- LOGIKA HITUNG RATING ---
+			// Kita hitung rata-rata dari array m.reviews
+			if (m.reviews && m.reviews.length > 0) {
+				const totalRating = m.reviews.reduce(
+					(sum, r) => sum + Number(r.rating),
+					0,
+				);
+				const avgRating = (totalRating / m.reviews.length).toFixed(1);
+				document.getElementById("menuRating").textContent = avgRating;
+			} else {
+				// Jika belum ada ulasan, tampilkan 0.0
+				document.getElementById("menuRating").textContent = "0.0";
+			}
+			// ----------------------------
+
 			document.getElementById("hotBadge").style.display = m.is_hot
 				? "inline"
 				: "none";

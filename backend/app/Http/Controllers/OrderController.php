@@ -109,6 +109,13 @@ class OrderController extends Controller
                     $order->estimation_time = \Carbon\Carbon::parse($order->estimation_time)->toIso8601String();
                 }
 
+                $order->items->transform(function ($item) use ($order) {
+                    $item->is_reviewed = \App\Models\Review::where('order_id', $order->id)
+                                                        ->where('menu_id', $item->menu_id)
+                                                        ->exists();
+                    return $item;
+                });
+
                 return $order;
             });
 

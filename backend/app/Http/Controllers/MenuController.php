@@ -14,11 +14,20 @@ class MenuController extends Controller
      */
     public function index()
     {
-        return response()->json(
-            Menu::with('tenant:id,name')
-                ->latest()
-                ->get()
-        );
+        $menus = Menu::with('tenant')
+            ->withAvg('reviews', 'rating')
+            ->latest()
+            ->get();
+
+        return response()->json($menus->map(function($menu) {
+            return [
+                ...$menu->toArray(),
+                'store_rating' => $menu->tenant->store_rating,
+                'rating' => $menu->reviews_avg_rating
+                    ? number_format((float) $menu->reviews_avg_rating, 1)
+                    : '0.0',
+            ];
+        }));
     }
 
     /**
